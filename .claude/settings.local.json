@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 *)",
+      "Bash(ls /c/Python*)",
+      "Read(//c/Users/facey/AppData/Local/Programs/Python//**)",
+      "Read(//c/Users/facey/AppData/Local/Microsoft/WindowsApps//**)",
+      "Bash(/c/Python314/python *)",
+      "Bash(python *)",
+      "Bash(pip install *)"
+    ]
+  }
+}

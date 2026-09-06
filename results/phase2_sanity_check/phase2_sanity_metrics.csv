@@ -1,0 +1,41 @@
+sample,label,method,level,mean_delta,psnr_db,ssim,contract_ok
+00000005_006.png,Infiltration-only,baseline,1,0.0,inf (identical),1.0,True
+00000005_006.png,Infiltration-only,median,1,0.883,44.67,0.9736,True
+00000005_006.png,Infiltration-only,median,2,1.256,41.94,0.957,True
+00000005_006.png,Infiltration-only,median,3,1.502,39.84,0.9452,True
+00000005_006.png,Infiltration-only,clahe_dwt,1,19.873,20.12,0.8304,True
+00000005_006.png,Infiltration-only,clahe_dwt,2,29.763,16.91,0.7024,True
+00000005_006.png,Infiltration-only,clahe_dwt,3,38.561,14.94,0.5987,True
+00000005_006.png,Infiltration-only,dae_clahe,1,20.003,20.06,0.828,True
+00000005_006.png,Infiltration-only,dae_clahe,2,30.324,16.73,0.6982,True
+00000005_006.png,Infiltration-only,dae_clahe,3,39.655,14.67,0.6114,True
+00000010_000.png,Infiltration-only,baseline,1,0.0,inf (identical),1.0,True
+00000010_000.png,Infiltration-only,median,1,0.973,43.54,0.9688,True
+00000010_000.png,Infiltration-only,median,2,1.372,40.82,0.9494,True
+00000010_000.png,Infiltration-only,median,3,1.611,39.35,0.9374,True
+00000010_000.png,Infiltration-only,clahe_dwt,1,15.562,21.85,0.8342,True
+00000010_000.png,Infiltration-only,clahe_dwt,2,22.69,18.93,0.7166,True
+00000010_000.png,Infiltration-only,clahe_dwt,3,30.927,16.53,0.6083,True
+00000010_000.png,Infiltration-only,dae_clahe,1,15.693,21.79,0.8295,True
+00000010_000.png,Infiltration-only,dae_clahe,2,23.237,18.71,0.7039,True
+00000010_000.png,Infiltration-only,dae_clahe,3,32.124,16.14,0.6049,True
+00000002_000.png,No-Finding-only,baseline,1,0.0,inf (identical),1.0,True
+00000002_000.png,No-Finding-only,median,1,0.651,47.48,0.9858,True
+00000002_000.png,No-Finding-only,median,2,1.058,43.85,0.9711,True
+00000002_000.png,No-Finding-only,median,3,1.323,41.81,0.9597,True
+00000002_000.png,No-Finding-only,clahe_dwt,1,16.946,21.0,0.9096,True
+00000002_000.png,No-Finding-only,clahe_dwt,2,27.644,17.04,0.8082,True
+00000002_000.png,No-Finding-only,clahe_dwt,3,38.329,14.53,0.7122,True
+00000002_000.png,No-Finding-only,dae_clahe,1,17.226,20.89,0.9095,True
+00000002_000.png,No-Finding-only,dae_clahe,2,28.814,16.74,0.7927,True
+00000002_000.png,No-Finding-only,dae_clahe,3,40.617,14.09,0.6692,True
+00000005_000.png,No-Finding-only,baseline,1,0.0,inf (identical),1.0,True
+00000005_000.png,No-Finding-only,median,1,0.522,47.85,0.9902,True
+00000005_000.png,No-Finding-only,median,2,0.858,44.14,0.9801,True
+00000005_000.png,No-Finding-only,median,3,1.112,41.37,0.9711,True
+00000005_000.png,No-Finding-only,clahe_dwt,1,16.35,21.38,0.9149,True
+00000005_000.png,No-Finding-only,clahe_dwt,2,26.887,17.3,0.8138,True
+00000005_000.png,No-Finding-only,clahe_dwt,3,36.75,14.85,0.7195,True
+00000005_000.png,No-Finding-only,dae_clahe,1,16.521,21.31,0.9186,True
+00000005_000.png,No-Finding-only,dae_clahe,2,27.661,17.08,0.8173,True
+00000005_000.png,No-Finding-only,dae_clahe,3,38.483,14.52,0.7183,True
