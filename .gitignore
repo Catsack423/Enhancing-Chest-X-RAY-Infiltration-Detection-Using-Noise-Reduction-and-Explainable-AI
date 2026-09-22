@@ -1,3 +1,4 @@
 data
 resnet50
 *.h5
+outputs/teachable_machine_pilot
