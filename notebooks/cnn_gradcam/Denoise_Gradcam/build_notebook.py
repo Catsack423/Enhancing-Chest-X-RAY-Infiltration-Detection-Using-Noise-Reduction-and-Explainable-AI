@@ -1,0 +1,336 @@
+import os
+import sys
+import json
+from pathlib import Path
+
+def build():
+    current_dir = Path(r"D:\ForSeminarProject\datasets\nih-chest-xrays\data\versions\3\notebooks\Denoise_Gradcam")
+    nb_path = current_dir / "denoise_gradcam_comparison.ipynb"
+
+    cells = []
+
+    # Cell 1: Markdown Title
+    cells.append({
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "# 🔬 Denoise + Grad-CAM: การศึกษาผลของการลดสัญญาณรบกวนต่อ Explainable AI\n",
+            "\n",
+            "สมุดโน้ตบุ๊กนี้จำลองการทดลองส่วน Denoising เหมือนกับที่ทำใน CNN โดยเปรียบเทียบทั้ง **7 รูปแบบการเตรียมภาพ**:\n",
+            "1. **Baseline**: ภาพเอกซเรย์ดิบ (Raw CXR)\n",
+            "2. **Median Filter**: L1 (3×3), L2 (5×5), L3 (7×7)\n",
+            "3. **CLAHE + DWT**: L1 (clip 2 / depth 1), L2 (clip 4 / depth 2), L3 (clip 8 / depth 3)\n",
+            "\n",
+            "**พร้อมการประเมิน Confusion Matrix ครบทั้ง 2 รูปแบบ:**\n",
+            "- **แบบที่ 1 (Classification Matrix):** โมเดลทาย Normal vs Infiltration ถูกต้องกี่ภาพ เหมือนใน CNN\n",
+            "- **แบบที่ 2 (Localization Matrix / Pointing Game):** Grad-CAM ชี้ตำแหน่งรอยโรคตกในกรอบ Bounding Box ของแพทย์จริงหรือไม่ (Hit vs Miss)"
+        ]
+    })
+
+    # Cell 2: Imports & Setup
+    cells.append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "import os\n",
+            "import sys\n",
+            "from pathlib import Path\n",
+            "\n",
+            "import cv2\n",
+            "import numpy as np\n",
+            "import pandas as pd\n",
+            "import matplotlib.pyplot as plt\n",
+            "import matplotlib.patches as patches\n",
+            "import seaborn as sns\n",
+            "from PIL import Image\n",
+            "from sklearn.metrics import confusion_matrix, classification_report\n",
+            "\n",
+            "import torch\n",
+            "import torch.nn as nn\n",
+            "import torchvision.models as models\n",
+            "import torchvision.transforms as transforms\n",
+            "\n",
+            "# ตรวจสอบ Path และนำเข้าโมดูล Denoise\n",
+            "CURRENT_DIR = Path.cwd()\n",
+            "if (CURRENT_DIR / 'denoise_methods.py').exists():\n",
+            "    BASE_DIR = CURRENT_DIR\n",
+            "    DATASET_DIR = CURRENT_DIR.parent.parent\n",
+            "else:\n",
+            "    BASE_DIR = CURRENT_DIR / 'notebooks' / 'Denoise_Gradcam'\n",
+            "    DATASET_DIR = CURRENT_DIR\n",
+            "\n",
+            "sys.path.append(str(BASE_DIR))\n",
+            "import denoise_methods as dm\n",
+            "\n",
+            "device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')\n",
+            "print(f\"Device: {device}\")\n",
+            "print(f\"Dataset Path: {DATASET_DIR}\")\n",
+            "print(f\"พร้อมใช้งานฟังก์ชัน Denoise: {list(dm.ALL_METHODS.keys())}\")"
+        ]
+    })
+
+    # Cell 3: Load Data
+    cells.append({
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 1. โหลดข้อมูลภาพและพิกัดรอยโรคจริงของแพทย์ (Ground-Truth BBox)"
+        ]
+    })
+    cells.append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "manifest_path = DATASET_DIR / 'notebooks' / 'Gradcam' / 'sample_manifest_200.csv'\n",
+            "df_manifest = pd.read_csv(manifest_path)\n",
+            "\n",
+            "bbox_path = DATASET_DIR / 'BBox_List_2017.csv'\n",
+            "df_bbox = pd.read_csv(bbox_path).iloc[:, :6]\n",
+            "df_bbox.columns = ['Image Index', 'Finding Label', 'x', 'y', 'w', 'h']\n",
+            "\n",
+            "print(f\"ชุดข้อมูลทดสอบ: Infiltration {sum(df_manifest['Class'] == 'Infiltration')} ภาพ | Normal {sum(df_manifest['Class'] == 'Normal')} ภาพ\")\n",
+            "df_manifest[df_manifest['Class'] == 'Infiltration'].head(5)"
+        ]
+    })
+
+    # Cell 4: ResNet50 & Grad-CAM Engine
+    cells.append({
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 2. โมเดล ResNet50 และอัลกอริทึม Grad-CAM"
+        ]
+    })
+    cells.append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "# โหลดโมเดล ResNet50\n",
+            "model = models.resnet50(weights=models.ResNet50_Weights.DEFAULT).to(device)\n",
+            "model.eval()\n",
+            "\n",
+            "# ตั้ง Hook ที่ layer4[-1] (Conv Block สุดท้าย)\n",
+            "gradients, activations = [], []\n",
+            "def hook_fwd(m, inp, out): activations.append(out)\n",
+            "def hook_bwd(m, g_inp, g_out): gradients.append(g_out[0])\n",
+            "\n",
+            "target_layer = model.layer4[-1]\n",
+            "target_layer.register_forward_hook(hook_fwd)\n",
+            "target_layer.register_full_backward_hook(hook_bwd)\n",
+            "\n",
+            "preprocess = transforms.Compose([\n",
+            "    transforms.Resize((224, 224)),\n",
+            "    transforms.ToTensor(),\n",
+            "    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),\n",
+            "])\n",
+            "\n",
+            "def compute_gradcam_for_numpy_image(img_u8):\n",
+            "    gradients.clear()\n",
+            "    activations.clear()\n",
+            "    \n",
+            "    img_pil = Image.fromarray(img_u8).convert('RGB')\n",
+            "    t_in = preprocess(img_pil).unsqueeze(0).to(device)\n",
+            "    \n",
+            "    out = model(t_in)\n",
+            "    pred_idx = out.argmax(dim=1).item()\n",
+            "    score = out[0, pred_idx]\n",
+            "    \n",
+            "    model.zero_grad()\n",
+            "    score.backward(retain_graph=True)\n",
+            "    \n",
+            "    grad = gradients[0][0].detach()\n",
+            "    act = activations[0][0].detach()\n",
+            "    weights = torch.mean(grad, dim=(1, 2), keepdim=True)\n",
+            "    cam = torch.sum(weights * act, dim=0).clamp(min=0).cpu().numpy()\n",
+            "    \n",
+            "    w, h = img_u8.shape[1], img_u8.shape[0]\n",
+            "    cam_resized = cv2.resize(cam, (w, h))\n",
+            "    if cam_resized.max() > cam_resized.min():\n",
+            "        cam_norm = (cam_resized - cam_resized.min()) / (cam_resized.max() - cam_resized.min())\n",
+            "    else:\n",
+            "        cam_norm = np.zeros_like(cam_resized)\n",
+            "        \n",
+            "    heatmap = np.uint8(255 * cam_norm)\n",
+            "    heatmap_colored = cv2.cvtColor(cv2.applyColorMap(heatmap, cv2.COLORMAP_JET), cv2.COLOR_BGR2RGB)\n",
+            "    cxr_rgb = cv2.cvtColor(img_u8, cv2.COLOR_GRAY2RGB)\n",
+            "    overlay = np.uint8(0.45 * heatmap_colored + 0.55 * cxr_rgb)\n",
+            "    \n",
+            "    return cam_norm, overlay\n",
+            "\n",
+            "print(\"Grad-CAM Engine พร้อมทำงาน!\")"
+        ]
+    })
+
+    # Cell 5: Visualizing Denoising Effects on Image
+    cells.append({
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 3. เปรียบเทียบภาพที่ผ่านการ Denoise ทั้ง 7 รูปแบบบนคนไข้รายเดียวกัน"
+        ]
+    })
+    cells.append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "sample_row = df_manifest[df_manifest['Class'] == 'Infiltration'].iloc[0]\n",
+            "img_path = DATASET_DIR / sample_row['Relative_Path']\n",
+            "raw_img = Image.open(img_path)\n",
+            "raw_u8 = np.array(raw_img.convert('L'))\n",
+            "\n",
+            "fig, axes = plt.subplots(2, 4, figsize=(18, 9))\n",
+            "axes = axes.flatten()\n",
+            "\n",
+            "for idx, (name, fn) in enumerate(dm.ALL_METHODS.items()):\n",
+            "    processed = fn(raw_u8)\n",
+            "    ax = axes[idx]\n",
+            "    ax.imshow(processed, cmap='gray')\n",
+            "    ax.set_title(f\"{name}\", fontsize=11, weight='bold', pad=8)\n",
+            "    ax.axis('off')\n",
+            "\n",
+            "axes[7].axis('off')\n",
+            "plt.suptitle(f\"เปรียบเทียบผล Denoising 7 วิธี บนภาพ: {sample_row['Image Index']}\", fontsize=14, weight='bold')\n",
+            "plt.tight_layout()\n",
+            "plt.show()"
+        ]
+    })
+
+    # Cell 6: Complete Denoise + Grad-CAM Comparison
+    cells.append({
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 4. เปรียบเทียบ Grad-CAM + Ground-Truth Doctor's BBox ครบทั้ง 7 วิธี"
+        ]
+    })
+    cells.append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "def compare_denoise_gradcam(image_index):\n",
+            "    row = df_manifest[df_manifest['Image Index'] == image_index].iloc[0]\n",
+            "    img_path = DATASET_DIR / row['Relative_Path']\n",
+            "    raw_u8 = np.array(Image.open(img_path).convert('L'))\n",
+            "    boxes = df_bbox[df_bbox['Image Index'] == image_index]\n",
+            "    \n",
+            "    fig, axes = plt.subplots(2, 4, figsize=(20, 10))\n",
+            "    axes = axes.flatten()\n",
+            "    \n",
+            "    for idx, (name, fn) in enumerate(dm.ALL_METHODS.items()):\n",
+            "        denoised = fn(raw_u8)\n",
+            "        cam, overlay = compute_gradcam_for_numpy_image(denoised)\n",
+            "        \n",
+            "        ax = axes[idx]\n",
+            "        ax.imshow(overlay)\n",
+            "        \n",
+            "        # ตีกรอบ BBox ของแพทย์\n",
+            "        for _, b in boxes.iterrows():\n",
+            "            bx, by, bw, bh = float(b['x']), float(b['y']), float(b['w']), float(b['h'])\n",
+            "            rect = patches.Rectangle((bx, by), bw, bh, linewidth=2.5, edgecolor='#00FF66', facecolor='none', linestyle='--')\n",
+            "            ax.add_patch(rect)\n",
+            "            \n",
+            "        ax.set_title(f\"{name}\", fontsize=11, weight='bold', pad=8)\n",
+            "        ax.axis('off')\n",
+            "        \n",
+            "    axes[7].axis('off')\n",
+            "    findings = row['Finding Labels']\n",
+            "    plt.suptitle(f\"Denoise + Grad-CAM Comparison | Image: {image_index} ({findings})\\n(Green Dashed Box = Doctor's Ground Truth BBox)\", fontsize=13, weight='bold')\n",
+            "    plt.tight_layout()\n",
+            "    plt.show()\n",
+            "\n",
+            "compare_denoise_gradcam(sample_row['Image Index'])"
+        ]
+    })
+
+    # Cell 7: Confusion Matrix Type 1 (Classification)
+    cells.append({
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 5. Confusion Matrix แบบที่ 1: ผลการทำนายคลาส (Classification Matrix)\n",
+            "วัดว่าโมเดล CNN ทาย Normal และ Infiltration ถูกต้องกี่ภาพ เหมือนกับการทดลองในโฟลเดอร์ `cnn`"
+        ]
+    })
+    cells.append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "# โหลดภาพตัวอย่างที่เรนเดอร์สำเร็จแล้วมาแสดงผล\n",
+            "cm_class_img_path = BASE_DIR / 'output' / 'confusion_matrix_classification.png'\n",
+            "if cm_class_img_path.exists():\n",
+            "    plt.figure(figsize=(16, 5))\n",
+            "    plt.imshow(Image.open(cm_class_img_path))\n",
+            "    plt.axis('off')\n",
+            "    plt.show()\n",
+            "else:\n",
+            "    print(\"ยังไม่พบไฟล์ภาพ ให้รัน generate_confusion_matrices.py เพื่อสร้างภาพ\")"
+        ]
+    })
+
+    # Cell 8: Confusion Matrix Type 2 (Localization / Pointing Game)
+    cells.append({
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 6. Confusion Matrix แบบที่ 2: ความแม่นยำในการชี้ตำแหน่งรอยโรค (Localization Matrix / Pointing Game)\n",
+            "วัดว่า Grad-CAM ชี้ตำแหน่งรอยโรค Infiltration ได้ตรงจุด (**Hit ตกใน BBox ของแพทย์**) หรือชี้หลุดตำแหน่ง (**Miss หลุด BBox**)"
+        ]
+    })
+    cells.append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "cm_loc_img_path = BASE_DIR / 'output' / 'confusion_matrix_xai_localization.png'\n",
+            "if cm_loc_img_path.exists():\n",
+            "    plt.figure(figsize=(16, 5))\n",
+            "    plt.imshow(Image.open(cm_loc_img_path))\n",
+            "    plt.axis('off')\n",
+            "    plt.show()\n",
+            "else:\n",
+            "    print(\"ยังไม่พบไฟล์ภาพ ให้รัน generate_confusion_matrices.py เพื่อสร้างภาพ\")"
+        ]
+    })
+
+    notebook_data = {
+        "cells": cells,
+        "metadata": {
+            "kernelspec": {
+                "display_name": "Python 3 (ipykernel)",
+                "language": "python",
+                "name": "python3"
+            },
+            "language_info": {
+                "codemirror_mode": {"name": "ipython", "version": 3},
+                "file_extension": ".py",
+                "mimetype": "text/x-python",
+                "name": "python",
+                "nbconvert_exporter": "python",
+                "pygments_lexer": "ipython3",
+                "version": "3.14.3"
+            }
+        },
+        "nbformat": 4,
+        "nbformat_minor": 4
+    }
+
+    with open(nb_path, "w", encoding="utf-8") as f:
+        json.dump(notebook_data, f, indent=2, ensure_ascii=False)
+
+    print(f"Generated notebook successfully at: {nb_path}")
+
+if __name__ == "__main__":
+    build()
