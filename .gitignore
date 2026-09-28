@@ -1,4 +1,10 @@
 data
+!notebooks/data/
+notebooks/data/*
+!notebooks/data/README.md
+!notebooks/data/teachable_machine_pilot/
+notebooks/data/teachable_machine_pilot/*
+!notebooks/data/teachable_machine_pilot/README.md
 resnet50
 *.h5
 outputs/teachable_machine_pilot
