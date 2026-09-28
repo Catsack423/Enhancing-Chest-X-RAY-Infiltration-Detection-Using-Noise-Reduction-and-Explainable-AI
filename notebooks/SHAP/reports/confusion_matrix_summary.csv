@@ -1,0 +1,4 @@
+Method,Classification_Accuracy,Pointing_Game_Hit_Rate
+Baseline (Raw),91.7%,20.0%
+Median L2 (5x5),93.3%,16.7%
+CLAHE+DWT L3,95.0%,23.3%
