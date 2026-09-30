@@ -4,8 +4,11 @@ import json
 from pathlib import Path
 
 def build_notebook():
-    notebook_dir = Path(r"D:\ForSeminarProject\datasets\nih-chest-xrays\data\versions\3\notebooks\Gradcam")
-    notebook_path = notebook_dir / "gradcam_normal_vs_infiltration.ipynb"
+    local_dir = Path(__file__).resolve().parent
+    notebook_paths = [local_dir / "gradcam_normal_vs_infiltration.ipynb"]
+    d_dir = Path(r"D:\ForSeminarProject\datasets\nih-chest-xrays\data\versions\3\notebooks\Gradcam")
+    if d_dir.exists():
+        notebook_paths.append(d_dir / "gradcam_normal_vs_infiltration.ipynb")
     
     cells = []
     
@@ -413,12 +416,52 @@ def build_notebook():
         ]
     })
 
+    # 8. Confusion Matrices
+    cells.append({
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## 7. การประเมินผลด้วย Confusion Matrix ทั้ง 2 รูปแบบ\n",
+            "การประเมินผลลัพธ์ของโมเดลแบ่งออกเป็น 2 มุมมองหลัก:\n",
+            "1. **Classification Confusion Matrix:** วัดผลการจำแนกประเภทโรค (Normal vs Infiltration)\n",
+            "2. **XAI Localization Confusion Matrix:** วัดความแม่นยำในการชี้ตำแหน่ง (Pointing Game Hit vs Miss เทียบกับ BBox ของแพทย์)"
+        ]
+    })
+    cells.append({
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "clf_cm_path = BASE_DIR / 'output' / 'confusion_matrix_classification.png'\n",
+            "loc_cm_path = BASE_DIR / 'output' / 'confusion_matrix_xai_localization.png'\n",
+            "summary_csv = BASE_DIR / 'reports' / 'gradcam_confusion_matrix_summary.csv'\n",
+            "\n",
+            "if summary_csv.exists():\n",
+            "    display(pd.read_csv(summary_csv))\n",
+            "\n",
+            "fig, axes = plt.subplots(1, 2, figsize=(15, 6), dpi=150)\n",
+            "if clf_cm_path.exists():\n",
+            "    axes[0].imshow(Image.open(clf_cm_path))\n",
+            "    axes[0].axis('off')\n",
+            "    axes[0].set_title('1. Classification Matrix', fontsize=12, weight='bold')\n",
+            "\n",
+            "if loc_cm_path.exists():\n",
+            "    axes[1].imshow(Image.open(loc_cm_path))\n",
+            "    axes[1].axis('off')\n",
+            "    axes[1].set_title('2. XAI Localization Matrix (Pointing Game)', fontsize=12, weight='bold')\n",
+            "\n",
+            "plt.tight_layout()\n",
+            "plt.show()"
+        ]
+    })
+
     # 9. Random explorer
     cells.append({
         "cell_type": "markdown",
         "metadata": {},
         "source": [
-            "## 7. ฟังก์ชันสุ่มดูคู่ภาพแบบ Interactive (Random Pair Explorer)\n",
+            "## 8. ฟังก์ชันสุ่มดูคู่ภาพแบบ Interactive (Random Pair Explorer)\n",
             "รันเซลล์นี้เพื่อสุ่มดูคู่ภาพ Normal vs Infiltration คู่ใหม่ ๆ จากชุดทดลอง 200 ภาพ"
         ]
     })
@@ -460,10 +503,11 @@ def build_notebook():
         "nbformat_minor": 4
     }
 
-    with open(notebook_path, "w", encoding="utf-8") as f:
-        json.dump(notebook_data, f, indent=2, ensure_ascii=False)
-        
-    print(f"Generated notebook successfully at: {notebook_path}")
+    for nb_p in notebook_paths:
+        with open(nb_p, "w", encoding="utf-8") as f:
+            json.dump(notebook_data, f, indent=2, ensure_ascii=False)
+        print(f"Generated notebook successfully at: {nb_p}")
 
 if __name__ == "__main__":
     build_notebook()
+

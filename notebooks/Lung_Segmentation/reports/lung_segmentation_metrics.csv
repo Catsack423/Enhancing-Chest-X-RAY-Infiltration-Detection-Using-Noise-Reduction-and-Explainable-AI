@@ -1,0 +1,5 @@
+Condition,Accuracy_%,Precision_%,Recall_Sensitivity_%,F1_Score,Pointing_Game_Hit_Rate_%,BBox_Hits,BBox_Misses,Normal_Clean_Rate_%,Mean_Energy_Inside_BBox_%,Mean_IoU_0.3
+1. Unmasked Raw CXR (Baseline),86.67,84.38,90.0,0.871,23.33,7,23,83.33,12.08,0.1042
+2. Segmented Lung Only (Raw Masked),91.67,90.32,93.33,0.918,26.67,8,22,90.0,16.97,0.1557
+3. Unmasked DAE+CLAHE,90.0,87.5,93.33,0.9032,26.67,8,22,83.33,13.53,0.1207
+4. Segmented Lung + DAE+CLAHE (Combined),91.67,90.32,93.33,0.918,40.0,12,18,90.0,17.31,0.1598

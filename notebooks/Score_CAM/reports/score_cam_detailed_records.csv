@@ -1,0 +1,161 @@
+Image Index,Class,XAI_Method,Ground_Truth,Predicted,Localization,Energy_Inside_BBox_%,IoU_0.3
+00000002_000.png,Normal,1. Grad-CAM (Raw CXR),0,1,False Alarm,0.0,0.0
+00000002_000.png,Normal,2. Score-CAM (Raw CXR),0,1,False Alarm,0.0,0.0
+00000002_000.png,Normal,3. Grad-CAM (DAE+CLAHE),0,1,False Alarm,0.0,0.0
+00000002_000.png,Normal,4. Score-CAM (DAE+CLAHE),0,1,False Alarm,0.0,0.0
+00000005_000.png,Normal,1. Grad-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000005_000.png,Normal,2. Score-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000005_000.png,Normal,3. Grad-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000005_000.png,Normal,4. Score-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000006_000.png,Normal,1. Grad-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000006_000.png,Normal,2. Score-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000006_000.png,Normal,3. Grad-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000006_000.png,Normal,4. Score-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000007_000.png,Normal,1. Grad-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000007_000.png,Normal,2. Score-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000007_000.png,Normal,3. Grad-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000007_000.png,Normal,4. Score-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000008_001.png,Normal,1. Grad-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000008_001.png,Normal,2. Score-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000008_001.png,Normal,3. Grad-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000008_001.png,Normal,4. Score-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000011_001.png,Normal,1. Grad-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000011_001.png,Normal,2. Score-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000011_001.png,Normal,3. Grad-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000011_001.png,Normal,4. Score-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000013_000.png,Normal,1. Grad-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000013_000.png,Normal,2. Score-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000013_000.png,Normal,3. Grad-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000013_000.png,Normal,4. Score-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000014_000.png,Normal,1. Grad-CAM (Raw CXR),0,1,False Alarm,0.0,0.0
+00000014_000.png,Normal,2. Score-CAM (Raw CXR),0,1,Clean Normal,0.0,0.0
+00000014_000.png,Normal,3. Grad-CAM (DAE+CLAHE),0,0,False Alarm,0.0,0.0
+00000014_000.png,Normal,4. Score-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000015_000.png,Normal,1. Grad-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000015_000.png,Normal,2. Score-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000015_000.png,Normal,3. Grad-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000015_000.png,Normal,4. Score-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000016_000.png,Normal,1. Grad-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000016_000.png,Normal,2. Score-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000016_000.png,Normal,3. Grad-CAM (DAE+CLAHE),0,1,Clean Normal,0.0,0.0
+00000016_000.png,Normal,4. Score-CAM (DAE+CLAHE),0,1,Clean Normal,0.0,0.0
+00000017_001.png,Normal,1. Grad-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000017_001.png,Normal,2. Score-CAM (Raw CXR),0,0,False Alarm,0.0,0.0
+00000017_001.png,Normal,3. Grad-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000017_001.png,Normal,4. Score-CAM (DAE+CLAHE),0,0,False Alarm,0.0,0.0
+00000018_000.png,Normal,1. Grad-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000018_000.png,Normal,2. Score-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000018_000.png,Normal,3. Grad-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000018_000.png,Normal,4. Score-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000022_000.png,Normal,1. Grad-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000022_000.png,Normal,2. Score-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000022_000.png,Normal,3. Grad-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000022_000.png,Normal,4. Score-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000023_000.png,Normal,1. Grad-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000023_000.png,Normal,2. Score-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000023_000.png,Normal,3. Grad-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000023_000.png,Normal,4. Score-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000029_000.png,Normal,1. Grad-CAM (Raw CXR),0,1,False Alarm,0.0,0.0
+00000029_000.png,Normal,2. Score-CAM (Raw CXR),0,1,Clean Normal,0.0,0.0
+00000029_000.png,Normal,3. Grad-CAM (DAE+CLAHE),0,0,False Alarm,0.0,0.0
+00000029_000.png,Normal,4. Score-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000031_000.png,Normal,1. Grad-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000031_000.png,Normal,2. Score-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000031_000.png,Normal,3. Grad-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000031_000.png,Normal,4. Score-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000034_001.png,Normal,1. Grad-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000034_001.png,Normal,2. Score-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000034_001.png,Normal,3. Grad-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000034_001.png,Normal,4. Score-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000035_000.png,Normal,1. Grad-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000035_000.png,Normal,2. Score-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000035_000.png,Normal,3. Grad-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000035_000.png,Normal,4. Score-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000037_000.png,Normal,1. Grad-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000037_000.png,Normal,2. Score-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000037_000.png,Normal,3. Grad-CAM (DAE+CLAHE),0,1,Clean Normal,0.0,0.0
+00000037_000.png,Normal,4. Score-CAM (DAE+CLAHE),0,1,Clean Normal,0.0,0.0
+00000038_002.png,Normal,1. Grad-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000038_002.png,Normal,2. Score-CAM (Raw CXR),0,0,Clean Normal,0.0,0.0
+00000038_002.png,Normal,3. Grad-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000038_002.png,Normal,4. Score-CAM (DAE+CLAHE),0,0,Clean Normal,0.0,0.0
+00000032_037.png,Infiltration,1. Grad-CAM (Raw CXR),1,0,Hit,9.4,0.1095
+00000032_037.png,Infiltration,2. Score-CAM (Raw CXR),1,0,Miss,8.26,0.1287
+00000032_037.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,1,Miss,4.25,0.0278
+00000032_037.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,1,Miss,5.95,0.0645
+00000211_016.png,Infiltration,1. Grad-CAM (Raw CXR),1,1,Miss,8.36,0.0723
+00000211_016.png,Infiltration,2. Score-CAM (Raw CXR),1,1,Miss,5.16,0.0395
+00000211_016.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,1,Miss,5.03,0.0408
+00000211_016.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,1,Miss,3.42,0.0001
+00000468_041.png,Infiltration,1. Grad-CAM (Raw CXR),1,1,Miss,1.16,0.0128
+00000468_041.png,Infiltration,2. Score-CAM (Raw CXR),1,1,Miss,1.43,0.0227
+00000468_041.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,1,Miss,1.03,0.0147
+00000468_041.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,1,Miss,1.36,0.0192
+00001039_005.png,Infiltration,1. Grad-CAM (Raw CXR),1,1,Miss,4.88,0.0613
+00001039_005.png,Infiltration,2. Score-CAM (Raw CXR),1,1,Miss,2.9,0.0039
+00001039_005.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,1,Miss,8.52,0.1126
+00001039_005.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,1,Miss,7.06,0.0839
+00001900_026.png,Infiltration,1. Grad-CAM (Raw CXR),1,1,Miss,6.49,0.0472
+00001900_026.png,Infiltration,2. Score-CAM (Raw CXR),1,1,Miss,9.1,0.0983
+00001900_026.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,0,Miss,6.35,0.0598
+00001900_026.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,0,Miss,5.33,0.0529
+00002224_007.png,Infiltration,1. Grad-CAM (Raw CXR),1,1,Miss,8.45,0.1041
+00002224_007.png,Infiltration,2. Score-CAM (Raw CXR),1,1,Miss,7.82,0.0997
+00002224_007.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,1,Hit,8.06,0.0863
+00002224_007.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,1,Miss,6.09,0.0724
+00003149_007.png,Infiltration,1. Grad-CAM (Raw CXR),1,1,Miss,4.68,0.0329
+00003149_007.png,Infiltration,2. Score-CAM (Raw CXR),1,1,Miss,6.99,0.0633
+00003149_007.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,1,Miss,6.92,0.0169
+00003149_007.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,1,Miss,12.54,0.1273
+00003333_002.png,Infiltration,1. Grad-CAM (Raw CXR),1,1,Miss,22.66,0.2962
+00003333_002.png,Infiltration,2. Score-CAM (Raw CXR),1,1,Hit,20.09,0.2063
+00003333_002.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,1,Hit,17.45,0.1411
+00003333_002.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,1,Miss,14.84,0.1662
+00003973_008.png,Infiltration,1. Grad-CAM (Raw CXR),1,1,Miss,1.94,0.0
+00003973_008.png,Infiltration,2. Score-CAM (Raw CXR),1,1,Miss,3.08,0.0269
+00003973_008.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,1,Miss,0.46,0.0
+00003973_008.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,1,Miss,1.67,0.0
+00005066_030.png,Infiltration,1. Grad-CAM (Raw CXR),1,1,Miss,6.24,0.0169
+00005066_030.png,Infiltration,2. Score-CAM (Raw CXR),1,1,Miss,12.27,0.0804
+00005066_030.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,1,Miss,24.42,0.2895
+00005066_030.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,1,Miss,26.05,0.3126
+00006096_010.png,Infiltration,1. Grad-CAM (Raw CXR),1,0,Miss,3.54,0.0145
+00006096_010.png,Infiltration,2. Score-CAM (Raw CXR),1,0,Miss,5.05,0.0739
+00006096_010.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,1,Miss,2.35,0.0081
+00006096_010.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,1,Miss,2.43,0.0073
+00006304_060.png,Infiltration,1. Grad-CAM (Raw CXR),1,1,Miss,0.58,0.0
+00006304_060.png,Infiltration,2. Score-CAM (Raw CXR),1,1,Miss,3.31,0.0
+00006304_060.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,1,Miss,4.52,0.0399
+00006304_060.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,1,Miss,3.35,0.0
+00006836_002.png,Infiltration,1. Grad-CAM (Raw CXR),1,1,Miss,6.77,0.0234
+00006836_002.png,Infiltration,2. Score-CAM (Raw CXR),1,1,Miss,7.81,0.0638
+00006836_002.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,1,Miss,17.46,0.2291
+00006836_002.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,1,Miss,12.19,0.1535
+00007124_006.png,Infiltration,1. Grad-CAM (Raw CXR),1,1,Miss,18.66,0.2039
+00007124_006.png,Infiltration,2. Score-CAM (Raw CXR),1,1,Hit,17.7,0.1785
+00007124_006.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,1,Miss,15.93,0.1573
+00007124_006.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,1,Miss,9.93,0.0639
+00008814_010.png,Infiltration,1. Grad-CAM (Raw CXR),1,1,Hit,20.1,0.2333
+00008814_010.png,Infiltration,2. Score-CAM (Raw CXR),1,1,Miss,10.44,0.0741
+00008814_010.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,1,Hit,21.11,0.2271
+00008814_010.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,1,Miss,11.17,0.1043
+00009431_004.png,Infiltration,1. Grad-CAM (Raw CXR),1,1,Miss,1.93,0.0
+00009431_004.png,Infiltration,2. Score-CAM (Raw CXR),1,1,Miss,2.19,0.0
+00009431_004.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,1,Miss,10.54,0.0993
+00009431_004.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,1,Miss,10.47,0.1114
+00010092_018.png,Infiltration,1. Grad-CAM (Raw CXR),1,1,Miss,1.42,0.0
+00010092_018.png,Infiltration,2. Score-CAM (Raw CXR),1,1,Miss,3.23,0.0457
+00010092_018.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,0,Miss,3.99,0.0643
+00010092_018.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,0,Miss,3.05,0.0515
+00010120_010.png,Infiltration,1. Grad-CAM (Raw CXR),1,1,Hit,57.7,0.3474
+00010120_010.png,Infiltration,2. Score-CAM (Raw CXR),1,1,Hit,36.66,0.3502
+00010120_010.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,1,Hit,42.76,0.3442
+00010120_010.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,1,Hit,47.72,0.4254
+00010230_001.png,Infiltration,1. Grad-CAM (Raw CXR),1,1,Miss,2.04,0.0
+00010230_001.png,Infiltration,2. Score-CAM (Raw CXR),1,1,Miss,4.14,0.0614
+00010230_001.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,1,Miss,0.91,0.0
+00010230_001.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,1,Miss,1.72,0.0
+00010277_000.png,Infiltration,1. Grad-CAM (Raw CXR),1,1,Miss,27.58,0.2192
+00010277_000.png,Infiltration,2. Score-CAM (Raw CXR),1,1,Miss,27.49,0.2327
+00010277_000.png,Infiltration,3. Grad-CAM (DAE+CLAHE),1,1,Hit,45.29,0.4952
+00010277_000.png,Infiltration,4. Score-CAM (DAE+CLAHE),1,1,Hit,41.41,0.4598

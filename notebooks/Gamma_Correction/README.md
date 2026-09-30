@@ -19,5 +19,25 @@ $$I_{\text{out}} = 255 \times \left(\frac{I_{\text{in}}}{255}\right)^\gamma$$
 - `gamma_correction_pipeline.ipynb`: Interactive Jupyter Notebook testing different gamma values and benchmarking against CLAHE.
 - `gamma_utils.py`: High-speed Look-Up Table (LUT) gamma functions and contrast metrics.
 - `generate_gamma_artifacts.py`: Automated generation of comparison charts.
-- `output/gamma_levels_comparison.png`: Visual evaluation of $\gamma = 0.5, 0.8, 1.0, 1.2, 1.5$.
-- `output/gamma_vs_clahe_benchmark.png`: Direct face-off with CLAHE and DAE+CLAHE.
+- `generate_gamma_confusion_matrices.py`: Benchmark script generating 4-condition Confusion Matrices and metrics.
+- `output/`:
+  - `gamma_levels_comparison.png`: Visual evaluation of $\gamma = 0.5, 0.8, 1.0, 1.2, 1.5$.
+  - `gamma_vs_clahe_benchmark.png`: Direct face-off with CLAHE and DAE+CLAHE.
+  - `confusion_matrix_gamma_classification.png`: 4-panel Binary Classification Confusion Matrix.
+  - `confusion_matrix_gamma_localization.png`: 4-panel XAI Localization (Pointing Game) Confusion Matrix.
+- `reports/`:
+  - `gamma_confusion_matrix_summary.csv`: Quantitative summary metrics table across all 4 conditions.
+  - `gamma_evaluation_records.csv`: Per-case evaluation results.
+  - `summary_report.md`: Comprehensive academic summary report for chapter 4.
+
+---
+
+## 3. Benchmark Summary (Gamma Correction vs CLAHE)
+
+| Enhancement Technique | Accuracy | Recall (Sensitivity) | F1-Score | Pointing Game Hit Rate | Mean Energy Inside BBox |
+|---|:---:|:---:|:---:|:---:|:---:|
+| **Baseline Raw (gamma=1.0)** | 86.67% | 90.00% | 0.8710 | 23.33% | 12.08% |
+| **Gamma = 0.8 (Optimal Bright)** | **91.67%** | **93.33%** | **0.9180** | **23.33%** | 11.11% |
+| **Gamma = 1.2 (Contrast Dark)** | 88.33% | 90.00% | 0.8852 | 16.67% | **13.55%** |
+| **CLAHE Benchmark (clip=4.0)** | 90.00% | 93.33% | 0.9032 | 23.33% | 12.10% |
+

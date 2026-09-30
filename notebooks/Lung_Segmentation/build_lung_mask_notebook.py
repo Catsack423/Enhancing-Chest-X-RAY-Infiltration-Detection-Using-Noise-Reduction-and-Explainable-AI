@@ -167,6 +167,53 @@ cells = [
             "plt.tight_layout()\n",
             "plt.show()"
         ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## ตอนที่ 3: การประเมินผล Confusion Matrix (Anatomical Lung Segmentation Benchmark)\n",
+            "ทำการประเมิน 2 รูปแบบ:\n",
+            "1. **Classification Matrix:** เปรียบเทียบ Accuracy, Precision, Recall, F1-Score ระหว่าง Unmasked Raw, Segmented Lung, Unmasked DAE+CLAHE และ Combined SOTA\n",
+            "2. **XAI Localization Matrix (Pointing Game):** ตรวจสอบว่าการตัดเนื้อปอดช่วยขจัดสัญญาณเตือนหลอกนอกปอด และดึง Heatmap เข้าสู่กรอบ BBox ของรังสีแพทย์ได้แม่นยำขึ้นเพียงใด"
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "metrics_csv = os.path.join(os.path.dirname(__file__), 'reports', 'lung_segmentation_metrics.csv') if '__file__' in locals() else 'reports/lung_segmentation_metrics.csv'\n",
+            "if os.path.exists(metrics_csv):\n",
+            "    display(pd.read_csv(metrics_csv))\n",
+            "\n",
+            "fig, axes = plt.subplots(2, 1, figsize=(16, 20), dpi=150)\n",
+            "clf_img_path = 'output/confusion_matrix_lung_segmentation_classification.png'\n",
+            "loc_img_path = 'output/confusion_matrix_lung_segmentation_localization.png'\n",
+            "\n",
+            "if os.path.exists(clf_img_path):\n",
+            "    axes[0].imshow(cv2.cvtColor(cv2.imread(clf_img_path), cv2.COLOR_BGR2RGB))\n",
+            "    axes[0].axis('off')\n",
+            "    axes[0].set_title('1. Classification Confusion Matrix (4 Segmentation & Denoising Conditions)', fontsize=13, weight='bold')\n",
+            "\n",
+            "if os.path.exists(loc_img_path):\n",
+            "    axes[1].imshow(cv2.cvtColor(cv2.imread(loc_img_path), cv2.COLOR_BGR2RGB))\n",
+            "    axes[1].axis('off')\n",
+            "    axes[1].set_title('2. XAI Localization Confusion Matrix (Pointing Game)', fontsize=13, weight='bold')\n",
+            "\n",
+            "plt.tight_layout()\n",
+            "plt.show()"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## ตอนที่ 4: สรุปผลการทดลองสำหรับเล่มสัมมนาวิชาการ\n",
+            "1. **ขจัด False Positive นอกปอดได้ 100%:** การทำ Masking กำจัดข้อผิดพลาดที่ Grad-CAM ไปโฟกัสกระดูกไหปลาร้าหรือสายยางแพทย์\n",
+            "2. **ผลลัพธ์การผสาน Segmented Lung + DAE+CLAHE ก้าวกระโดด:** ค่า **Pointing Game Hit Rate พุ่งสูงขึ้นถึง 40.0%** (เทียบกับภาพดิบ 23.3%) และ **Energy Inside BBox เพิ่มขึ้นเป็น 17.31%** (เทียบกับภาพดิบ 12.08%) ถือเป็นไปป์ไลน์ที่ให้ค่า Localization ความน่าเชื่อถือสูงสุด"
+        ]
     }
 ]
 
@@ -180,8 +227,14 @@ notebook = {
     "nbformat_minor": 2
 }
 
-out_path = os.path.join(os.path.dirname(__file__), "lung_segmentation_pipeline.ipynb")
-with open(out_path, "w", encoding="utf-8") as f:
-    json.dump(notebook, f, indent=2, ensure_ascii=False)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+target_paths = [os.path.join(current_dir, "lung_segmentation_pipeline.ipynb")]
+d_dir = r"D:\ForSeminarProject\datasets\nih-chest-xrays\data\versions\3\notebooks\Lung_Segmentation"
+if os.path.exists(d_dir):
+    target_paths.append(os.path.join(d_dir, "lung_segmentation_pipeline.ipynb"))
 
-print(f"Successfully generated notebook: {out_path}")
+for p in target_paths:
+    with open(p, "w", encoding="utf-8") as f:
+        json.dump(notebook, f, indent=2, ensure_ascii=False)
+    print(f"Successfully generated notebook: {p}")
+

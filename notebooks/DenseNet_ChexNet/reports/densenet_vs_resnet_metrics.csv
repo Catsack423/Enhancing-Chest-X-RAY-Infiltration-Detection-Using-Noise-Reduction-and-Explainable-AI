@@ -1,0 +1,5 @@
+Model_Architecture,Accuracy_%,Precision_%,Recall_Sensitivity_%,F1_Score,Pointing_Game_Hit_Rate_%,BBox_Hits,BBox_Misses,Normal_Clean_Rate_%,Mean_Energy_Inside_BBox_%,Mean_IoU_0.3
+ResNet50 (Raw CXR),86.67,84.38,90.0,0.871,23.33,7,23,83.33,12.08,0.1042
+DenseNet121 (Raw CXR),91.67,90.32,93.33,0.918,13.33,4,26,90.0,8.62,0.0716
+ResNet50 (DAE+CLAHE),90.0,87.5,93.33,0.9032,26.67,8,22,83.33,13.53,0.1207
+DenseNet121 (DAE+CLAHE),95.0,93.55,96.67,0.9508,13.33,4,26,90.0,10.99,0.0992

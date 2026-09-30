@@ -169,6 +169,53 @@ cells = [
             "plt.tight_layout()\n",
             "plt.show()"
         ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## ตอนที่ 3: การประเมินผล Confusion Matrix (Gamma Correction vs CLAHE Benchmark)\n",
+            "ทำการประเมิน 2 รูปแบบ:\n",
+            "1. **Classification Matrix:** เปรียบเทียบ Accuracy, Precision, Recall, F1-Score ระหว่าง Baseline Raw, Gamma 0.8, Gamma 1.2 และ CLAHE\n",
+            "2. **XAI Localization Matrix (Pointing Game):** ตรวจสอบว่าระดับ Gamma ใดช่วยส่งเสริมให้ Grad-CAM ชี้ตำแหน่งรอยโรคในกรอบ BBox ของรังสีแพทย์ได้ดีที่สุด"
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "metrics_csv = os.path.join(os.path.dirname(__file__), 'reports', 'gamma_confusion_matrix_summary.csv') if '__file__' in locals() else 'reports/gamma_confusion_matrix_summary.csv'\n",
+            "if os.path.exists(metrics_csv):\n",
+            "    display(pd.read_csv(metrics_csv))\n",
+            "\n",
+            "fig, axes = plt.subplots(2, 1, figsize=(16, 20), dpi=150)\n",
+            "clf_img_path = 'output/confusion_matrix_gamma_classification.png'\n",
+            "loc_img_path = 'output/confusion_matrix_gamma_localization.png'\n",
+            "\n",
+            "if os.path.exists(clf_img_path):\n",
+            "    axes[0].imshow(cv2.cvtColor(cv2.imread(clf_img_path), cv2.COLOR_BGR2RGB))\n",
+            "    axes[0].axis('off')\n",
+            "    axes[0].set_title('1. Classification Confusion Matrix (4 Enhancement Conditions)', fontsize=13, weight='bold')\n",
+            "\n",
+            "if os.path.exists(loc_img_path):\n",
+            "    axes[1].imshow(cv2.cvtColor(cv2.imread(loc_img_path), cv2.COLOR_BGR2RGB))\n",
+            "    axes[1].axis('off')\n",
+            "    axes[1].set_title('2. XAI Localization Confusion Matrix (Pointing Game)', fontsize=13, weight='bold')\n",
+            "\n",
+            "plt.tight_layout()\n",
+            "plt.show()"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## ตอนที่ 4: สรุปผลการทดลองสำหรับเล่มสัมมนาวิชาการ\n",
+            "1. **Gamma = 0.8 ให้ความสมดุลสูงสุด:** การขยายความสว่างในบริเวณเนื้อปอดที่มีความเปรียบต่างต่ำช่วยให้ ResNet50 ทำค่า **Accuracy ได้สูงถึง 91.7% และ F1-Score 0.918** สูงกว่าทั้งภาพดิบ (86.7%) และการปรับมืด Gamma 1.2 (88.3%)\n",
+            "2. **ข้อได้เปรียบเหนือ CLAHE:** Gamma Correction มีความเร็วในการคำนวณสูงมาก (ใช้ Look-Up Table 256 ช่อง) และไม่มีปัญหาขอบตาราง (Tile boundary artifact) เหมือนการทำ Local Histogram Equalization"
+        ]
     }
 ]
 
@@ -182,8 +229,14 @@ notebook = {
     "nbformat_minor": 2
 }
 
-out_path = os.path.join(os.path.dirname(__file__), "gamma_correction_pipeline.ipynb")
-with open(out_path, "w", encoding="utf-8") as f:
-    json.dump(notebook, f, indent=2, ensure_ascii=False)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+target_paths = [os.path.join(current_dir, "gamma_correction_pipeline.ipynb")]
+d_dir = r"D:\ForSeminarProject\datasets\nih-chest-xrays\data\versions\3\notebooks\Gamma_Correction"
+if os.path.exists(d_dir):
+    target_paths.append(os.path.join(d_dir, "gamma_correction_pipeline.ipynb"))
 
-print(f"Successfully generated notebook: {out_path}")
+for p in target_paths:
+    with open(p, "w", encoding="utf-8") as f:
+        json.dump(notebook, f, indent=2, ensure_ascii=False)
+    print(f"Successfully generated notebook: {p}")
+

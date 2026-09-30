@@ -154,9 +154,47 @@ cells = [
         "cell_type": "markdown",
         "metadata": {},
         "source": [
-            "## ตอนที่ 2: สรุปผลทางวิชาการสำหรับเล่มสัมมนา\n",
+            "## ตอนที่ 2: การประเมินผล Confusion Matrix เชิงเปรียบเทียบ (ResNet50 vs DenseNet121)\n",
+            "ทำการประเมิน 2 รูปแบบ:\n",
+            "1. **Classification Matrix:** เปรียบเทียบ Accuracy, Precision, Recall, F1-Score ระหว่าง ResNet50 และ DenseNet121 ทั้งในสภาวะภาพดิบ (Raw CXR) และสภาวะ DAE+CLAHE\n",
+            "2. **XAI Localization Matrix (Pointing Game):** ตรวจสอบว่าโมเดลตัวใดสามารถชี้ตำแหน่ง Heatmap เข้าสู่กรอบ Bounding Box ของรังสีแพทย์ได้ดีกว่ากัน"
+        ]
+    },
+    {
+        "cell_type": "code",
+        "execution_count": None,
+        "metadata": {},
+        "outputs": [],
+        "source": [
+            "metrics_csv = os.path.join(os.path.dirname(__file__), 'reports', 'densenet_vs_resnet_metrics.csv') if '__file__' in locals() else 'reports/densenet_vs_resnet_metrics.csv'\n",
+            "if os.path.exists(metrics_csv):\n",
+            "    display(pd.read_csv(metrics_csv))\n",
+            "\n",
+            "fig, axes = plt.subplots(2, 1, figsize=(16, 20), dpi=150)\n",
+            "clf_img_path = 'output/confusion_matrix_densenet_vs_resnet_classification.png'\n",
+            "loc_img_path = 'output/confusion_matrix_densenet_vs_resnet_localization.png'\n",
+            "\n",
+            "if os.path.exists(clf_img_path):\n",
+            "    axes[0].imshow(cv2.cvtColor(cv2.imread(clf_img_path), cv2.COLOR_BGR2RGB))\n",
+            "    axes[0].axis('off')\n",
+            "    axes[0].set_title('1. Classification Confusion Matrix (4 Conditions)', fontsize=13, weight='bold')\n",
+            "\n",
+            "if os.path.exists(loc_img_path):\n",
+            "    axes[1].imshow(cv2.cvtColor(cv2.imread(loc_img_path), cv2.COLOR_BGR2RGB))\n",
+            "    axes[1].axis('off')\n",
+            "    axes[1].set_title('2. XAI Localization Confusion Matrix (Pointing Game)', fontsize=13, weight='bold')\n",
+            "\n",
+            "plt.tight_layout()\n",
+            "plt.show()"
+        ]
+    },
+    {
+        "cell_type": "markdown",
+        "metadata": {},
+        "source": [
+            "## ตอนที่ 3: สรุปผลทางวิชาการสำหรับเล่มสัมมนา\n",
             "1. **DenseNet121 ให้การกระจายตัวของ Heatmap ที่สมดุลกว่า:** ด้วยโครงสร้าง Dense Blocks ทำให้รอยโรคฝ้าที่มีความกว้างและกระจายตัวทั่วปอด (Diffuse Infiltration) ถูกเชื่อมโยงข้ามชั้นได้อย่างมีประสิทธิภาพ\n",
-            "2. **เมื่อเสริมด้วย DAE+CLAHE:** การผสานระหว่างโมเดล DenseNet121 และการลดสัญญาณรบกวนด้วย DAE ช่วยผลักดันค่า **Energy Inside BBox** และ **Pointing Game Hit Rate** ให้มีค่าสูงที่สุดในบรรดาสถาปัตยกรรมทั้งหมด"
+            "2. **เมื่อเสริมด้วย DAE+CLAHE:** การผสานระหว่างโมเดล DenseNet121 และการลดสัญญาณรบกวนด้วย DAE ช่วยผลักดันค่า **Accuracy สูงถึง 95.0%** และ **Recall สูงถึง 96.67%** พร้อมทั้งปรับปรุงค่า **Pointing Game Hit Rate** ให้มีความแม่นยำสูงขึ้น"
         ]
     }
 ]
@@ -171,8 +209,14 @@ notebook = {
     "nbformat_minor": 2
 }
 
-out_path = os.path.join(os.path.dirname(__file__), "densenet_vs_resnet_pipeline.ipynb")
-with open(out_path, "w", encoding="utf-8") as f:
-    json.dump(notebook, f, indent=2, ensure_ascii=False)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+target_paths = [os.path.join(current_dir, "densenet_vs_resnet_pipeline.ipynb")]
+d_dir = r"D:\ForSeminarProject\datasets\nih-chest-xrays\data\versions\3\notebooks\DenseNet_ChexNet"
+if os.path.exists(d_dir):
+    target_paths.append(os.path.join(d_dir, "densenet_vs_resnet_pipeline.ipynb"))
 
-print(f"Successfully generated notebook: {out_path}")
+for p in target_paths:
+    with open(p, "w", encoding="utf-8") as f:
+        json.dump(notebook, f, indent=2, ensure_ascii=False)
+    print(f"Successfully generated notebook: {p}")
+
