@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "seed": 42,
+  "output_subdirectory": "runs/train_100_per_class",
+  "data": {
+    "colab_data_root": "/content/drive/MyDrive/nih-chest-xrays/data/versions/3",
+    "train_per_class": 100,
+    "validation_per_class": 25,
+    "validation_patient_fraction": 0.2,
+    "expected_test_images": 12081,
+    "expected_xai_images": 123,
+    "expected_xai_patients": 115
+  },
+  "preprocessing": {
+    "working_size": 256,
+    "cnn_size": 224,
+    "mean": [0.485, 0.456, 0.406],
+    "std": [0.229, 0.224, 0.225],
+    "clahe_grid": [8, 8]
+  },
+  "dae": {
+    "base_channels": 32,
+    "epochs": 10,
+    "batch_size": 16,
+    "learning_rate": 0.001,
+    "gaussian_sigma": 0.05,
+    "poisson_scale": 30.0,
+    "l1_weight": 0.2
+  },
+  "cnn": {
+    "weights": "IMAGENET1K_V2",
+    "batch_size": 16,
+    "epochs": 50,
+    "learning_rate": 0.0001,
+    "patience": 5,
+    "classification_threshold": 0.5,
+    "num_workers": 0
+  },
+  "xai": {
+    "iou_thresholds": [0.3, 0.5],
+    "bootstrap_replicates": 2000,
+    "background_per_class": 16,
+    "shap_nsamples": 200,
+    "shap_batch_size": 8,
+    "visual_examples": 3
+  },
+  "conditions": [
+    {"id": "baseline", "group": "baseline", "level": 0},
+    {"id": "median_L1", "group": "median", "level": 1, "kernel": 3},
+    {"id": "median_L2", "group": "median", "level": 2, "kernel": 5},
+    {"id": "median_L3", "group": "median", "level": 3, "kernel": 7},
+    {"id": "clahe_dwt_L1", "group": "clahe_dwt", "level": 1, "clip_limit": 2.0, "wavelet": "db1", "dwt_depth": 1, "threshold_multiplier": 0.5, "order": "DWT_then_CLAHE"},
+    {"id": "clahe_dwt_L2", "group": "clahe_dwt", "level": 2, "clip_limit": 4.0, "wavelet": "db1", "dwt_depth": 2, "threshold_multiplier": 1.0, "order": "DWT_then_CLAHE"},
+    {"id": "clahe_dwt_L3", "group": "clahe_dwt", "level": 3, "clip_limit": 8.0, "wavelet": "db1", "dwt_depth": 3, "threshold_multiplier": 2.0, "order": "DWT_then_CLAHE"},
+    {"id": "dae_clahe_L1", "group": "dae_clahe", "level": 1, "clip_limit": 2.0},
+    {"id": "dae_clahe_L2", "group": "dae_clahe", "level": 2, "clip_limit": 4.0},
+    {"id": "dae_clahe_L3", "group": "dae_clahe", "level": 3, "clip_limit": 8.0}
+  ]
+}
