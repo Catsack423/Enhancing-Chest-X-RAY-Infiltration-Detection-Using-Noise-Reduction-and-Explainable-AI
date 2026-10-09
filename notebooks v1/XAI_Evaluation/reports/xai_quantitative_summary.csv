@@ -1,0 +1,5 @@
+Method,Pointing_Game_HitRate_Strict_%,Pointing_Game_HitRate_Margin_%,Energy_Inside_BBox_Mean_%,Energy_Inside_BBox_Std_%,IoU_at_0.3_Mean,IoU_at_0.3_Std,IoU_at_0.5_Mean,Dice_at_0.3_Mean
+Baseline Raw,21.0,25.0,15.4,15.79,0.1287,0.1233,0.094,0.2089
+Median L2,23.0,27.0,17.02,16.74,0.1429,0.1337,0.1016,0.2284
+CLAHE DWT L2,19.0,21.0,15.91,17.13,0.1239,0.1332,0.0814,0.199
+DAE CLAHE L2,26.0,30.0,17.5,18.18,0.1528,0.1563,0.1158,0.2378

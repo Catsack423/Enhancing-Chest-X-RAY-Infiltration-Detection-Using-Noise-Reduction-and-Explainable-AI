@@ -1,0 +1,201 @@
+Image Index,Class,Finding Labels,Patient ID,Patient Age,Patient Gender,View Position,Has_BBox,Relative_Path
+00000002_000.png,Normal,No Finding,2,81,M,PA,False,images_001\images\00000002_000.png
+00000005_000.png,Normal,No Finding,5,69,F,PA,False,images_001\images\00000005_000.png
+00000006_000.png,Normal,No Finding,6,81,M,PA,False,images_001\images\00000006_000.png
+00000007_000.png,Normal,No Finding,7,82,M,PA,False,images_001\images\00000007_000.png
+00000008_001.png,Normal,No Finding,8,70,F,PA,False,images_001\images\00000008_001.png
+00000011_001.png,Normal,No Finding,11,75,M,PA,False,images_001\images\00000011_001.png
+00000013_000.png,Normal,No Finding,13,61,M,PA,False,images_001\images\00000013_000.png
+00000014_000.png,Normal,No Finding,14,61,F,PA,False,images_001\images\00000014_000.png
+00000015_000.png,Normal,No Finding,15,70,M,AP,False,images_001\images\00000015_000.png
+00000016_000.png,Normal,No Finding,16,71,M,PA,False,images_001\images\00000016_000.png
+00000017_001.png,Normal,No Finding,17,77,M,AP,False,images_001\images\00000017_001.png
+00000018_000.png,Normal,No Finding,18,75,M,PA,False,images_001\images\00000018_000.png
+00000022_000.png,Normal,No Finding,22,48,M,PA,False,images_001\images\00000022_000.png
+00000023_000.png,Normal,No Finding,23,63,F,PA,False,images_001\images\00000023_000.png
+00000029_000.png,Normal,No Finding,29,59,F,PA,False,images_001\images\00000029_000.png
+00000031_000.png,Normal,No Finding,31,71,F,PA,False,images_001\images\00000031_000.png
+00000034_001.png,Normal,No Finding,34,76,M,PA,False,images_001\images\00000034_001.png
+00000035_000.png,Normal,No Finding,35,79,M,PA,False,images_001\images\00000035_000.png
+00000037_000.png,Normal,No Finding,37,72,M,PA,False,images_001\images\00000037_000.png
+00000038_002.png,Normal,No Finding,38,77,M,PA,False,images_001\images\00000038_002.png
+00000039_000.png,Normal,No Finding,39,76,M,PA,False,images_001\images\00000039_000.png
+00000040_000.png,Normal,No Finding,40,67,M,PA,False,images_001\images\00000040_000.png
+00000041_003.png,Normal,No Finding,41,62,F,PA,False,images_001\images\00000041_003.png
+00000042_000.png,Normal,No Finding,42,71,M,AP,False,images_001\images\00000042_000.png
+00000046_000.png,Normal,No Finding,46,57,M,PA,False,images_001\images\00000046_000.png
+00000047_000.png,Normal,No Finding,47,73,F,PA,False,images_001\images\00000047_000.png
+00000048_000.png,Normal,No Finding,48,46,F,PA,False,images_001\images\00000048_000.png
+00000049_001.png,Normal,No Finding,49,92,F,PA,False,images_001\images\00000049_001.png
+00000050_000.png,Normal,No Finding,50,78,M,AP,False,images_001\images\00000050_000.png
+00000052_000.png,Normal,No Finding,52,71,M,PA,False,images_001\images\00000052_000.png
+00000054_001.png,Normal,No Finding,54,72,F,PA,False,images_001\images\00000054_001.png
+00000055_000.png,Normal,No Finding,55,81,F,PA,False,images_001\images\00000055_000.png
+00000057_000.png,Normal,No Finding,57,71,M,PA,False,images_001\images\00000057_000.png
+00000059_000.png,Normal,No Finding,59,53,F,PA,False,images_001\images\00000059_000.png
+00000061_016.png,Normal,No Finding,61,77,M,AP,False,images_001\images\00000061_016.png
+00000064_000.png,Normal,No Finding,64,57,M,PA,False,images_001\images\00000064_000.png
+00000065_000.png,Normal,No Finding,65,46,M,PA,False,images_001\images\00000065_000.png
+00000067_002.png,Normal,No Finding,67,66,F,PA,False,images_001\images\00000067_002.png
+00000068_000.png,Normal,No Finding,68,65,F,PA,False,images_001\images\00000068_000.png
+00000070_000.png,Normal,No Finding,70,50,F,PA,False,images_001\images\00000070_000.png
+00000071_003.png,Normal,No Finding,71,69,F,PA,False,images_001\images\00000071_003.png
+00000073_000.png,Normal,No Finding,73,61,F,PA,False,images_001\images\00000073_000.png
+00000078_000.png,Normal,No Finding,78,73,F,PA,False,images_001\images\00000078_000.png
+00000080_000.png,Normal,No Finding,80,64,F,PA,False,images_001\images\00000080_000.png
+00000081_000.png,Normal,No Finding,81,67,M,PA,False,images_001\images\00000081_000.png
+00000082_000.png,Normal,No Finding,82,51,M,PA,False,images_001\images\00000082_000.png
+00000083_000.png,Normal,No Finding,83,56,F,PA,False,images_001\images\00000083_000.png
+00000085_000.png,Normal,No Finding,85,62,M,PA,False,images_001\images\00000085_000.png
+00000086_000.png,Normal,No Finding,86,76,M,PA,False,images_001\images\00000086_000.png
+00000087_000.png,Normal,No Finding,87,71,F,AP,False,images_001\images\00000087_000.png
+00000090_000.png,Normal,No Finding,90,67,F,PA,False,images_001\images\00000090_000.png
+00000091_000.png,Normal,No Finding,91,69,M,PA,False,images_001\images\00000091_000.png
+00000092_000.png,Normal,No Finding,92,54,F,PA,False,images_001\images\00000092_000.png
+00000093_002.png,Normal,No Finding,93,75,M,PA,False,images_001\images\00000093_002.png
+00000094_000.png,Normal,No Finding,94,63,M,PA,False,images_001\images\00000094_000.png
+00000095_000.png,Normal,No Finding,95,50,F,PA,False,images_001\images\00000095_000.png
+00000096_008.png,Normal,No Finding,96,67,F,PA,False,images_001\images\00000096_008.png
+00000097_000.png,Normal,No Finding,97,83,F,PA,False,images_001\images\00000097_000.png
+00000098_000.png,Normal,No Finding,98,63,F,PA,False,images_001\images\00000098_000.png
+00000099_006.png,Normal,No Finding,99,58,F,AP,False,images_001\images\00000099_006.png
+00000100_001.png,Normal,No Finding,100,64,M,PA,False,images_001\images\00000100_001.png
+00000104_001.png,Normal,No Finding,104,69,F,PA,False,images_001\images\00000104_001.png
+00000105_000.png,Normal,No Finding,105,64,M,PA,False,images_001\images\00000105_000.png
+00000106_000.png,Normal,No Finding,106,60,F,PA,False,images_001\images\00000106_000.png
+00000107_000.png,Normal,No Finding,107,61,F,PA,False,images_001\images\00000107_000.png
+00000108_000.png,Normal,No Finding,108,42,F,PA,False,images_001\images\00000108_000.png
+00000109_002.png,Normal,No Finding,109,55,M,PA,False,images_001\images\00000109_002.png
+00000110_000.png,Normal,No Finding,110,48,F,PA,False,images_001\images\00000110_000.png
+00000112_001.png,Normal,No Finding,112,49,M,AP,False,images_001\images\00000112_001.png
+00000113_000.png,Normal,No Finding,113,73,M,PA,False,images_001\images\00000113_000.png
+00000115_000.png,Normal,No Finding,115,49,F,PA,False,images_001\images\00000115_000.png
+00000116_027.png,Normal,No Finding,116,75,F,AP,False,images_001\images\00000116_027.png
+00000118_008.png,Normal,No Finding,118,73,M,PA,False,images_001\images\00000118_008.png
+00000121_000.png,Normal,No Finding,121,46,M,PA,False,images_001\images\00000121_000.png
+00000122_000.png,Normal,No Finding,122,52,M,PA,False,images_001\images\00000122_000.png
+00000126_000.png,Normal,No Finding,126,50,M,PA,False,images_001\images\00000126_000.png
+00000127_000.png,Normal,No Finding,127,56,F,PA,False,images_001\images\00000127_000.png
+00000129_000.png,Normal,No Finding,129,66,F,PA,False,images_001\images\00000129_000.png
+00000130_000.png,Normal,No Finding,130,52,F,PA,False,images_001\images\00000130_000.png
+00000132_000.png,Normal,No Finding,132,59,F,PA,False,images_001\images\00000132_000.png
+00000133_001.png,Normal,No Finding,133,68,M,PA,False,images_001\images\00000133_001.png
+00000135_000.png,Normal,No Finding,135,70,M,PA,False,images_001\images\00000135_000.png
+00000136_000.png,Normal,No Finding,136,58,F,PA,False,images_001\images\00000136_000.png
+00000137_000.png,Normal,No Finding,137,52,M,PA,False,images_001\images\00000137_000.png
+00000138_000.png,Normal,No Finding,138,61,F,PA,False,images_001\images\00000138_000.png
+00000139_000.png,Normal,No Finding,139,58,F,PA,False,images_001\images\00000139_000.png
+00000140_000.png,Normal,No Finding,140,25,F,PA,False,images_001\images\00000140_000.png
+00000141_000.png,Normal,No Finding,141,31,M,PA,False,images_001\images\00000141_000.png
+00000142_000.png,Normal,No Finding,142,47,M,PA,False,images_001\images\00000142_000.png
+00000143_000.png,Normal,No Finding,143,94,M,AP,False,images_001\images\00000143_000.png
+00000144_000.png,Normal,No Finding,144,83,M,PA,False,images_001\images\00000144_000.png
+00000146_000.png,Normal,No Finding,146,55,F,PA,False,images_001\images\00000146_000.png
+00000148_000.png,Normal,No Finding,148,59,M,PA,False,images_001\images\00000148_000.png
+00000149_000.png,Normal,No Finding,149,68,M,PA,False,images_001\images\00000149_000.png
+00000150_001.png,Normal,No Finding,150,54,F,AP,False,images_001\images\00000150_001.png
+00000151_000.png,Normal,No Finding,151,54,M,PA,False,images_001\images\00000151_000.png
+00000152_000.png,Normal,No Finding,152,65,M,PA,False,images_001\images\00000152_000.png
+00000153_000.png,Normal,No Finding,153,55,M,PA,False,images_001\images\00000153_000.png
+00000155_001.png,Normal,No Finding,155,52,F,PA,False,images_001\images\00000155_001.png
+00000158_000.png,Normal,No Finding,158,58,F,PA,False,images_001\images\00000158_000.png
+00000032_037.png,Infiltration,Cardiomegaly|Edema|Infiltration,32,55,F,AP,True,images_001\images\00000032_037.png
+00000211_016.png,Infiltration,Cardiomegaly|Infiltration,211,59,F,AP,True,images_001\images\00000211_016.png
+00000468_041.png,Infiltration,Infiltration,468,31,M,PA,True,images_001\images\00000468_041.png
+00001039_005.png,Infiltration,Emphysema|Infiltration,1039,42,F,AP,True,images_001\images\00001039_005.png
+00001900_026.png,Infiltration,Effusion|Infiltration,1900,52,M,PA,True,images_002\images\00001900_026.png
+00002224_007.png,Infiltration,Infiltration,2224,40,F,AP,True,images_002\images\00002224_007.png
+00003149_007.png,Infiltration,Effusion|Infiltration,3149,39,M,AP,True,images_002\images\00003149_007.png
+00003333_002.png,Infiltration,Infiltration|Mass,3333,36,F,PA,True,images_002\images\00003333_002.png
+00003973_008.png,Infiltration,Cardiomegaly|Consolidation|Infiltration,3973,44,F,PA,True,images_003\images\00003973_008.png
+00005066_030.png,Infiltration,Cardiomegaly|Effusion|Infiltration,5066,52,M,AP,True,images_003\images\00005066_030.png
+00006096_010.png,Infiltration,Atelectasis|Infiltration|Nodule,6096,48,M,AP,True,images_003\images\00006096_010.png
+00006304_060.png,Infiltration,Atelectasis|Infiltration,6304,67,F,AP,True,images_003\images\00006304_060.png
+00006836_002.png,Infiltration,Atelectasis|Infiltration,6836,75,F,AP,True,images_004\images\00006836_002.png
+00007124_006.png,Infiltration,Atelectasis|Effusion|Infiltration,7124,54,F,PA,True,images_004\images\00007124_006.png
+00008814_010.png,Infiltration,Atelectasis|Effusion|Infiltration,8814,36,M,PA,True,images_004\images\00008814_010.png
+00009431_004.png,Infiltration,Atelectasis|Effusion|Infiltration|Mass,9431,18,M,AP,True,images_005\images\00009431_004.png
+00010092_018.png,Infiltration,Atelectasis|Emphysema|Infiltration|Pneumothorax,10092,47,F,PA,True,images_005\images\00010092_018.png
+00010120_010.png,Infiltration,Infiltration|Pneumonia,10120,49,M,AP,True,images_005\images\00010120_010.png
+00010230_001.png,Infiltration,Infiltration,10230,2,M,AP,True,images_005\images\00010230_001.png
+00010277_000.png,Infiltration,Infiltration|Mass|Nodule|Pleural_Thickening|Effusion|Pneumonia,10277,60,M,PA,True,images_005\images\00010277_000.png
+00010805_049.png,Infiltration,Infiltration,10805,9,F,AP,True,images_005\images\00010805_049.png
+00010828_039.png,Infiltration,Atelectasis|Consolidation|Effusion|Infiltration,10828,45,M,AP,True,images_005\images\00010828_039.png
+00011023_004.png,Infiltration,Cardiomegaly|Infiltration,11023,23,F,PA,True,images_005\images\00011023_004.png
+00011124_000.png,Infiltration,Infiltration,11124,66,M,PA,True,images_005\images\00011124_000.png
+00011237_094.png,Infiltration,Effusion|Infiltration,11237,56,F,AP,True,images_005\images\00011237_094.png
+00011269_018.png,Infiltration,Atelectasis|Effusion|Infiltration|Pneumothorax,11269,41,M,PA,True,images_005\images\00011269_018.png
+00011366_002.png,Infiltration,Edema|Pneumonia|Infiltration,11366,60,M,AP,True,images_005\images\00011366_002.png
+00011925_072.png,Infiltration,Atelectasis|Infiltration|Mass|Pleural_Thickening,11925,54,M,AP,True,images_006\images\00011925_072.png
+00012021_054.png,Infiltration,Consolidation|Infiltration,12021,25,M,AP,True,images_006\images\00012021_054.png
+00012364_045.png,Infiltration,Infiltration,12364,53,F,AP,True,images_006\images\00012364_045.png
+00012376_010.png,Infiltration,Effusion|Infiltration|Nodule|Mass|Pneumothorax,12376,55,M,PA,True,images_006\images\00012376_010.png
+00012505_007.png,Infiltration,Atelectasis|Effusion|Infiltration,12505,65,F,AP,True,images_006\images\00012505_007.png
+00013106_000.png,Infiltration,Infiltration|Mass,13106,61,M,PA,True,images_006\images\00013106_000.png
+00013310_057.png,Infiltration,Pneumothorax|Infiltration,13310,58,M,AP,True,images_006\images\00013310_057.png
+00013391_005.png,Infiltration,Infiltration|Pneumonia,13391,45,F,PA,True,images_006\images\00013391_005.png
+00013471_029.png,Infiltration,Atelectasis|Infiltration,13471,65,M,AP,True,images_006\images\00013471_029.png
+00013670_151.png,Infiltration,Cardiomegaly|Infiltration,13670,56,M,AP,True,images_006\images\00013670_151.png
+00013922_021.png,Infiltration,Infiltration,13922,53,M,AP,True,images_007\images\00013922_021.png
+00013993_083.png,Infiltration,Atelectasis|Effusion|Infiltration,13993,42,M,AP,True,images_007\images\00013993_083.png
+00014203_018.png,Infiltration,Atelectasis|Infiltration,14203,30,M,AP,True,images_007\images\00014203_018.png
+00014251_029.png,Infiltration,Infiltration,14251,71,M,PA,True,images_007\images\00014251_029.png
+00014617_003.png,Infiltration,Infiltration,14617,59,F,AP,True,images_007\images\00014617_003.png
+00014738_000.png,Infiltration,Effusion|Infiltration|Mass|Pleural_Thickening,14738,65,F,PA,True,images_007\images\00014738_000.png
+00015069_001.png,Infiltration,Infiltration|Pneumonia,15069,25,M,PA,True,images_007\images\00015069_001.png
+00015732_020.png,Infiltration,Edema|Infiltration,15732,48,F,AP,True,images_007\images\00015732_020.png
+00015831_011.png,Infiltration,Atelectasis|Infiltration,15831,64,M,AP,True,images_007\images\00015831_011.png
+00016094_007.png,Infiltration,Fibrosis|Infiltration,16094,25,M,PA,True,images_008\images\00016094_007.png
+00016191_004.png,Infiltration,Atelectasis|Infiltration,16191,65,M,PA,True,images_008\images\00016191_004.png
+00016417_008.png,Infiltration,Effusion|Infiltration,16417,60,M,PA,True,images_008\images\00016417_008.png
+00016705_006.png,Infiltration,Consolidation|Infiltration|Pneumonia,16705,25,M,AP,True,images_008\images\00016705_006.png
+00016732_040.png,Infiltration,Atelectasis|Cardiomegaly|Infiltration,16732,79,F,PA,True,images_008\images\00016732_040.png
+00016786_001.png,Infiltration,Infiltration|Pneumonia,16786,23,F,AP,True,images_008\images\00016786_001.png
+00017083_002.png,Infiltration,Effusion|Infiltration|Nodule|Pneumothorax,17083,50,F,PA,True,images_008\images\00017083_002.png
+00017138_037.png,Infiltration,Infiltration|Effusion,17138,24,M,AP,True,images_008\images\00017138_037.png
+00017544_003.png,Infiltration,Edema|Infiltration|Nodule,17544,49,M,AP,True,images_008\images\00017544_003.png
+00017714_009.png,Infiltration,Infiltration,17714,20,M,AP,True,images_008\images\00017714_009.png
+00017972_032.png,Infiltration,Infiltration|Pleural_Thickening|Pneumonia,17972,15,M,AP,True,images_008\images\00017972_032.png
+00017981_014.png,Infiltration,Infiltration,17981,43,F,PA,True,images_008\images\00017981_014.png
+00018253_054.png,Infiltration,Atelectasis|Effusion|Infiltration,18253,71,F,AP,True,images_008\images\00018253_054.png
+00018393_000.png,Infiltration,Mass|Infiltration|Pneumonia,18393,47,F,PA,True,images_009\images\00018393_000.png
+00018721_010.png,Infiltration,Infiltration,18721,42,M,AP,True,images_009\images\00018721_010.png
+00018921_038.png,Infiltration,Infiltration|Pneumothorax,18921,43,F,AP,True,images_009\images\00018921_038.png
+00019018_007.png,Infiltration,Cardiomegaly|Effusion|Nodule|Infiltration,19018,28,M,AP,True,images_009\images\00019018_007.png
+00019150_002.png,Infiltration,Infiltration|Pneumonia,19150,69,M,AP,True,images_009\images\00019150_002.png
+00019363_043.png,Infiltration,Infiltration,19363,55,F,AP,True,images_009\images\00019363_043.png
+00019625_002.png,Infiltration,Edema|Effusion|Infiltration,19625,73,M,AP,True,images_009\images\00019625_002.png
+00019634_004.png,Infiltration,Infiltration|Nodule,19634,65,F,AP,True,images_009\images\00019634_004.png
+00019646_006.png,Infiltration,Atelectasis|Infiltration,19646,29,F,AP,True,images_009\images\00019646_006.png
+00019706_012.png,Infiltration,Atelectasis|Effusion|Infiltration,19706,34,M,PA,True,images_009\images\00019706_012.png
+00019750_012.png,Infiltration,Effusion|Infiltration,19750,61,M,AP,True,images_009\images\00019750_012.png
+00019769_014.png,Infiltration,Infiltration|Pneumonia,19769,49,F,PA,True,images_009\images\00019769_014.png
+00020113_030.png,Infiltration,Atelectasis|Effusion|Infiltration,20113,38,M,AP,True,images_009\images\00020113_030.png
+00020184_013.png,Infiltration,Effusion|Infiltration,20184,25,M,PA,True,images_009\images\00020184_013.png
+00020259_002.png,Infiltration,Consolidation|Infiltration|Pneumonia,20259,52,F,AP,True,images_009\images\00020259_002.png
+00020405_041.png,Infiltration,Effusion|Infiltration,20405,49,M,PA,True,images_009\images\00020405_041.png
+00020482_011.png,Infiltration,Consolidation|Infiltration,20482,29,F,AP,True,images_009\images\00020482_011.png
+00021009_001.png,Infiltration,Cardiomegaly|Effusion|Infiltration,21009,48,F,AP,True,images_010\images\00021009_001.png
+00021201_010.png,Infiltration,Consolidation|Effusion|Infiltration|Mass,21201,65,M,PA,True,images_010\images\00021201_010.png
+00021703_001.png,Infiltration,Effusion|Infiltration|Atelectasis,21703,25,M,AP,True,images_010\images\00021703_001.png
+00021710_003.png,Infiltration,Infiltration,21710,59,M,PA,True,images_010\images\00021710_003.png
+00021840_016.png,Infiltration,Effusion|Infiltration,21840,59,F,PA,True,images_010\images\00021840_016.png
+00021926_007.png,Infiltration,Infiltration,21926,12,M,PA,True,images_010\images\00021926_007.png
+00022369_013.png,Infiltration,Effusion|Infiltration,22369,43,F,AP,True,images_010\images\00022369_013.png
+00022416_048.png,Infiltration,Effusion|Infiltration,22416,52,M,AP,True,images_010\images\00022416_048.png
+00022470_006.png,Infiltration,Infiltration|Nodule,22470,46,M,AP,True,images_010\images\00022470_006.png
+00022727_000.png,Infiltration,Consolidation|Pleural_Thickening|Infiltration,22727,54,F,PA,True,images_010\images\00022727_000.png
+00022899_014.png,Infiltration,Effusion|Infiltration,22899,60,M,AP,True,images_010\images\00022899_014.png
+00023026_008.png,Infiltration,Infiltration|Mass|Pleural_Thickening|Pneumonia,23026,30,F,AP,True,images_010\images\00023026_008.png
+00025521_003.png,Infiltration,Atelectasis|Effusion|Infiltration,25521,30,F,PA,True,images_011\images\00025521_003.png
+00025787_027.png,Infiltration,Effusion|Infiltration|Pneumothorax,25787,28,M,AP,True,images_011\images\00025787_027.png
+00026098_003.png,Infiltration,Effusion|Infiltration,26098,42,M,AP,True,images_011\images\00026098_003.png
+00026194_010.png,Infiltration,Atelectasis|Infiltration,26194,11,F,AP,True,images_011\images\00026194_010.png
+00026538_012.png,Infiltration,Infiltration,26538,21,F,AP,True,images_011\images\00026538_012.png
+00026865_003.png,Infiltration,Infiltration,26865,43,M,AP,True,images_011\images\00026865_003.png
+00026911_000.png,Infiltration,Effusion|Infiltration|Mass,26911,10,M,AP,True,images_011\images\00026911_000.png
+00027113_002.png,Infiltration,Infiltration|Mass|Nodule,27113,26,F,PA,True,images_011\images\00027113_002.png
+00027357_014.png,Infiltration,Cardiomegaly|Effusion|Infiltration,27357,26,M,AP,True,images_011\images\00027357_014.png
+00027441_002.png,Infiltration,Effusion|Infiltration|Nodule|Pneumothorax,27441,11,F,AP,True,images_011\images\00027441_002.png
+00027479_013.png,Infiltration,Effusion|Infiltration|Nodule,27479,51,M,AP,True,images_011\images\00027479_013.png
+00027927_008.png,Infiltration,Emphysema|Infiltration,27927,57,F,PA,True,images_011\images\00027927_008.png

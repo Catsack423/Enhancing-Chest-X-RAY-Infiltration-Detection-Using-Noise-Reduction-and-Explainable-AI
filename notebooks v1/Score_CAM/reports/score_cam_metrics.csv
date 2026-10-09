@@ -1,0 +1,5 @@
+XAI_Technique,Accuracy_%,Precision_%,Recall_Sensitivity_%,F1_Score,Pointing_Game_Hit_Rate_%,BBox_Hits,BBox_Misses,Normal_Clean_Rate_%,Mean_Energy_Inside_BBox_%,Mean_IoU_0.3
+1. Grad-CAM (Raw CXR),87.5,85.71,90.0,0.878,15.0,3,17,85.0,10.73,0.0897
+2. Score-CAM (Raw CXR),87.5,85.71,90.0,0.878,15.0,3,17,90.0,9.76,0.0925
+3. Grad-CAM (DAE+CLAHE),87.5,85.71,90.0,0.878,25.0,5,15,85.0,12.37,0.1227
+4. Score-CAM (DAE+CLAHE),87.5,85.71,90.0,0.878,10.0,2,18,90.0,11.39,0.1138

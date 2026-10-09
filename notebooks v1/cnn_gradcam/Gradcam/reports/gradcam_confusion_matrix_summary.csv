@@ -1,0 +1,2 @@
+Model,Total_Evaluated,Normal_Cases,Infiltration_Cases,Accuracy_%,Precision_%,Recall_%,F1_Score,BBox_Pointing_Game_Hit_Rate_%,BBox_Hits,BBox_Misses,Normal_Clean_Rate_%
+ResNet50 Baseline (Raw Image),60,30,30,86.67,84.38,90.0,0.871,10.0,3,27,73.33

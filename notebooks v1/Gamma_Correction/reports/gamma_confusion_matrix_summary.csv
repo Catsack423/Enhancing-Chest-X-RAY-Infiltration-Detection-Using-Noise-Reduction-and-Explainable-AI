@@ -1,0 +1,5 @@
+Enhancement_Technique,Accuracy_%,Precision_%,Recall_Sensitivity_%,F1_Score,Pointing_Game_Hit_Rate_%,BBox_Hits,BBox_Misses,Normal_Clean_Rate_%,Mean_Energy_Inside_BBox_%,Mean_IoU_0.3
+Baseline Raw (gamma=1.0),86.67,84.38,90.0,0.871,23.33,7,23,83.33,12.08,0.1042
+Gamma = 0.8 (Optimal Bright),91.67,90.32,93.33,0.918,23.33,7,23,86.67,11.11,0.0944
+Gamma = 1.2 (Contrast Dark),88.33,87.1,90.0,0.8852,16.67,5,25,83.33,13.55,0.1187
+CLAHE Benchmark (clip=4.0),90.0,87.5,93.33,0.9032,23.33,7,23,86.67,12.1,0.1062
