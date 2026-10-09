@@ -31,8 +31,8 @@ class BinaryResNet50(nn.Module):
         return self.backbone(x)  # (N, 1), the Infiltration logit
 
 
-def load_cnn(exp, condition_id, device="cpu"):
+def load_cnn(exp, condition_id, device="cpu", model_factory=BinaryResNet50):
     checkpoint = exp.load_checkpoint(exp.results("CNN", condition_id) / "best.pt", condition_id)
-    model = BinaryResNet50(pretrained=False, weights_name=exp.config["cnn"]["weights"])
+    model = model_factory(pretrained=False, weights_name=exp.config["cnn"]["weights"])
     model.load_state_dict(checkpoint["model_state_dict"])
     return model.to(device).eval()

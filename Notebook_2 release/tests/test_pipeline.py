@@ -185,7 +185,10 @@ class PersistenceTests(unittest.TestCase):
 
     def test_notebooks_validate_and_code_cells_compile(self):
         notebooks = sorted(ROOT.glob("*/*.ipynb"))
-        self.assertEqual(len(notebooks), 3)
+        self.assertEqual({p.name for p in notebooks}, {
+            "cnn_comparison.ipynb", "gradcam_comparison.ipynb",
+            "shap_comparison.ipynb", "frequency_comparison.ipynb",
+        })
         for path in notebooks:
             nb = nbformat.read(path, as_version=4)
             nbformat.validate(nb)

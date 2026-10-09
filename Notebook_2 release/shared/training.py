@@ -149,7 +149,8 @@ def predict(model, batches, device):
     return np.asarray(values)
 
 
-def train_condition(exp, manifests, condition_id, device="cuda"):
+def train_condition(exp, manifests, condition_id, device="cuda", *,
+                    model_factory=BinaryResNet50, preprocessor_factory=Preprocessor):
     exp.lock()
     device = torch.device(device)
     folder = exp.results("CNN", condition_id)
@@ -165,12 +166,12 @@ def train_condition(exp, manifests, condition_id, device="cuda"):
                 raise FileNotFoundError(folder / name)
         return json.loads((folder / "metrics.json").read_text())
     settings = exp.config["cnn"]
-    prep = Preprocessor(exp, condition_id, device)
+    prep = preprocessor_factory(exp, condition_id, device)
     prep.prepare([manifests[n] for n in ("train", "validation", "test")])
     val_loader = loader(ImageDataset(manifests["validation"], prep), settings["batch_size"], exp.config["seed"])
     test_loader = loader(ImageDataset(manifests["test"], prep), settings["batch_size"], exp.config["seed"])
     set_seed(exp.config["seed"])
-    model = BinaryResNet50(pretrained=True, weights_name=settings["weights"]).to(device)
+    model = model_factory(pretrained=True, weights_name=settings["weights"]).to(device)
     optimizer = torch.optim.Adam((p for p in model.parameters() if p.requires_grad), lr=settings["learning_rate"])
     epoch, best, history, stale = 0, float("inf"), [], 0
     if (folder / "last.pt").exists():
@@ -197,10 +198,10 @@ def train_condition(exp, manifests, condition_id, device="cuda"):
         save_torch(folder / "last.pt", state)
         pd.DataFrame(history).to_csv(folder / "history.csv", index=False)
         print(f"{condition_id} epoch {epoch}: images={len(epoch_frame)}, train={train_loss:.5f}, validation={val_loss:.5f}", flush=True)
-    best_model = load_cnn(exp, condition_id, device)
+    best_model = load_cnn(exp, condition_id, device, model_factory=model_factory)
     probabilities = predict(best_model, test_loader, device)
     sample = next(iter(test_loader))[0].to(device)
-    reloaded = load_cnn(exp, condition_id, device)
+    reloaded = load_cnn(exp, condition_id, device, model_factory=model_factory)
     with torch.no_grad():
         torch.testing.assert_close(best_model(sample), reloaded(sample), rtol=0, atol=1e-6)
     result = classification_metrics(manifests["test"].label, probabilities, settings["classification_threshold"])

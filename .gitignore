@@ -1,6 +1,7 @@
 data
 resnet50
 *.h5
+.gpu/
 outputs/teachable_machine_pilot
 __pycache__/
 *.pyc

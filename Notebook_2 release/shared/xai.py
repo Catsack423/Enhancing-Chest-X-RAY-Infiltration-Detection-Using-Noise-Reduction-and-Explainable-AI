@@ -10,7 +10,7 @@ from .denoising import Preprocessor, read_gray
 from .evaluation import bbox_mask, localization_metrics, summarize_xai
 from .experiment import file_hash, write_json, set_seed
 from .explainers import gradcam, shap_maps
-from .models import load_cnn
+from .models import load_cnn, BinaryResNet50
 
 
 def save_npz(path, arrays):
@@ -21,7 +21,9 @@ def save_npz(path, arrays):
     temporary.replace(path)
 
 
-def evaluate_condition(exp, manifests, criterion, condition_id, device="cuda"):
+def evaluate_condition(exp, manifests, criterion, condition_id, device="cuda", *,
+                       model_factory=BinaryResNet50, preprocessor_factory=Preprocessor,
+                       gradcam_fn=gradcam, shap_maps_fn=shap_maps):
     if criterion not in ("Grad-CAM", "SHAP"):
         raise ValueError("Unsupported explainer")
     exp.lock()
@@ -37,8 +39,8 @@ def evaluate_condition(exp, manifests, criterion, condition_id, device="cuda"):
     else:
         write_json(marker, {"provenance": provenance, "cnn_checkpoint_hash": model_hash})
     set_seed(exp.config["seed"])
-    model = load_cnn(exp, condition_id, device)
-    prep = Preprocessor(exp, condition_id, device)
+    model = load_cnn(exp, condition_id, device, model_factory=model_factory)
+    prep = preprocessor_factory(exp, condition_id, device)
     explainer = None
     if criterion == "SHAP":
         import shap
@@ -65,11 +67,11 @@ def evaluate_condition(exp, manifests, criterion, condition_id, device="cuda"):
         raw = read_gray(exp.data_root / row["relative_path"])
         input_tensor = prep.tensor(row).unsqueeze(0).to(device)
         if criterion == "Grad-CAM":
-            heatmap, probability = gradcam(model, input_tensor, raw.shape)
+            heatmap, probability = gradcam_fn(model, input_tensor, raw.shape)
             arrays = {"heatmap": heatmap}
             signed = None
         else:
-            arrays = shap_maps(explainer, input_tensor, raw.shape, exp.config)
+            arrays = shap_maps_fn(explainer, input_tensor, raw.shape, exp.config)
             heatmap = arrays["positive_heatmap"]
             signed = arrays["signed_native"]
             with torch.no_grad():
