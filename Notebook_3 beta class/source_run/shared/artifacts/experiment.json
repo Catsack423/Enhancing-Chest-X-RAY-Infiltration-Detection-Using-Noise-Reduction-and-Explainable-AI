@@ -1,0 +1,125 @@
+{
+  "config_hash": "7e5ba886ee5df4bc2db5bf64d46545890fa0ec578415a4ef5aaf193889d35a99",
+  "config": {
+    "schema_version": 1,
+    "seed": 42,
+    "output_subdirectory": "runs/class200_e10",
+    "training": {
+      "images_per_epoch": 400
+    },
+    "data": {
+      "colab_data_root": "/content/drive/MyDrive/nih-chest-xrays/data/versions/3",
+      "train_per_class": 200,
+      "validation_per_class": 40,
+      "validation_patient_fraction": 0.2,
+      "test_scope": "official_balanced_subset",
+      "test_per_class": 50,
+      "official_test_images": 12081,
+      "expected_test_images": 100,
+      "expected_xai_images": 123,
+      "expected_xai_patients": 115
+    },
+    "preprocessing": {
+      "working_size": 256,
+      "cnn_size": 224,
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ],
+      "clahe_grid": [
+        8,
+        8
+      ]
+    },
+    "dae": {
+      "base_channels": 32,
+      "epochs": 10,
+      "batch_size": 16,
+      "learning_rate": 0.001,
+      "gaussian_sigma": 0.05,
+      "poisson_scale": 30.0,
+      "l1_weight": 0.2
+    },
+    "cnn": {
+      "weights": "IMAGENET1K_V2",
+      "batch_size": 16,
+      "epochs": 10,
+      "learning_rate": 0.0001,
+      "patience": 10,
+      "classification_threshold": 0.5,
+      "num_workers": 0,
+      "optimizer": "AdamW",
+      "weight_decay": 0.0001,
+      "head_dropout": 0.3,
+      "trainable_layers": "head_only",
+      "freeze_batchnorm": true,
+      "record_train_eval_loss": true
+    },
+    "xai": {
+      "iou_thresholds": [
+        0.3,
+        0.5
+      ],
+      "bootstrap_replicates": 2000,
+      "background_per_class": 16,
+      "shap_nsamples": 200,
+      "shap_batch_size": 8,
+      "visual_examples": 3
+    },
+    "conditions": [
+      {
+        "id": "baseline",
+        "group": "baseline",
+        "level": 0
+      },
+      {
+        "id": "dwt_L1_L4_fusion",
+        "group": "dwt_features",
+        "level": 4,
+        "wavelet": "db1",
+        "mode": "periodization",
+        "depth": 4
+      },
+      {
+        "id": "dft_low_mid_high_fusion",
+        "group": "dft_features",
+        "level": 0,
+        "low_cutoff": 0.125,
+        "high_cutoff": 0.25,
+        "frequency_units": "cycles_per_pixel_radial"
+      }
+    ],
+    "training_data_change": {
+      "original_train_per_class": 160,
+      "added_train_per_class": 40,
+      "selection_seed": 42,
+      "selection_stream": 200400,
+      "policy": "retain all 320 old train images; add 40/class from the original train-patient partition; preserve validation/test/XAI/background manifests"
+    },
+    "run_mode": "full"
+  },
+  "manifest_hashes": {
+    "background.csv": "dc120d64b2f0e688e8f84e2616105528ef308e9e4ce37a8fbe25459fe6d574ac",
+    "test.csv": "1ad454f195f15367aabbd478b58f890293aeaa769d96c2e9ae2637e41a958831",
+    "train.csv": "35c831fa401dc84aa906123f9dede8e70e3de460647b42d4cde229928f4c8683",
+    "validation.csv": "5e497caab0dffee0b2252dbbb5a7b74d8bf645261e3ea2ef272af7b798188f1a",
+    "xai.csv": "64e4b73789903517d34a8ff43e6253b97256876df4bc7d505f96a0995fce6873"
+  },
+  "condition_id": null,
+  "versions": {
+    "torch": "2.13.0+cu130",
+    "torchvision": "0.28.0+cu130",
+    "shap": "0.51.0",
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "opencv-python": "not-installed",
+    "PyWavelets": "1.9.0",
+    "scikit-learn": "1.9.1"
+  }
+}

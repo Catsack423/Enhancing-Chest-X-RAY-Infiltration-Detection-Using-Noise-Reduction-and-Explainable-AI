@@ -1,6 +1,36 @@
 # สรุปผล Notebook v2 release — CNN, Grad-CAM และ SHAP
 
-อ่านผลจาก CSV ในโฟลเดอร์ `CNN/comparison/`, `Grad-CAM/comparison/` และ `SHAP/comparison/` ที่นำมาจากการรัน ไม่ได้ฝึกโมเดลหรือสร้าง heatmap ใหม่เพื่อเขียนรายงานนี้
+## ผลเพิ่ม: DWT L1–L4 ไม่ใช้ CLAHE / DFT ต่ำ–กลาง–สูง
+
+นำเข้าผลรันจริงที่ผู้ใช้ส่งเมื่อ 9 ตุลาคม 2026 ไว้ที่ [`runs/frequency_fusion_existing_split/`](runs/frequency_fusion_existing_split/README.md) มี CNN checkpoints, history, predictions และ CSV สรุป classification/XAI ตรวจ SHA-256 ไฟล์ที่คัดลอกครบ 32 ไฟล์ รวมประมาณ 1.29 GB ไม่มีการฝึกเพิ่มระหว่างนำเข้า
+
+| วิธี | CNN Accuracy | เพิ่มจาก baseline | Recall | F1 | ROC-AUC |
+| --- | --- | --- | --- | --- | --- |
+| Baseline | 54.00% | — | 78.00% | 0.6290 | 0.6044 |
+| DWT L1–L4 + A4 ไม่ใช้ CLAHE | 55.00% | +1 จุดเปอร์เซ็นต์ | 26.00% | 0.3662 | 0.6172 |
+| DFT ต่ำ–กลาง–สูง | 63.00% | +9 จุดเปอร์เซ็นต์ | 56.00% | 0.6022 | 0.6556 |
+
+**DFT ยังไม่ถึงเกณฑ์เพิ่ม Accuracy อย่างน้อย 10 จุดเปอร์เซ็นต์ที่ผู้ใช้ระบุ:** baseline 54% ต้องได้อย่างน้อย 64%; รอบนี้ได้ 63% และ Recall/F1 ลดลง จึงยังสรุปว่าดีขึ้นทุกด้านไม่ได้ ผลนำร่องมี test 100 ภาพและ seed เดียว; paired patient-bootstrap 95% CI ของ ΔAccuracy DFT เท่ากับ −2.89 ถึง +22.00 จุดเปอร์เซ็นต์ ยังคร่อม 0
+
+ตรวจ manifests แล้ว **ชุดที่ใช้ฝึกไม่ imbalance**: train 160/160, validation 40/40, test 50/50 (No Finding/Infiltration) และไม่มีคนไข้ซ้ำระหว่าง train/validation/test ทุกวิธีเลือก best epoch 2 แล้ว train loss ลดแต่ validation loss เพิ่มถึง epoch 7 สอดคล้องกับ overfit ดู [กราฟ train/validation loss](runs/frequency_fusion_existing_split/analysis/cnn_training_curves.png) และ [การวิเคราะห์พร้อมประวัติฝึก](runs/frequency_fusion_existing_split/README.md)
+
+XAI กลุ่ม overall 123 ภาพ / 115 คนไข้:
+
+| วิธี | Grad-CAM Pointing Game | Grad-CAM IoU@0.3 | SHAP Pointing Game | SHAP IoU@0.3 |
+| --- | --- | --- | --- | --- |
+| Baseline | 22.76% | 0.13212 | 10.57% | 0.00358 |
+| DWT L1–L4 + A4 | 4.88% | 0.04910 | 4.88% | 0.00040 |
+| DFT ต่ำ–กลาง–สูง | 17.07% | 0.08177 | 11.38% | 0.00410 |
+
+Grad-CAM ของทั้งสองวิธีต่ำกว่า baseline; SHAP ของ DFT เพิ่มเล็กน้อยแต่ CI ของผลต่าง IoU@0.3 คร่อม 0 ดูค่า CI และกลุ่มย่อยใน [รายงานผลรอบ frequency](runs/frequency_fusion_existing_split/README.md), [classification.csv](runs/frequency_fusion_existing_split/comparison/classification.csv), [xai.csv](runs/frequency_fusion_existing_split/comparison/xai.csv) และ [paired XAI deltas](runs/frequency_fusion_existing_split/comparison/paired_xai_deltas.csv)
+
+**ขอบเขตไฟล์:** XAI ที่นำเข้ารอบ frequency มี summary/paired CSV เท่านั้น ยังไม่มี heatmap หรือผลรายภาพของรอบนี้ แม้ `status.csv` ต้นฉบับระบุ complete ส่วน CNN มี best/last checkpoints ครบทั้ง 3 วิธี เก็บ config/เวอร์ชัน Colab จริงและ manifests ที่ hash ตรงไว้ใน `metadata/` ไม่ปนผล GPU smoke test local รายละเอียดวิธีรวม feature และ notebook อยู่ใน [Frequency/README.md](Frequency/README.md)
+
+---
+
+## ผล 10 เงื่อนไขเดิม: Median / CLAHE+DWT / DAE+CLAHE
+
+ส่วนถัดไปสรุปเฉพาะ **10 เงื่อนไขเดิม** คำว่า “สูงสุด” หรือ “เด่นที่สุด” ในส่วนนี้หมายถึงการเปรียบเทียบภายใน 10 เงื่อนไขนั้น อ่านผลจาก CSV ใน `CNN/comparison/`, `Grad-CAM/comparison/` และ `SHAP/comparison/` ที่นำมาจากการรัน ไม่ได้ฝึกโมเดลหรือสร้าง heatmap ใหม่เพื่อเขียนรายงานนี้
 
 ## ผลสำคัญที่อ่านได้ทันที
 

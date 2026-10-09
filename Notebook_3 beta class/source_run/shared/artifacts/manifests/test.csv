@@ -1,0 +1,101 @@
+image,patient_id,relative_path,label,finding_labels
+00000583_039.png,583,images_001/images/00000583_039.png,0,No Finding
+00001075_005.png,1075,images_001/images/00001075_005.png,1,Infiltration
+00001836_013.png,1836,images_002/images/00001836_013.png,1,Infiltration
+00002300_033.png,2300,images_002/images/00002300_033.png,1,Infiltration
+00002316_005.png,2316,images_002/images/00002316_005.png,1,Infiltration
+00002437_054.png,2437,images_002/images/00002437_054.png,0,No Finding
+00002551_002.png,2551,images_002/images/00002551_002.png,1,Infiltration
+00004342_003.png,4342,images_003/images/00004342_003.png,0,No Finding
+00004342_017.png,4342,images_003/images/00004342_017.png,1,Infiltration
+00004344_005.png,4344,images_003/images/00004344_005.png,1,Infiltration
+00004808_054.png,4808,images_003/images/00004808_054.png,1,Infiltration
+00004858_079.png,4858,images_003/images/00004858_079.png,0,No Finding
+00005609_010.png,5609,images_003/images/00005609_010.png,1,Infiltration
+00005681_049.png,5681,images_003/images/00005681_049.png,0,No Finding
+00005944_000.png,5944,images_003/images/00005944_000.png,1,Infiltration
+00006304_043.png,6304,images_003/images/00006304_043.png,1,Infiltration
+00006329_013.png,6329,images_003/images/00006329_013.png,1,Infiltration
+00006425_006.png,6425,images_003/images/00006425_006.png,0,No Finding
+00007728_012.png,7728,images_004/images/00007728_012.png,1,Infiltration
+00007735_019.png,7735,images_004/images/00007735_019.png,1,Infiltration
+00008626_022.png,8626,images_004/images/00008626_022.png,0,No Finding
+00008729_001.png,8729,images_004/images/00008729_001.png,1,Infiltration
+00009845_041.png,9845,images_005/images/00009845_041.png,0,No Finding
+00009892_017.png,9892,images_005/images/00009892_017.png,1,Infiltration
+00010092_005.png,10092,images_005/images/00010092_005.png,0,No Finding
+00010677_023.png,10677,images_005/images/00010677_023.png,1,Infiltration
+00010871_015.png,10871,images_005/images/00010871_015.png,0,No Finding
+00011402_014.png,11402,images_005/images/00011402_014.png,0,No Finding
+00011514_012.png,11514,images_005/images/00011514_012.png,1,Infiltration
+00011557_002.png,11557,images_005/images/00011557_002.png,0,No Finding
+00011702_003.png,11702,images_006/images/00011702_003.png,1,Infiltration
+00012021_079.png,12021,images_006/images/00012021_079.png,1,Infiltration
+00012087_048.png,12087,images_006/images/00012087_048.png,0,No Finding
+00012291_000.png,12291,images_006/images/00012291_000.png,0,No Finding
+00012834_102.png,12834,images_006/images/00012834_102.png,1,Infiltration
+00013111_049.png,13111,images_006/images/00013111_049.png,0,No Finding
+00013249_024.png,13249,images_006/images/00013249_024.png,1,Infiltration
+00013670_011.png,13670,images_006/images/00013670_011.png,1,Infiltration
+00013670_153.png,13670,images_006/images/00013670_153.png,1,Infiltration
+00013670_159.png,13670,images_006/images/00013670_159.png,1,Infiltration
+00014839_008.png,14839,images_007/images/00014839_008.png,0,No Finding
+00014888_001.png,14888,images_007/images/00014888_001.png,0,No Finding
+00015100_004.png,15100,images_007/images/00015100_004.png,0,No Finding
+00015530_012.png,15530,images_007/images/00015530_012.png,0,No Finding
+00015530_110.png,15530,images_007/images/00015530_110.png,1,Infiltration
+00015646_059.png,15646,images_007/images/00015646_059.png,0,No Finding
+00015676_005.png,15676,images_007/images/00015676_005.png,0,No Finding
+00016009_016.png,16009,images_007/images/00016009_016.png,1,Infiltration
+00016522_026.png,16522,images_008/images/00016522_026.png,0,No Finding
+00016607_014.png,16607,images_008/images/00016607_014.png,0,No Finding
+00016705_017.png,16705,images_008/images/00016705_017.png,1,Infiltration
+00016807_003.png,16807,images_008/images/00016807_003.png,0,No Finding
+00016944_005.png,16944,images_008/images/00016944_005.png,0,No Finding
+00016990_004.png,16990,images_008/images/00016990_004.png,0,No Finding
+00017138_064.png,17138,images_008/images/00017138_064.png,1,Infiltration
+00017318_000.png,17318,images_008/images/00017318_000.png,1,Infiltration
+00017504_031.png,17504,images_008/images/00017504_031.png,1,Infiltration
+00017504_047.png,17504,images_008/images/00017504_047.png,1,Infiltration
+00017504_067.png,17504,images_008/images/00017504_067.png,0,No Finding
+00017701_001.png,17701,images_008/images/00017701_001.png,0,No Finding
+00018187_002.png,18187,images_008/images/00018187_002.png,0,No Finding
+00018233_044.png,18233,images_008/images/00018233_044.png,0,No Finding
+00018253_065.png,18253,images_008/images/00018253_065.png,1,Infiltration
+00018253_071.png,18253,images_008/images/00018253_071.png,1,Infiltration
+00018360_045.png,18360,images_008/images/00018360_045.png,1,Infiltration
+00018867_030.png,18867,images_009/images/00018867_030.png,1,Infiltration
+00020213_090.png,20213,images_009/images/00020213_090.png,1,Infiltration
+00020791_000.png,20791,images_009/images/00020791_000.png,1,Infiltration
+00020857_001.png,20857,images_009/images/00020857_001.png,0,No Finding
+00021024_005.png,21024,images_010/images/00021024_005.png,1,Infiltration
+00021274_005.png,21274,images_010/images/00021274_005.png,1,Infiltration
+00021481_016.png,21481,images_010/images/00021481_016.png,1,Infiltration
+00021840_010.png,21840,images_010/images/00021840_010.png,0,No Finding
+00022290_001.png,22290,images_010/images/00022290_001.png,1,Infiltration
+00022572_010.png,22572,images_010/images/00022572_010.png,0,No Finding
+00022993_024.png,22993,images_010/images/00022993_024.png,0,No Finding
+00023075_039.png,23075,images_010/images/00023075_039.png,0,No Finding
+00023283_018.png,23283,images_010/images/00023283_018.png,0,No Finding
+00025787_021.png,25787,images_011/images/00025787_021.png,1,Infiltration
+00025787_032.png,25787,images_011/images/00025787_032.png,0,No Finding
+00025954_000.png,25954,images_011/images/00025954_000.png,0,No Finding
+00026132_021.png,26132,images_011/images/00026132_021.png,0,No Finding
+00026818_002.png,26818,images_011/images/00026818_002.png,0,No Finding
+00026865_001.png,26865,images_011/images/00026865_001.png,0,No Finding
+00026865_003.png,26865,images_011/images/00026865_003.png,1,Infiltration
+00027782_000.png,27782,images_011/images/00027782_000.png,1,Infiltration
+00027927_030.png,27927,images_011/images/00027927_030.png,1,Infiltration
+00028112_001.png,28112,images_011/images/00028112_001.png,0,No Finding
+00028218_000.png,28218,images_012/images/00028218_000.png,0,No Finding
+00028529_001.png,28529,images_012/images/00028529_001.png,0,No Finding
+00028616_000.png,28616,images_012/images/00028616_000.png,0,No Finding
+00028774_013.png,28774,images_012/images/00028774_013.png,1,Infiltration
+00028861_002.png,28861,images_012/images/00028861_002.png,0,No Finding
+00028974_011.png,28974,images_012/images/00028974_011.png,1,Infiltration
+00029277_000.png,29277,images_012/images/00029277_000.png,0,No Finding
+00029476_002.png,29476,images_012/images/00029476_002.png,0,No Finding
+00029663_000.png,29663,images_012/images/00029663_000.png,0,No Finding
+00029663_006.png,29663,images_012/images/00029663_006.png,1,Infiltration
+00030111_009.png,30111,images_012/images/00030111_009.png,1,Infiltration
+00030466_000.png,30466,images_012/images/00030466_000.png,0,No Finding

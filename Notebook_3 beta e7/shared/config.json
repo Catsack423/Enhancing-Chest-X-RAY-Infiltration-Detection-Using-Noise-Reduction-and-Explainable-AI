@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "seed": 42,
+  "output_subdirectory": "runs/head_only_e7",
+  "training": {
+    "images_per_epoch": 320
+  },
+  "data": {
+    "colab_data_root": "/content/drive/MyDrive/nih-chest-xrays/data/versions/3",
+    "train_per_class": 160,
+    "validation_per_class": 40,
+    "validation_patient_fraction": 0.2,
+    "test_scope": "official_balanced_subset",
+    "test_per_class": 50,
+    "official_test_images": 12081,
+    "expected_test_images": 100,
+    "expected_xai_images": 123,
+    "expected_xai_patients": 115
+  },
+  "preprocessing": {
+    "working_size": 256,
+    "cnn_size": 224,
+    "mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "std": [
+      0.229,
+      0.224,
+      0.225
+    ],
+    "clahe_grid": [
+      8,
+      8
+    ]
+  },
+  "dae": {
+    "base_channels": 32,
+    "epochs": 10,
+    "batch_size": 16,
+    "learning_rate": 0.001,
+    "gaussian_sigma": 0.05,
+    "poisson_scale": 30.0,
+    "l1_weight": 0.2
+  },
+  "cnn": {
+    "weights": "IMAGENET1K_V2",
+    "batch_size": 16,
+    "epochs": 7,
+    "learning_rate": 0.0001,
+    "patience": 7,
+    "classification_threshold": 0.5,
+    "num_workers": 0,
+    "optimizer": "AdamW",
+    "weight_decay": 0.0001,
+    "head_dropout": 0.3,
+    "trainable_layers": "head_only",
+    "freeze_batchnorm": true,
+    "record_train_eval_loss": true
+  },
+  "xai": {
+    "iou_thresholds": [
+      0.3,
+      0.5
+    ],
+    "bootstrap_replicates": 2000,
+    "background_per_class": 16,
+    "shap_nsamples": 200,
+    "shap_batch_size": 8,
+    "visual_examples": 3
+  },
+  "conditions": [
+    {
+      "id": "baseline",
+      "group": "baseline",
+      "level": 0
+    },
+    {
+      "id": "dwt_L1_L4_fusion",
+      "group": "dwt_features",
+      "level": 4,
+      "wavelet": "db1",
+      "mode": "periodization",
+      "depth": 4
+    },
+    {
+      "id": "dft_low_mid_high_fusion",
+      "group": "dft_features",
+      "level": 0,
+      "low_cutoff": 0.125,
+      "high_cutoff": 0.25,
+      "frequency_units": "cycles_per_pixel_radial"
+    }
+  ]
+}
