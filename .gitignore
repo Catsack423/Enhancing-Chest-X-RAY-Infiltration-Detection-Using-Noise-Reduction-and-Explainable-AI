@@ -22,6 +22,7 @@ desktop.ini
 .local-artifacts/
 
 # Preserve local runtime files left in inactive version directories.
+/Notebook_3 beta class 200/
 /Notebook_2 beta/
 /Notebook_2 release/
 /Notebook_3 beta/

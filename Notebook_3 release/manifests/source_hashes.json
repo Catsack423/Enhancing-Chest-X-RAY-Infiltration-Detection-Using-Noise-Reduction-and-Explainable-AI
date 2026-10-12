@@ -1,0 +1,23 @@
+{
+  "sources": {
+    "Data_Entry_2017.csv": "88f75094e25ccc0c6f1f9cdfd4b2f94f9379a0ae07d5ff4dcf94242707b07462",
+    "BBox_List_2017.csv": "0bbfea9d4c4e9771481b3023b1bc9f0df9dea924453b12986beb29b0c4d0c95b",
+    "train_val_list.txt": "61fbe896321c1c1c8b75f3e4f3a08e4fef6486d95ef8a667c31d4d60dca6cb81",
+    "test_list.txt": "38ca5ef7f756092946f57c1a59faca882ed589a1ab1f72590b45dc06c6d5e1cc"
+  },
+  "manifests": {
+    "background.csv": "dc120d64b2f0e688e8f84e2616105528ef308e9e4ce37a8fbe25459fe6d574ac",
+    "test.csv": "1be46e711135443a73d00c62c87f01094345a5e4214a1f421dd781d4fce6c495",
+    "train.csv": "fb3880337611df4eaca54172862babd27275e119e567cc26f032370e9fec41a7",
+    "validation.csv": "ac38bfc8e948e60fad14bbe98949c69595b757431d91e52ceab4660d91a0bfdd",
+    "xai.csv": "64e4b73789903517d34a8ff43e6253b97256876df4bc7d505f96a0995fce6873"
+  },
+  "expected_counts": {
+    "train": 46108,
+    "validation": 11719,
+    "test": 12081,
+    "xai": 123,
+    "background": 32
+  },
+  "dataset_seed": 42
+}

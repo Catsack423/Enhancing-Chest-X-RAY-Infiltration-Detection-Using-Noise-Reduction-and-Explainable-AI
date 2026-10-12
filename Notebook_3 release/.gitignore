@@ -1,0 +1,8 @@
+.runtime/
+runs/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+*.zip
+*.pt
+*.pth

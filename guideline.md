@@ -161,3 +161,18 @@ Phase 6 (XAI Evaluation)
 - Wang, X., et al. (2017). *ChestX-ray8: Hospital-scale Chest X-ray Database and Benchmarks.* (ที่มาของ dataset)
 
 (รายการอ้างอิงฉบับเต็มอยู่ในเอกสารโครงงานบทที่ 2-3)
+
+## 9. v3 release — สเปกที่ผู้ใช้ให้สร้าง (12 ตุลาคม 2026)
+
+Implementation อยู่ `Notebook_3 release/` บน branch `codex/notebook-v3-release` รายละเอียดใน README/RUN_GUIDE/configs ของ release
+
+- Dataset Colab: `/content/drive/MyDrive/nih -xray/data/3` ที่มีอยู่บน Google Drive; ไม่สร้าง/อัปโหลด ZIP ภาพใหม่
+- ใช้ pure Infiltration vs strictly No Finding ตามเดิม: Train46,108 (40,371/5,737), Validation11,719 (10,129/1,590), fullofficialfilteredTest12,081 (9,861/2,220)
+- Reuse validation-patient partition เดิม seed42/20% reserved4,815patients; ไม่ re-split official lists เก็บ400trainเดิมครบ
+- XAI123/115patients: pure19/mixedhigh64/mixedlow40, background32ภาพเดิมจากtrain; patient-bootstrap95%CI2,000draws
+- หลัก12conditions: baseline, Median3/5/7, controlledDWT→CLAHEthreshold0.5/1/2 (db1/depth3/clip2คงที่), controlledDAE→CLAHEα0.25/0.5/1(clip2คงที่), DWT5viewfusion และDFT3viewfusion
+- เก็บ v2 parameterpreset เป็นlegacyแยก Controlledstrengthไม่ได้ใช้CLAHEclipเป็นตัวแทนdenoisingstrengthโดยลำพัง
+- ResNet50ImageNetV2ทุกmethod: headwarmup3epochs จากนั้นlayer4+headจน20epochs, freezeearlylayers/BatchNormstatisticsทั้งหมด; AdamW/dropout0.3/weightedBCEtrain-onlypos_weight≈7.037/effectivebatch16
+- 3trainingseeds42/43/44 แต่manifestsคงที่ รวม36CNN+3DAE; bestเลือกvalidationbalancedBCE ไม่ใช้test/XAIเลือกcheckpointหรือthreshold
+- Runtimecacheuint8shardsอยู่ColabVM, results/checkpointsอยู่Drive; durablemetadata/manifest/sourcepixel/code/versionhashesใช้ตรวจresume
+- ผลvalidationและข้อจำกัดอยู่ `Notebook_3 release/VALIDATION.md` การทดสอบชุดเล็กไม่ใช่ผลclassificationงานวิจัยเต็ม

@@ -1,0 +1,66 @@
+{
+  "status": "proposal audit only; no new training manifests or training created",
+  "source_hashes": {
+    "Data_Entry_2017.csv": "88f75094e25ccc0c6f1f9cdfd4b2f94f9379a0ae07d5ff4dcf94242707b07462",
+    "BBox_List_2017.csv": "0bbfea9d4c4e9771481b3023b1bc9f0df9dea924453b12986beb29b0c4d0c95b",
+    "train_val_list.txt": "61fbe896321c1c1c8b75f3e4f3a08e4fef6486d95ef8a667c31d4d60dca6cb81",
+    "test_list.txt": "38ca5ef7f756092946f57c1a59faca882ed589a1ab1f72590b45dc06c6d5e1cc"
+  },
+  "official_counts": {
+    "train_val": {
+      "images": 86524,
+      "patients": 28008
+    },
+    "test": {
+      "images": 25596,
+      "patients": 2797
+    }
+  },
+  "eligible_all": {
+    "No Finding": 60361,
+    "Infiltration": 9547
+  },
+  "split_policy": "reuse exact seed42 reserved20percent patient partition from v2/class200; expand within partitions only; keep official test unchanged",
+  "reserved_validation_patients": 4815,
+  "binary_sets": {
+    "train": {
+      "No Finding": 40371,
+      "Infiltration-only": 5737,
+      "total": 46108,
+      "patients": 19260,
+      "missing_files": [],
+      "retained_pilot_images": 400
+    },
+    "validation": {
+      "No Finding": 10129,
+      "Infiltration-only": 1590,
+      "total": 11719,
+      "patients": 4815,
+      "missing_files": [],
+      "retained_pilot_images": 80
+    },
+    "test": {
+      "No Finding": 9861,
+      "Infiltration-only": 2220,
+      "total": 12081,
+      "patients": 2589,
+      "missing_files": [],
+      "retained_pilot_images": 100
+    }
+  },
+  "class_weight_pos": 7.036953111382256,
+  "xai": {
+    "images": 123,
+    "patients": 115,
+    "strata": {
+      "mixed_low_risk": 40,
+      "pure": 19,
+      "mixed_high_risk": 64
+    },
+    "missing_files": [],
+    "overlap_with_binary_test": 19
+  },
+  "indexed_local_images": 112120,
+  "numpy_version": "2.4.6",
+  "all_patient_disjoint_checks_passed": true
+}

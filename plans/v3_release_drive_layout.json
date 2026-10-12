@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "status": "proposal_only; release implementation and Drive validation have not run",
+  "path_source": "user screenshots: My Drive > nih -xray > data > 3",
+  "data_access": "mounted_google_drive_with_ephemeral_vm_cache",
+  "colab_mount_root": "/content/drive",
+  "colab_data_root": "/content/drive/MyDrive/nih -xray/data/3",
+  "colab_release_root": "/content/drive/MyDrive/nih -xray/Notebook_3_release",
+  "colab_output_root": "/content/drive/MyDrive/nih -xray/Notebook_3_release/runs/release_full",
+  "colab_cache_root": "/content/cxr_v3_cache",
+  "local_data_root": "D:/kaggle_cache/datasets/nih-chest-xrays/data/versions/3",
+  "dataset_zip_required": false,
+  "dataset_source_read_only": true,
+  "drive_dataset_verified": false,
+  "metadata_files": [
+    "Data_Entry_2017.csv",
+    "BBox_List_2017.csv",
+    "train_val_list.txt",
+    "test_list.txt"
+  ],
+  "supported_image_layouts": [
+    "images_NNN/images/<image_id>",
+    "images_NNN/<image_id>"
+  ],
+  "reference_audit": "plans/v3_release_dataset_audit.json",
+  "cache_policy": {
+    "working_size": 256,
+    "storage": "uint8 grayscale pixel shards or memmap on Colab VM",
+    "binary_working_pixel_bytes": 4581490688,
+    "native_xai_images": 123,
+    "persist_input_cache_to_drive_by_default": false,
+    "missing_image_policy": "stop; never skip or replace selected images",
+    "key_components": ["source_hashes", "manifest_hashes", "preprocessing_hash", "condition_parameters", "dae_checkpoint_hash_when_required"]
+  }
+}

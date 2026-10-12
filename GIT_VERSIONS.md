@@ -11,6 +11,7 @@ scripts and existing reports. Folder names are preserved so notebook paths keep 
 | `codex/notebook-v3-beta` | `Notebook_3 beta` |
 | `codex/notebook-v3-beta-e7` | `Notebook_3 beta e7` |
 | `codex/notebook-v3-beta-class200` | `Notebook_3 beta class 200` |
+| `codex/notebook-v3-release` | `Notebook_3 release` |
 
 Save or stash local code edits before changing versions:
 
