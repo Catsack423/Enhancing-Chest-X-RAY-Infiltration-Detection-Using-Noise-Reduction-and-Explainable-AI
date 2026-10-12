@@ -6,3 +6,17 @@ outputs/teachable_machine_pilot
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
+
+# Keep datasets, generated packages and model weights outside Git.
+*.zip
+*.pth
+*.pt
+*.hdf5
+*.ckpt
+*.safetensors
+**/.runtime/
+**/runs/
+**/smoke_runs/
+desktop.ini
+.claude/settings.local.json
+.local-artifacts/

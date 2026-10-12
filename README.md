@@ -1,37 +1,12 @@
-# Enhancing-Chest-X-RAY-Infiltration-Detection-Using-Noise-Reduction-and-Explainable-AI
+# Enhancing Chest X-ray Infiltration Detection
 
-> **โครงการวิจัยสัมมนาวิชาการ:** การเพิ่มประสิทธิภาพการตรวจจับภาวะแทรกซึมในปอด (Infiltration) จากภาพเอกซเรย์ทรวงอก ด้วยการลดสัญญาณรบกวนและปัญญาประดิษฐ์ที่อธิบายได้  
-> **ผู้จัดทำ:** นายปิยะพล ตุ่นป่า, นายสัพพัญญู คำตุ้ม  
-> **อาจารย์ที่ปรึกษา:** อ. ดร.พบพร ด่านวิรุทัย  
+Research: denoising strength versus classification and XAI localization on NIH ChestX-ray14.
+The experiment specification is [guideline.md](guideline.md).
 
----
+Versions are maintained on separate branches. See [GIT_VERSIONS.md](GIT_VERSIONS.md)
+for the branch map, switching instructions and large-file handling.
 
-## 📖 เอกสารรวมข้อมูลการวิจัยฉบับสมบูรณ์ (Master Compendium)
-อ่านรายละเอียดงานวิจัย ผลการทดลองครบทุกมิติ และแนวทางการเขียนเล่มรายงาน 5 บท ได้ในไฟล์เดียวที่:
-👉 **[MASTER_RESEARCH_COMPENDIUM.md](file:///C:/Users/s0955/Github/Enhancing-Chest-X-RAY-Infiltration-Detection-Using-Noise-Reduction-and-Explainable-AI/MASTER_RESEARCH_COMPENDIUM.md)**
+Research documentation: [Master compendium](MASTER_RESEARCH_COMPENDIUM.md),
+[proposal](PROPOSAL_CP353761_FULL/PROPOSAL_CP353761_FULL.md).
 
----
-
-## 🗂️ แผนผังโฟลเดอร์การทดลองหลัก (Research Notebooks)
-* **[notebooks/README.md](file:///C:/Users/s0955/Github/Enhancing-Chest-X-RAY-Infiltration-Detection-Using-Noise-Reduction-and-Explainable-AI/notebooks/README.md):** แผนผังและคำอธิบายสถาปัตยกรรมโน้ตบุ๊กทั้งหมด
-* **[notebooks/XAI_Evaluation/](file:///C:/Users/s0955/Github/Enhancing-Chest-X-RAY-Infiltration-Detection-Using-Noise-Reduction-and-Explainable-AI/notebooks/XAI_Evaluation/):** ชุดทดสอบวัดผลเชิงสถิติ XAI 100 เคส (Pointing Game, Saliency Energy, IoU/Dice)
-* **[notebooks/DAE_CLAHE/](file:///C:/Users/s0955/Github/Enhancing-Chest-X-RAY-Infiltration-Detection-Using-Noise-Reduction-and-Explainable-AI/notebooks/DAE_CLAHE/):** โมเดล Denoising Autoencoder ร่วมกับ CLAHE (Proposed Method)
-* **[notebooks/DenseNet_ChexNet/](file:///C:/Users/s0955/Github/Enhancing-Chest-X-RAY-Infiltration-Detection-Using-Noise-Reduction-and-Explainable-AI/notebooks/DenseNet_ChexNet/):** การประชันสถาปัตยกรรม DenseNet-121 ChexNet vs ResNet-50
-* **[notebooks/Lung_Segmentation/](file:///C:/Users/s0955/Github/Enhancing-Chest-X-RAY-Infiltration-Detection-Using-Noise-Reduction-and-Explainable-AI/notebooks/Lung_Segmentation/):** การตัดขอบเขตเนื้อปอดเพื่อกำจัด False Positive นอกปอด
-* **[notebooks/Score_CAM/](file:///C:/Users/s0955/Github/Enhancing-Chest-X-RAY-Infiltration-Detection-Using-Noise-Reduction-and-Explainable-AI/notebooks/Score_CAM/):** เทคนิค Gradient-Free Explainable AI
-* **[notebooks/Gamma_Correction/](file:///C:/Users/s0955/Github/Enhancing-Chest-X-RAY-Infiltration-Detection-Using-Noise-Reduction-and-Explainable-AI/notebooks/Gamma_Correction/):** การปรับความสว่างแบบไม่ใช่เชิงเส้น ($\gamma = 0.5 - 1.5$)
-* **[notebooks/SHAP/](file:///C:/Users/s0955/Github/Enhancing-Chest-X-RAY-Infiltration-Detection-Using-Noise-Reduction-and-Explainable-AI/notebooks/SHAP/):** การอธิบายผลระดับพิกเซลด้วย Game Theory
-
----
-
-## 💾 Model Weights & Data Structure
-* ResNet-50 ImageNet Weights: Downloaded from [Kaggle ResNet50](https://www.kaggle.com/datasets/crawford/resnet50)
-* NIH ChestX-ray14:
-  ```text
-  data/versions/3/
-  ├── images_001/ ... images_012/
-  ├── Data_Entry_2017.csv
-  ├── BBox_List_2017.csv
-  ├── train_val_list.txt
-  └── test_list.txt
-  ```
+Dataset: `data/versions/3/` (local, ignored by Git). Use the official train/test lists.
