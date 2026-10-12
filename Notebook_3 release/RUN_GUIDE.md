@@ -9,6 +9,13 @@
 
 ## Resume
 
+### ใช้ GPU VRAM เพิ่มสำหรับ DAE
+
+run_all / DAE notebook รุ่นล่าสุดมี GPU batch tuning ก่อนฝึก (USE_GPU_DAE_BATCH=True): ลองbatch16/32/48/64/80/96/... วัดforward/backward/Adamจริง เลือกbatchเร็วที่สุดที่อยู่ในงบ90%ของVRAM และเลือกbatchใหญ่กว่าเมื่อความเร็วห่างไม่เกิน5% มีAMPตามconfigเดิม และเผื่อOOM ผลprobeเป็นsyntheticGPUsteps ไม่ใช่เวลาของepochรวมโหลดข้อมูล
+หยุดDAEเดิมก่อน ใช้ `dae_gpu_batch_cell.txt` หลังsetup/preparation หรือเปิดnotebookใหม่ หากGPUยังมีmodelเก่าค้างให้Restart sessionบนVMเดิมแล้วรันsetup/preparationใหม่ ไม่ลบcache/dataset
+เปลี่ยนbatchแล้วจะเริ่มexperimentใหม่ใน `release_full_dae_bNNN_gpu/seed_42` เป็นต้น โดยเก็บoutputเดิม ใช้runsชุดใหม่กับCNN/XAI/reportsต่อทั้งหมด เก็บ20epochs/3seeds/ข้อมูล/architecture/learning rateเดิม ไม่resumecheckpointbatch16ปนกับbatchใหม่ CNNmicrobatchและSHAPsettingsยังเดิม จึงไม่กระทบeffectivebatch16ของCNN
+หากกลับมาอีกsession ให้รันtuningและเปิดbatchprofileเดิมก่อนresume ถ้าbatchที่เลือกเปลี่ยนจะเปิดoutputคนละชื่อ ตั้งUSE_GPU_DAE_BATCH=Falseเพื่อใช้batch16แผนเดิม
+
 ### Log ระหว่างฝึก DAE / CNN
 
 Notebook รุ่นล่าสุดมี observer ใน cells ฝึก: START ทันที, heartbeat ทุก10วินาที, epoch/batch/images/s/ETA ของ pass ปัจจุบัน, validation, ตรวจ checkpoint และบันทึก Drive โดยไม่เปลี่ยน production Python หรือ run fingerprint

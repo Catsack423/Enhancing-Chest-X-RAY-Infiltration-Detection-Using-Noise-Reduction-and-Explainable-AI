@@ -60,6 +60,10 @@ if not summary_path.exists() or summary_path.read_text(encoding='utf-8') != summ
 old_write_for_summary = builder.write_notebook
 def write_with_summary(relative_path, cells):
     cells = [(kind, summary_code if kind == 'code' and text.startswith('from shared.reporting import summarize_seeds\n') else text) for kind, text in cells]
+    if relative_path.as_posix() in ('run_all.ipynb', 'DAE/train_dae.ipynb'):
+        gpu_code = 'USE_GPU_DAE_BATCH = not SMOKE\nif USE_GPU_DAE_BATCH:\n' + ''.join('    '+line+'\n' for line in (ROOT / 'dae_gpu_batch_cell.txt').read_text(encoding='utf-8').splitlines())
+        insertion = next(i for i, (kind, text) in enumerate(cells) if kind == 'code' and 'TRAIN_STAGE = "dae"' in text)
+        cells[insertion:insertion] = [('markdown', '### GPU batch tuning — เพิ่ม DAE batch จากผลวัด VRAM/ความเร็ว\nใช้ VRAM budget90%; เปลี่ยน batch แล้วเริ่ม output ใหม่ เก็บผลเดิมไว้ ตั้ง USE_GPU_DAE_BATCH=False เพื่อใช้แผนเดิม'), ('code',gpu_code)]
     return old_write_for_summary(relative_path, cells)
 builder.write_notebook = write_with_summary
 def logged_stage_code(stage):
