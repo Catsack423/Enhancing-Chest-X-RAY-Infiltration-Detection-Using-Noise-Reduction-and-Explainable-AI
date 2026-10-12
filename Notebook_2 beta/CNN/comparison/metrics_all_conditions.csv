@@ -1,0 +1,11 @@
+condition_id,status,n,accuracy,precision,recall,f1,roc_auc
+baseline,not_run,,,,,,
+median_L1,not_run,,,,,,
+median_L2,not_run,,,,,,
+median_L3,not_run,,,,,,
+clahe_dwt_L1,not_run,,,,,,
+clahe_dwt_L2,not_run,,,,,,
+clahe_dwt_L3,not_run,,,,,,
+dae_clahe_L1,not_run,,,,,,
+dae_clahe_L2,not_run,,,,,,
+dae_clahe_L3,not_run,,,,,,

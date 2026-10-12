@@ -10,3 +10,7 @@ Research documentation: [Master compendium](MASTER_RESEARCH_COMPENDIUM.md),
 [proposal](PROPOSAL_CP353761_FULL/PROPOSAL_CP353761_FULL.md).
 
 Dataset: `data/versions/3/` (local, ignored by Git). Use the official train/test lists.
+
+Current version: `codex/notebook-v2-beta`.
+
+Notebook source: [Notebook_2 beta/README.md](Notebook_2%20beta/README.md).
