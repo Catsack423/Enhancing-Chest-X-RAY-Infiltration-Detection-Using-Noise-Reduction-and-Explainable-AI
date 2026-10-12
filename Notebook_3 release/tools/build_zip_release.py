@@ -2,10 +2,29 @@
 from pathlib import Path
 import sys
 import zipfile
+import nbformat
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 import build_notebooks as builder
+
+def zip_intro(text):
+    return text.replace(
+        'ไป `MyDrive/nih -xray/` ข้อมูลอ่านจาก `MyDrive/nih -xray/data/3` ที่มีอยู่ ไม่อัปโหลดรูปซ้ำ',
+        'ไป `MyDrive/nih -xray/` และอัปโหลด dataset ZIP 13 ส่วนพร้อม index ไป `MyDrive/nih -xray/data/v3_selected_zip/`\n'
+        'Setup คัดลอก ZIP จาก Drive แล้วแตกภาพต้นฉบับลง `/content/cxr_v3_originals` ก่อนสร้าง cache; ดู `ZIP_DATA_GUIDE.md`')
+
+original_write = builder.write_notebook
+def stable_write(relative_path, cells):
+    cells = [(kind, zip_intro(text) if kind == 'markdown' else text) for kind, text in cells]
+    path = ROOT / relative_path
+    if path.exists():
+        existing = nbformat.read(path, as_version=4)
+        wanted = [('code' if kind == 'code' else 'markdown', text) for kind, text in cells]
+        if [(c.cell_type, c.source) for c in existing.cells] == wanted and not any(c.get('outputs') for c in existing.cells):
+            return path
+    return original_write(relative_path, cells)
+builder.write_notebook = stable_write
 
 standalone = {name: (ROOT / name).read_bytes() for name in
               ('check_overfit.ipynb', 'export_results_colab.ipynb') if (ROOT / name).exists()}
@@ -26,7 +45,6 @@ with zipfile.ZipFile(package, 'a', zipfile.ZIP_DEFLATED) as archive:
         archive.write(path, 'Notebook_3_release/tools/' + path.name)
 
 # The intro comes from the older portable builder; update the generated artifacts.
-import nbformat
 for path in ROOT.rglob('*.ipynb'):
     if any(p in {'.runtime', 'runs'} for p in path.relative_to(ROOT).parts):
         continue
@@ -35,10 +53,7 @@ for path in ROOT.rglob('*.ipynb'):
     notebook = nbformat.read(path, as_version=4)
     for cell in notebook.cells:
         if cell.cell_type == 'markdown':
-            cell.source = cell.source.replace(
-                'ไป `MyDrive/nih -xray/` ข้อมูลอ่านจาก `MyDrive/nih -xray/data/3` ที่มีอยู่ ไม่อัปโหลดรูปซ้ำ',
-                'ไป `MyDrive/nih -xray/` และอัปโหลด dataset ZIP 13 ส่วนพร้อม index ไป `MyDrive/nih -xray/data/v3_selected_zip/`\n'
-                'Setup คัดลอก ZIP จาก Drive แล้วแตกภาพต้นฉบับลง `/content/cxr_v3_originals` ก่อนสร้าง cache; ดู `ZIP_DATA_GUIDE.md`')
+            cell.source = zip_intro(cell.source)
     nbformat.write(notebook, path)
 with zipfile.ZipFile(package) as archive:
     names = archive.namelist()

@@ -2,8 +2,9 @@
 
 เปิด [run_all.ipynb](run_all.ipynb) บน Colab เลือก GPU แล้วรันตามลำดับ
 อัปโหลด **Notebook_3_release_colab.zip** ไป `MyDrive/nih -xray/` เพียงไฟล์เดียวสำหรับ source package
-ข้อมูลอ่านจาก **`MyDrive/nih -xray/data/3`** ที่มีอยู่ ไม่สร้าง/อัปโหลด dataset ZIP ใหม่
-ชื่อ `nih -xray` มีช่องว่างก่อน `-`; แก้ DATA_ROOT ใน setup cell ได้หากชื่อจริงต่างจากรูป
+อัปโหลด **13 dataset ZIP + dataset_zip_index.json** ไป **`MyDrive/nih -xray/data/v3_selected_zip/`** ตาม [ZIP_DATA_GUIDE.md](ZIP_DATA_GUIDE.md)
+Setup คัดลอก ZIP จาก Drive แล้วแตกภาพต้นฉบับบน VM: **DATA_ROOT=`/content/cxr_v3_originals`** จึงไม่เปิดต้นฉบับผ่าน Drive ทีละไฟล์
+ชื่อ `nih -xray` มีช่องว่างก่อน `-`; แก้ ZIP_ROOT ใน setup cell ได้หากชื่อจริงต่างจากรูป
 
 | ชุด | No Finding | Infiltration-only | รวม |
 |---|---:|---:|---:|
@@ -37,6 +38,7 @@ Trainทุกภาพหนึ่งครั้งต่อepoch ไม่ do
 ## Drive, cache และ resume
 
 - Datasetต้นทางอ่านอย่างเดียว รองรับ `images_NNN/images/<id>` หรือ `images_NNN/<id>`
+- ZIP มีภาพที่ใช้จริง70,012ภาพ รวม26.26GiB; ตรวจSHA-256ก่อนใช้และแสดงcopy/extractprogress ส่วนที่แตกครบใช้ต่อได้
 - Frozenmanifestsแนบในsourcepackage; ตรวจmetadata/splits/bboxhashesและpixelhashก่อนใช้ ไม่สแกนDriveทุกepoch
 - Workingcacheuint8shards256²บน`/content/cxr_v3_cache` ประมาณ4.27GiB plusnativeXAI; derivedcacheจำกัด6GiB
 - Resultsอยู่`MyDrive/nih -xray/Notebook_3_release/runs/release_full/seed_42` และseed43/44
