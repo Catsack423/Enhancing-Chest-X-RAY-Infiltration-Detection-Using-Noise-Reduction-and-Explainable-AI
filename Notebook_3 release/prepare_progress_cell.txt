@@ -1,0 +1,90 @@
+import threading
+import time
+from contextlib import contextmanager
+
+@contextmanager
+def preparation_progress(seed, interval=10):
+    """Notebook-only observer; preserve all source files, pixels and run fingerprints."""
+    import shared.data as data_module
+    from shared.runtime_cache import RuntimeCache
+    started = time.monotonic()
+    status = {"phase": "opening run / checking configuration", "done": 0, "total": 0,
+              "image": None, "reading_since": None}
+    stop = threading.Event()
+    original_manifests = data_module.prepare_manifests
+    original_verify = data_module.verify_manifests
+    original_prepare = RuntimeCache.prepare
+    original_read = RuntimeCache._read
+
+    def emit(message):
+        print(f"[prepare seed={seed}] {message}", flush=True)
+
+    def heartbeat():
+        while not stop.wait(interval):
+            elapsed = time.monotonic() - started
+            message = f"{status['phase']} | elapsed {elapsed:.0f}s"
+            if status["total"]:
+                message += f" | {status['done']:,}/{status['total']:,} ({100*status['done']/status['total']:.1f}%)"
+            if status["image"]:
+                message += f" | image {status['image']}"
+                if status["reading_since"] is not None:
+                    message += f" | current read {time.monotonic()-status['reading_since']:.0f}s"
+            emit(message)
+
+    def manifests(exp):
+        status["phase"] = "checking source checksums and loading frozen manifests"
+        emit(status["phase"] + f" | data={exp.data_root}")
+        result = original_manifests(exp)
+        emit("manifests verified: " + str({name: len(frame) for name, frame in result.items()}))
+        return result
+
+    def verify(exp, frames):
+        status["phase"] = "validating labels, patient partitions and bounding boxes"
+        emit(status["phase"])
+        result = original_verify(exp, frames)
+        status["phase"] = "saving/verifying run manifest records"
+        return result
+
+    def prepare(cache, frames):
+        status.update(phase="checking runtime cache and Drive folder layout", done=0,
+                      total=len(set().union(*(set(frame.image) for frame in frames.values()))),
+                      image=None, reading_since=None)
+        emit(f"source cache: {status['total']:,} unique images | cache={cache.root}")
+        result = original_prepare(cache, frames)
+        status.update(phase="cache verified and ready", done=status["total"], image=None, reading_since=None)
+        emit(f"cache ready: {status['total']:,} images (existing verified shards are reused)")
+        return result
+
+    def read(cache, row):
+        status.update(phase="reading Drive image / resizing / caching", image=row["image"], reading_since=time.monotonic())
+        if status["done"] == 0:
+            emit(f"first image read: {row['image']}; heartbeat every {interval}s")
+        result = original_read(cache, row)
+        status["done"] = max(status["done"], cache.indices[row["image"]]+1)
+        status["reading_since"] = None
+        return result
+
+    data_module.prepare_manifests = manifests
+    data_module.verify_manifests = verify
+    RuntimeCache.prepare = prepare
+    RuntimeCache._read = read
+    monitor = threading.Thread(target=heartbeat, daemon=True)
+    emit("START: verifying data and preparing cache; model training has not started")
+    monitor.start()
+    try:
+        yield
+    finally:
+        stop.set()
+        monitor.join(timeout=1)
+        data_module.prepare_manifests = original_manifests
+        data_module.verify_manifests = original_verify
+        RuntimeCache.prepare = original_prepare
+        RuntimeCache._read = original_read
+        emit(f"preparation cell ended after {time.monotonic()-started:.1f}s")
+
+runs = {}
+for seed in SEEDS:
+    with preparation_progress(seed):
+        exp, manifests = open_run(DATA_ROOT, OUTPUT_ROOT, CACHE_ROOT, seed=seed, smoke=SMOKE)
+    runs[seed] = (exp, manifests)
+    print(seed, {name: len(frame) for name, frame in manifests.items()}, exp.output_root, flush=True)

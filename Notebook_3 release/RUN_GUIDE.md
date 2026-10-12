@@ -9,6 +9,22 @@
 
 ## Resume
 
+### Progress ระหว่างเตรียม cache
+
+Notebook รุ่นเพิ่มlogแสดงphaseทันที และheartbeatทุก10วินาที พร้อมจำนวนภาพ/ภาพที่กำลังอ่าน/เวลาที่ใช้
+ขั้นนี้ยังไม่ฝึกmodel จำนวนภาพuniqueทั้งหมดประมาณ70,012ภาพ; versionเดิมพิมพ์หลัง10shardsหรือ10,240ภาพจึงดูเงียบ
+หากกำลังรันversionเดิม ให้หยุดเฉพาะcellเตรียมcache แล้วแทนcellนั้นด้วยข้อความใน`prepare_progress_cell.txt`และรันใหม่
+ไม่ต้องresetruntimeหรือลบcache/output; verifiedshardsเดิมใช้ต่อได้ ส่วนshardที่ยังไม่ครบจะเตรียมใหม่
+Observerอยู่ในnotebookเท่านั้น ไม่เปลี่ยนproductionPython/sourcefingerprintหรือphysicsของrun
+สร้างnotebooks/ZIPพร้อมprogressซ้ำด้วย:
+
+```python
+from pathlib import Path
+import build_notebooks as builder
+builder.OPEN = Path("prepare_progress_cell.txt").read_text(encoding="utf-8")
+builder.package()
+```
+
 หลังruntimeหลุด เปิดnotebookเดิม รันsetupและcacheใหม่ แล้วรันstageที่ต้องการต่อ
 Checkpointsคืนmodel/optimizer/scaler/RNGและtrainingstage; epochที่ยังไม่จบเริ่มใหม่จากcheckpointล่าสุดที่จบแล้ว
 XAIทำต่อเฉพาะภาพที่ยังไม่มีverifiedrecord; artifactsที่เขียนไม่ครบไม่ถือว่าcompleted
