@@ -20,3 +20,10 @@ __pycache__/
 desktop.ini
 .claude/settings.local.json
 .local-artifacts/
+
+# Preserve local runtime files left in inactive version directories.
+/Notebook_2 beta/
+/Notebook_3 beta/
+/Notebook_3 beta class 200/
+/Notebook_3 beta e7/
+/notebooks v1/
