@@ -45,6 +45,7 @@ if IN_COLAB:
     os.environ["CXR_PREPROCESS_CACHE_ROOT"] = "/content/nih_cxr_v3_cache"
 else:
     candidates = [Path.cwd(), *Path.cwd().parents,
+                  Path.cwd() / "Notebook_3 beta class 200",
                   Path.cwd() / "Notebook_3 beta class", Path.cwd() / "Notebook_3_class"]
     NOTEBOOK_3_DIR = next((p for p in candidates if (p / "shared/beta.py").is_file()), None)
     if NOTEBOOK_3_DIR is None:
@@ -182,12 +183,14 @@ del prep'''),
 RTX 4060 ประเมิน training + classification ประมาณ 2–10 นาที ไม่รวม download ครั้งแรก
 ยังไม่ได้วัดการฝึกเต็มรุ่นนี้; XAI โดยเฉพาะ SHAP ใช้เวลามากกว่า
 รันซ้ำ resume ได้ หาก config/code/versions เปลี่ยนให้ใช้ OUTPUT_ROOT ใหม่"""),
-        ("code", '''for condition_id in exp.condition_ids:
+        ("code", '''from check_overfit import plot_overfit
+for condition_id in exp.condition_ids:
     metrics = train_beta(exp, manifests, condition_id, DEVICE)
     assert metrics["epochs_run"] == 10 and metrics["trainable_parameters"] == 2049
     print(condition_id, {k: metrics[k] for k in ("accuracy", "precision", "recall", "f1", "roc_auc", "best_epoch")})
     cnn_table, xai_table, paired_deltas, status = frequency_reports(exp)
     display(status)
+    plot_overfit(exp.output_root, condition_ids=exp.condition_ids, display_plots=False)
 display(cnn_table)'''),
         ("markdown", """## 5. ตรวจ train/validation gap
 `train_loss` ระหว่าง update เปิด dropout และเปลี่ยนน้ำหนักไปแต่ละ batch
@@ -195,8 +198,8 @@ display(cnn_table)'''),
 ใช้ train_eval_loss เทียบ validation_loss เพื่ออ่าน gap; ไม่ใช้ train Accuracy ว่าเป็น test Accuracy
 ดูแนวโน้มตลอด 10 รอบ: train_eval_loss ลดแต่ validation_loss เพิ่มต่อเนื่องเป็นสัญญาณ overfit
 หากทั้งสอง loss สูงอาจเป็น underfit; freeze/regularization ไม่รับประกันว่าจะขจัดปัญหาได้ทั้งหมด"""),
-        ("code", '''curve_path = plot_training_history(exp)
-display(Image(filename=str(curve_path)))
+        ("code", '''from check_overfit import plot_overfit
+overfit_report = plot_overfit(exp.output_root, condition_ids=exp.condition_ids)
 for condition_id in exp.condition_ids:
     print(condition_id)
     display(pd.read_csv(exp.results("CNN", condition_id) / "history.csv"))'''),
@@ -271,8 +274,57 @@ if IN_COLAB:
     return destination
 
 
+def build_overfit_notebook():
+    """Standalone result reader that works with an already uploaded old run."""
+    notebook = nbf.v4.new_notebook()
+    notebook.cells = [
+        nbf.v4.new_markdown_cell("""# Check overfit — อ่านผลที่รันแล้ว
+
+ใช้ `history.csv` ที่มีอยู่เพื่อวาด train/validation loss ไม่โหลดโมเดล ไม่ฝึกใหม่ ไม่ต้องใช้ GPU
+เปิด notebook นี้บน Colab แล้วรัน 2 เซลล์ ใช้ CPU runtime ได้ และไม่ต้องอัปโหลด Colab ZIP ใหม่
+แก้ `RUN_ROOT` ให้ตรงโฟลเดอร์ run ที่มี `CNN/results/` ของคุณ หากใช้ output อื่น
+
+บันทึกกราฟรวมที่ `comparison/training_curves.png` และกราฟรายวิธีที่
+`CNN/results/<condition_id>/training_curves.png` พร้อม `comparison/overfit_summary.csv`
+ถ้ารันเสร็จเพียง baseline ก็วาด baseline ได้ วิธีที่ยังไม่มี history จะแจ้งว่าขาด
+
+เส้น **Train (eval mode)** เทียบ **Validation** ใช้ดู gap ได้ตรงกว่า loss ระหว่าง update ที่เปิด dropout
+เมื่อ train loss ลดแต่ validation loss เพิ่มหลัง best epoch ต่อเนื่อง เป็นสัญญาณ overfit
+เส้นประสีเขียวระบุ epoch ที่ validation loss ต่ำที่สุดใน history ที่มี ไม่ใช่ผล test
+หาก history รุ่นเก่าไม่มี train_eval_loss จะใช้ train_loss พร้อมระบุว่าเป็น loss ระหว่างฝึก"""),
+        nbf.v4.new_code_cell('''from pathlib import Path
+try:
+    from google.colab import drive
+    drive.mount("/content/drive")
+    IN_COLAB = True
+except ImportError:
+    IN_COLAB = False
+
+RUN_ROOT = Path("/content/drive/MyDrive/Notebook_3_beta_class/runs/class200_e10")
+if not IN_COLAB:
+    candidates = [Path.cwd(), Path.cwd() / "Notebook_3 beta class 200",
+                  Path.cwd() / "Notebook_3 beta class", *Path.cwd().parents]
+    local_root = next((p for p in candidates if (p / "runs/class200_e10/CNN/results").is_dir()), Path.cwd())
+    RUN_ROOT = local_root / "runs/class200_e10"
+print("Read saved histories from:", RUN_ROOT)'''),
+        nbf.v4.new_code_cell((ROOT / "check_overfit.py").read_text(encoding="utf-8") +
+                            '\nreport = plot_overfit(RUN_ROOT)\n'),
+    ]
+    notebook.metadata = {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+                         "language_info": {"name": "python"},
+                         "colab": {"name": "check_overfit.ipynb", "provenance": []}}
+    for cell in notebook.cells:
+        if cell.cell_type == "code":
+            ast.parse(cell.source)
+    nbf.validate(notebook)
+    destination = ROOT / "check_overfit.ipynb"
+    nbf.write(notebook, destination)
+    return destination
+
+
 def package():
     notebook = build()
+    overfit_notebook = build_overfit_notebook()
     target = ROOT / "Notebook_3_beta_class_colab.zip"
     temporary = target.with_suffix(".tmp.zip")
     sources = [*sorted((ROOT / "shared").glob("*.py")), *sorted((ROOT / "shared").glob("*.json")),
@@ -280,6 +332,7 @@ def package():
                *sorted((ROOT / "reference_run").rglob("*.json")), *sorted((ROOT / "reference_run").rglob("*.csv")),
                ROOT / "README.md", ROOT / "build_notebook.py", ROOT / "validate_notebook_gpu.py",
                ROOT / "V2_SOURCE_HASHES.json", ROOT / "E2_SOURCE_HASHES.json", ROOT / "prepare_data.py", notebook,
+               ROOT / "check_overfit.py", overfit_notebook,
                *sorted((ROOT / "tests").glob("*.py"))]
     if (ROOT / "VALIDATION.md").is_file():
         sources.append(ROOT / "VALIDATION.md")

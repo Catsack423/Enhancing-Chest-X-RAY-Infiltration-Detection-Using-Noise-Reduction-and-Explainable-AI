@@ -48,6 +48,14 @@ Train มี 385 คนไข้และไม่ซ้ำกับ validation/
 
 รายงาน Accuracy/Precision/Recall/F1/ROC-AUC/confusion matrix และกราฟ `train_eval_loss` เทียบ `validation_loss` ตลอด 10 รอบเพื่อดู overfit การ freeze/regularization ไม่รับประกันว่าปัญหาจะหมดหรือ Accuracy จะดีขึ้น
 
+### Check overfit จากผลที่รันแล้ว
+
+ใน notebook หลัก รันหัวข้อ **5. ตรวจ train/validation gap** เพื่อแสดงกราฟ loss ได้ทันทีโดยไม่ฝึกซ้ำ กราฟรวมอยู่ `runs/class200_e10/comparison/training_curves.png` รุ่นปรับปรุงยังสร้างกราฟทันทีหลังฝึกแต่ละวิธี และเก็บสำเนาใน `CNN/results/<condition_id>/training_curves.png` จึงเปิดดูจากโฟลเดอร์ baseline/DWT/DFT ได้
+
+ถ้าปิด runtime ไปแล้ว ให้เปิด [check_overfit.ipynb](check_overfit.ipynb) บน Colab รันเพียง 2 เซลล์ด้วย CPU และแก้ `RUN_ROOT` หากใช้ตำแหน่งอื่น notebook นี้มีโค้ดครบในตัว อ่านเฉพาะ histories เดิมและสร้างกราฟ ไม่ต้องติดตั้งโค้ดฝึกหรืออัปโหลด ZIP ใหม่ ไม่แก้ checkpoints/history/config/manifests และวาดได้แม้มีผลเสร็จแค่ baseline
+
+กราฟเปรียบเทียบ Train (eval mode) กับ Validation พร้อม loss ระหว่าง update เป็นเส้นประ และระบุ best validation epoch ด้วยเส้นแนวตั้ง ตาราง `comparison/overfit_summary.csv` เก็บค่าปลายรอบสำหรับอ่านประกอบกราฟ หากเป็น history รุ่นเก่าที่ไม่มี train_eval_loss จะระบุว่าใช้ train loss ระหว่างฝึกแทน
+
 Grad-CAM และ SHAP ใช้ checkpoint เดียวกับ classification วัด IoU@0.3/0.5, Pointing Game, energy inside และ patient-bootstrap 95% CI 2,000 รอบ พร้อม paired deltas SHAP backgrounds 32/nsamples 200/batch 8 แผนที่อธิบาย processed frequency views ไม่ใช่ gradient ผ่าน NumPy transform ของ raw image
 
 เป้าหมาย +10 จุดเปอร์เซ็นต์คิดจาก **baseline ของชุด 400 ภาพ / epochs 10 + 0.10** เทียบกับ e2/e7 ได้เชิงภาพรวม แต่จำนวนภาพและ epochs เปลี่ยนพร้อมกัน จึงอ้างผลของการเพิ่ม epochs อย่างเดียวไม่ได้ Test 100 ภาพเป็น pilot เดิม ไม่ใช่ official binary test เต็ม 12,081 ภาพ

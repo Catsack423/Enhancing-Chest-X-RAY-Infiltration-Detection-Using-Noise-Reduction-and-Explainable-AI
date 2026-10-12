@@ -1,5 +1,13 @@
 # Validation — v3 beta class 200/class, epochs 10
 
+## เพิ่มการเปิดกราฟจากผลเดิม (2026-10-10)
+
+เพิ่ม `check_overfit.py` และ notebook ที่มีโค้ดครบในตัว `check_overfit.ipynb` อ่าน histories ที่รันแล้วได้บน CPU โดยไม่โหลดโมเดล ไม่ฝึก และไม่ต้องตรวจ run lock ใหม่ ส่วน notebook หลักสร้างกราฟหลังแต่ละวิธีฝึกเสร็จ พร้อมแสดงในหัวข้อ 5 และบันทึกกราฟทั้งใน comparison และโฟลเดอร์ผลรายวิธี
+
+ตรวจโดย execute เซลล์ของ standalone notebook กับ histories GPU smoke เดิมทั้ง 3 วิธี/10 epochs ผ่าน รวมกรณีมีเฉพาะ baseline, history รุ่นเก่าไม่มี train_eval_loss และกรณีไม่มีไฟล์ history ตรวจ notebook syntax/clean outputs/ZIP CRC และเปิดตรวจภาพกราฟแล้ว ใช้ CPU ประมาณ 5.5 วินาที ไม่มีการฝึกหรือประเมิน GPU รอบใหม่
+
+ตรวจ SHA-256 ของ **26 ไฟล์** ใน shared code/config และ source manifests/artifacts ก่อน/หลังแก้ไข ตรงกันทั้งหมด จึงไม่เปลี่ยน protocol/provenance ของผลฝึกเดิม ภาพที่ใช้ตรวจบนเครื่องเป็น smoke histories ไม่ใช่ผลการฝึก Colab ของผู้ใช้
+
 ตรวจวันที่ 2026-10-10 บน Windows / NVIDIA GeForce RTX 4060 8 GB ด้วย `.gpu/Scripts/python.exe` โดยไม่ได้รันการทดลองเต็ม 400 ภาพ
 
 ## ข้อมูลและ package
