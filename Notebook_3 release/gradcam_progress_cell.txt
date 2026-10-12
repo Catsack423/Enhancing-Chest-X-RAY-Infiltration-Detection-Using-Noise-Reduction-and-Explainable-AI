@@ -1,0 +1,110 @@
+import threading
+import time
+import inspect
+from contextlib import contextmanager
+from functools import wraps
+
+@contextmanager
+def activity_progress(seed, stage, interval=10):
+    started = time.monotonic()
+    status = {'phase': 'importing evaluation/reporting modules', 'condition': stage,
+              'image': None, 'verified': set(), 'total': 0}
+    patches = []
+    stop = threading.Event()
+    def emit(message):
+        print(f'[seed={seed} {stage}] {message}', flush=True)
+    def heartbeat():
+        while not stop.wait(interval):
+            message = f"{status['condition']} | {status['phase']} | elapsed {time.monotonic()-started:.0f}s"
+            if status['total']:
+                message += f" | verified {len(status['verified'])}/{status['total']} images"
+            if status['image']:
+                message += f" | current image {status['image']}"
+            emit(message)
+    def patch(module, name, replacement):
+        patches.append((module, name, getattr(module, name)))
+        setattr(module, name, replacement)
+    emit('START: heartbeat every 10s')
+    monitor = threading.Thread(target=heartbeat, daemon=True)
+    monitor.start()
+    try:
+        import shared.xai as xai
+        import shared.reporting as reporting
+        from shared.preprocessing import ReleasePreprocessor
+        def operation(module, name, label):
+            original = getattr(module, name)
+            @wraps(original)
+            def wrapped(*args, **kwargs):
+                status['phase'] = label
+                emit(label)
+                result = original(*args, **kwargs)
+                status['phase'] = label + ' finished / continuing'
+                return result
+            patch(module, name, wrapped)
+        operation(ReleasePreprocessor, 'prepare', 'checking/building preprocessing cache on VM')
+        original_paths = xai._paths
+        def paths(folder, image):
+            status.update(image=image, phase='checking per-image artifacts / preparing explanation')
+            return original_paths(folder, image)
+        patch(xai, '_paths', paths)
+        original_verify = xai.verify_record
+        def verify(exp, criterion, condition_id, row, model_hash, folder=None):
+            status.update(phase='verifying saved maps, overlays and localization metrics', image=row['image'])
+            result = original_verify(exp, criterion, condition_id, row, model_hash, folder)
+            status['verified'].add(row['image'])
+            return result
+        patch(xai, 'verify_record', verify)
+        original_evaluate = xai.evaluate_condition
+        defaults = inspect.signature(original_evaluate).parameters
+        @wraps(original_evaluate)
+        def evaluate(exp, manifests, criterion, condition_id, *args, **kwargs):
+            status.update(condition=condition_id, phase='checking CNN checkpoint / loading model / preparing background',
+                          image=None, verified=set(), total=len(manifests['xai']))
+            emit(f"{criterion} {condition_id} START | {status['total']} images | checking completed CNN")
+            for name, label in (('gradcam_fn', 'computing Grad-CAM'), ('shap_maps_fn', 'computing SHAP attributions')):
+                fn = kwargs.get(name, defaults[name].default)
+                def explain(*a, _fn=fn, _label=label, **k):
+                    status['phase'] = _label
+                    result = _fn(*a, **k)
+                    status['phase'] = 'explanation calculated / preparing output artifacts'
+                    return result
+                kwargs[name] = explain
+            result = original_evaluate(exp, manifests, criterion, condition_id, *args, **kwargs)
+            status.update(phase='method finished', image=None)
+            emit(f"{criterion} {condition_id} DONE | {len(status['verified'])}/{status['total']} verified images")
+            return result
+        patch(xai, 'evaluate_condition', evaluate)
+        original_marker = reporting._read_marker
+        def marker(exp, criterion, condition):
+            status.update(condition=condition, phase=f'checking {criterion} completion and hashes', image=None, total=0)
+            emit(f'{condition} | checking {criterion} results')
+            return original_marker(exp, criterion, condition)
+        patch(reporting, '_read_marker', marker)
+        for name, label in (('classification_bootstrap', 'classification patient bootstrap CI / paired comparison'),
+                            ('patient_bootstrap', 'XAI patient bootstrap CI / paired comparison'),
+                            ('_strength_plots', 'generating strength comparison plots'),
+                            ('summarize_xai', 'summarizing localization metrics and patient confidence intervals'),
+                            ('report_all', 'collecting completed results / generating reports'),
+                            ('summarize_seeds', 'verifying seed reports / calculating mean and SD')):
+            operation(reporting, name, label)
+        operation(xai, 'summarize_xai', 'summarizing localization metrics and patient confidence intervals')
+        original_publish = xai.publish_file
+        def publish(source, destination):
+            status['phase'] = f'publishing and verifying Drive output: {destination}'
+            result = original_publish(source, destination)
+            status['phase'] = 'Drive output verified / continuing'
+            return result
+        patch(xai, 'publish_file', publish)
+        status['phase'] = 'running selected stage'
+        yield
+    finally:
+        stop.set()
+        monitor.join(timeout=1)
+        for module, name, original in reversed(patches):
+            setattr(module, name, original)
+        emit(f'cell ended after {time.monotonic()-started:.1f}s; hooks restored')
+
+PIPELINE_STAGE = "gradcam"
+for seed, (exp, manifests) in runs.items():
+    with activity_progress(seed, PIPELINE_STAGE):
+        run_stages(exp, manifests, stages=[PIPELINE_STAGE], condition_ids=CONDITIONS, device=DEVICE)

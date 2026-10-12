@@ -29,6 +29,42 @@ builder.write_notebook = stable_write
 standalone = {name: (ROOT / name).read_bytes() for name in
               ('check_overfit.ipynb', 'export_results_colab.ipynb') if (ROOT / name).exists()}
 builder.OPEN = (ROOT / 'prepare_progress_cell.txt').read_text(encoding='utf-8')
+dae_cell = (ROOT / 'train_dae_progress_cell.txt').read_text(encoding='utf-8')
+cnn_cell = dae_cell.replace('TRAIN_STAGE = "dae"', 'TRAIN_STAGE = "cnn"')
+cnn_path = ROOT / 'train_cnn_progress_cell.txt'
+if not cnn_path.exists() or cnn_path.read_text(encoding='utf-8') != cnn_cell:
+    tmp_cell = cnn_path.with_suffix('.txt.tmp')
+    tmp_cell.write_text(cnn_cell, encoding='utf-8')
+    tmp_cell.replace(cnn_path)
+original_stage_code = builder.stage_code
+activity_cell = (ROOT / 'activity_progress_cell.txt').read_text(encoding='utf-8')
+activity_cells = {}
+for activity_stage in ('gradcam', 'shap', 'reports'):
+    cell = activity_cell.replace('PIPELINE_STAGE = "gradcam"', f'PIPELINE_STAGE = "{activity_stage}"')
+    activity_cells[activity_stage] = cell
+    cell_path = ROOT / f'{activity_stage}_progress_cell.txt'
+    if not cell_path.exists() or cell_path.read_text(encoding='utf-8') != cell:
+        cell_tmp = cell_path.with_suffix('.txt.tmp')
+        cell_tmp.write_text(cell, encoding='utf-8')
+        cell_tmp.replace(cell_path)
+summary_code = activity_cell.split('\nPIPELINE_STAGE = ')[0] + '''
+with activity_progress("all", "seed_summary"):
+    from shared.reporting import summarize_seeds
+    summarize_seeds(next(iter(runs.values()))[0].base_output_root)
+'''
+summary_path = ROOT / 'seed_summary_progress_cell.txt'
+if not summary_path.exists() or summary_path.read_text(encoding='utf-8') != summary_code:
+    summary_tmp = summary_path.with_suffix('.txt.tmp')
+    summary_tmp.write_text(summary_code, encoding='utf-8')
+    summary_tmp.replace(summary_path)
+old_write_for_summary = builder.write_notebook
+def write_with_summary(relative_path, cells):
+    cells = [(kind, summary_code if kind == 'code' and text.startswith('from shared.reporting import summarize_seeds\n') else text) for kind, text in cells]
+    return old_write_for_summary(relative_path, cells)
+builder.write_notebook = write_with_summary
+def logged_stage_code(stage):
+    return {'dae': dae_cell, 'cnn': cnn_cell, **activity_cells}.get(stage) or original_stage_code(stage)
+builder.stage_code = logged_stage_code
 builder.SETUP = builder.SETUP.replace(
     '    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "-r", str(ROOT / "requirements.txt")])',
     '''    import runpy

@@ -9,6 +9,15 @@
 
 ## Resume
 
+### Log ระหว่างฝึก DAE / CNN
+
+Notebook รุ่นล่าสุดมี observer ใน cells ฝึก: START ทันที, heartbeat ทุก10วินาที, epoch/batch/images/s/ETA ของ pass ปัจจุบัน, validation, ตรวจ checkpoint และบันทึก Drive โดยไม่เปลี่ยน production Python หรือ run fingerprint
+ถ้าเปิด notebook เก่า ให้แทนทั้ง cell DAE ด้วย `train_dae_progress_cell.txt` หรือ CNN ด้วย `train_cnn_progress_cell.txt` ไม่ต้อง reset runtime/upload dataset ใหม่ ต้องหยุด cell เดิมก่อนแก้และรันใหม่: epoch ที่ยังไม่จบจะเริ่มใหม่จาก checkpoint ของ epoch ที่จบล่าสุด หรือรอ epoch ปัจจุบันจบก่อนเปลี่ยน observer
+ETA เป็นประมาณการเฉพาะ pass ปัจจุบัน ไม่รวม validation/การบันทึกหรือทั้ง20epochs heartbeat แสดงสถานะล่าสุด ไม่ยืนยันว่าการเรียก Drive/CUDA ที่รอนานเสร็จแล้ว
+
+Grad-CAM/SHAP มี START และ heartbeat พร้อม method, image, จำนวนภาพที่ตรวจผลผ่าน, คำนวณ explanation, preprocessing cache, publish/verify Drive outputs; ใช้ cells ใน `gradcam_progress_cell.txt` และ `shap_progress_cell.txt`
+Reports แสดงตรวจผลแต่ละ method/criterion, patient-bootstrap CI, paired comparisons, สร้างกราฟและเผยแพร่ผล ใช้ `reports_progress_cell.txt`; รวม seeds ใช้ `seed_summary_progress_cell.txt` ทุก observer คืน hooks หลังจบ/error และไม่เปลี่ยน production Python/fingerprint
+
 ### NumPy `_blas_supports_fpe` AttributeError
 
 หลัง pip เปลี่ยน NumPy อาจยังมี binary รุ่นเก่าอยู่ใน kernel เลือก **Runtime → Restart session** เพื่อ restart Python บน VM เดิม แล้วรัน setup และ preparation ใหม่ก่อน DAE ไม่เลือก disconnect/delete runtime และไม่ลบ dataset/cache ส่วนที่ตรวจครบใช้ต่อได้
