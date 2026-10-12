@@ -31,10 +31,12 @@ if IN_COLAB:
     else:
         raise FileNotFoundError("Upload Notebook_3_release_colab.zip to MyDrive/nih -xray, or upload the source folder as Notebook_3_release")
     import runpy
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "-r", str(ROOT / "requirements.txt")])
+    runpy.run_path(str(ROOT / "tools/check_environment.py"))["check_numpy"]()
     ZIP_ROOT = Path("/content/drive/MyDrive/nih -xray/data/v3_selected_zip")
     stage_dataset = runpy.run_path(str(ROOT / "tools/stage_dataset.py"))["stage_dataset"]
     DATA_ROOT = stage_dataset(ROOT, ZIP_ROOT, Path("/content/cxr_v3_originals"))
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "-r", str(ROOT / "requirements.txt")])
+
     OUTPUT_ROOT = RELEASE_ROOT / "runs/release_full"
     CACHE_ROOT = Path("/content/cxr_v3_cache")
 else:

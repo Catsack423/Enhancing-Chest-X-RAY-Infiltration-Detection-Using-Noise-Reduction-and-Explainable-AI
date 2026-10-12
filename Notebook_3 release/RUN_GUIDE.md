@@ -9,6 +9,11 @@
 
 ## Resume
 
+### NumPy `_blas_supports_fpe` AttributeError
+
+หลัง pip เปลี่ยน NumPy อาจยังมี binary รุ่นเก่าอยู่ใน kernel เลือก **Runtime → Restart session** เพื่อ restart Python บน VM เดิม แล้วรัน setup และ preparation ใหม่ก่อน DAE ไม่เลือก disconnect/delete runtime และไม่ลบ dataset/cache ส่วนที่ตรวจครบใช้ต่อได้
+Setup รุ่นใหม่ตรวจ `numpy.testing` หลัง pip ก่อน copy/extract ZIP และก่อน training ถ้ายังผิดหลัง restart ให้รัน `repair_numpy_cell.txt` (ติดตั้ง NumPy 2.4.6 เดิมใหม่) แล้ว restart session อีกครั้ง ไม่ downgrade dependencies ของงานเดิม
+
 ### Progress ระหว่างเตรียม cache
 
 Notebook รุ่นเพิ่มlogแสดงphaseทันที และheartbeatทุก10วินาที พร้อมจำนวนภาพ/ภาพที่กำลังอ่าน/เวลาที่ใช้

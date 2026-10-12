@@ -30,13 +30,19 @@ standalone = {name: (ROOT / name).read_bytes() for name in
               ('check_overfit.ipynb', 'export_results_colab.ipynb') if (ROOT / name).exists()}
 builder.OPEN = (ROOT / 'prepare_progress_cell.txt').read_text(encoding='utf-8')
 builder.SETUP = builder.SETUP.replace(
-    '    subprocess.check_call([sys.executable,',
+    '    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "-r", str(ROOT / "requirements.txt")])',
     '''    import runpy
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "-r", str(ROOT / "requirements.txt")])
+    runpy.run_path(str(ROOT / "tools/check_environment.py"))["check_numpy"]()
     ZIP_ROOT = Path("/content/drive/MyDrive/nih -xray/data/v3_selected_zip")
     stage_dataset = runpy.run_path(str(ROOT / "tools/stage_dataset.py"))["stage_dataset"]
     DATA_ROOT = stage_dataset(ROOT, ZIP_ROOT, Path("/content/cxr_v3_originals"))
-    subprocess.check_call([sys.executable,''')
-(ROOT / 'setup_zip_cell.txt').write_text(builder.SETUP, encoding='utf-8')
+''')
+setup_file = ROOT / 'setup_zip_cell.txt'
+if not setup_file.exists() or setup_file.read_text(encoding='utf-8') != builder.SETUP:
+    setup_tmp = setup_file.with_suffix('.txt.tmp')
+    setup_tmp.write_text(builder.SETUP, encoding='utf-8')
+    setup_tmp.replace(setup_file)
 package = builder.package()
 for name, payload in standalone.items():
     (ROOT / name).write_bytes(payload)
@@ -44,17 +50,7 @@ with zipfile.ZipFile(package, 'a', zipfile.ZIP_DEFLATED) as archive:
     for path in sorted((ROOT / 'tools').glob('*.py')):
         archive.write(path, 'Notebook_3_release/tools/' + path.name)
 
-# The intro comes from the older portable builder; update the generated artifacts.
-for path in ROOT.rglob('*.ipynb'):
-    if any(p in {'.runtime', 'runs'} for p in path.relative_to(ROOT).parts):
-        continue
-    if path.name in standalone:
-        continue
-    notebook = nbformat.read(path, as_version=4)
-    for cell in notebook.cells:
-        if cell.cell_type == 'markdown':
-            cell.source = zip_intro(cell.source)
-    nbformat.write(notebook, path)
+# stable_write already normalizes the introduction; avoid rewriting open notebooks.
 with zipfile.ZipFile(package) as archive:
     names = archive.namelist()
 tmp = package.with_suffix('.repack.zip')

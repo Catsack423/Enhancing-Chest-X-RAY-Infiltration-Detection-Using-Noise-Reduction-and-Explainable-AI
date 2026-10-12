@@ -1,0 +1,6 @@
+# Only if the same NumPy error persists AFTER Runtime > Restart session.
+import sys
+import subprocess
+subprocess.check_call([sys.executable, "-m", "pip", "install", "--no-cache-dir",
+                       "--force-reinstall", "--no-deps", "numpy==2.4.6"])
+print("Now select Runtime > Restart session, then rerun setup and preparation. Keep this VM; do not delete cache.", flush=True)
