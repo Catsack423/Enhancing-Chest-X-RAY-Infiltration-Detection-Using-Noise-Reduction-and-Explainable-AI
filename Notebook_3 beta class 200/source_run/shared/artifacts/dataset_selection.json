@@ -1,0 +1,34 @@
+{
+  "reference_config_hash": "bef80c48b198754d761f7df1215ef2c975577a7a41946a95945c131afc74d5e1",
+  "reference_manifest_hashes": {
+    "background.csv": "dc120d64b2f0e688e8f84e2616105528ef308e9e4ce37a8fbe25459fe6d574ac",
+    "test.csv": "1ad454f195f15367aabbd478b58f890293aeaa769d96c2e9ae2637e41a958831",
+    "train.csv": "0526edbfbac445cf966c64aef91732fffe98af2926da611d30d99db6d26a25df",
+    "validation.csv": "5e497caab0dffee0b2252dbbb5a7b74d8bf645261e3ea2ef272af7b798188f1a",
+    "xai.csv": "64e4b73789903517d34a8ff43e6253b97256876df4bc7d505f96a0995fce6873"
+  },
+  "new_manifest_hashes": {
+    "background.csv": "dc120d64b2f0e688e8f84e2616105528ef308e9e4ce37a8fbe25459fe6d574ac",
+    "test.csv": "1ad454f195f15367aabbd478b58f890293aeaa769d96c2e9ae2637e41a958831",
+    "train.csv": "35c831fa401dc84aa906123f9dede8e70e3de460647b42d4cde229928f4c8683",
+    "validation.csv": "5e497caab0dffee0b2252dbbb5a7b74d8bf645261e3ea2ef272af7b798188f1a",
+    "xai.csv": "64e4b73789903517d34a8ff43e6253b97256876df4bc7d505f96a0995fce6873"
+  },
+  "retained_train_images": 320,
+  "added_train_images": 80,
+  "seed": 42,
+  "stream": 200400,
+  "reserved_validation_patient_count": 4815,
+  "train_patients": 385,
+  "counts": {
+    "train": 400,
+    "validation": 80,
+    "test": 100,
+    "xai": 123,
+    "background": 32
+  },
+  "policy": "retain all 320 old train images; add 40/class from the original train-patient partition; preserve validation/test/XAI/background manifests",
+  "official_split_unchanged": true,
+  "patient_disjoint": true,
+  "image_availability_used_for_selection": false
+}

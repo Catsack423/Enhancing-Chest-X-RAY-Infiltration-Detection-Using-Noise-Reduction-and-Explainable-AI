@@ -1,0 +1,33 @@
+image,patient_id,relative_path,label,finding_labels
+00000517_003.png,517,images_001/images/00000517_003.png,0,No Finding
+00001682_002.png,1682,images_002/images/00001682_002.png,0,No Finding
+00001857_001.png,1857,images_002/images/00001857_001.png,1,Infiltration
+00001958_011.png,1958,images_002/images/00001958_011.png,1,Infiltration
+00003989_019.png,3989,images_003/images/00003989_019.png,0,No Finding
+00005403_023.png,5403,images_003/images/00005403_023.png,1,Infiltration
+00006322_001.png,6322,images_003/images/00006322_001.png,1,Infiltration
+00006339_001.png,6339,images_003/images/00006339_001.png,0,No Finding
+00007191_017.png,7191,images_004/images/00007191_017.png,1,Infiltration
+00008033_004.png,8033,images_004/images/00008033_004.png,1,Infiltration
+00009827_000.png,9827,images_005/images/00009827_000.png,1,Infiltration
+00011923_000.png,11923,images_006/images/00011923_000.png,0,No Finding
+00012280_003.png,12280,images_006/images/00012280_003.png,0,No Finding
+00012931_019.png,12931,images_006/images/00012931_019.png,1,Infiltration
+00014272_000.png,14272,images_007/images/00014272_000.png,1,Infiltration
+00015113_004.png,15113,images_007/images/00015113_004.png,0,No Finding
+00017020_000.png,17020,images_008/images/00017020_000.png,0,No Finding
+00017982_000.png,17982,images_008/images/00017982_000.png,0,No Finding
+00020827_008.png,20827,images_009/images/00020827_008.png,0,No Finding
+00020864_000.png,20864,images_009/images/00020864_000.png,1,Infiltration
+00021759_019.png,21759,images_010/images/00021759_019.png,0,No Finding
+00022244_000.png,22244,images_010/images/00022244_000.png,1,Infiltration
+00022289_000.png,22289,images_010/images/00022289_000.png,1,Infiltration
+00022788_001.png,22788,images_010/images/00022788_001.png,0,No Finding
+00024188_000.png,24188,images_010/images/00024188_000.png,0,No Finding
+00025075_002.png,25075,images_011/images/00025075_002.png,1,Infiltration
+00026178_000.png,26178,images_011/images/00026178_000.png,0,No Finding
+00026369_000.png,26369,images_011/images/00026369_000.png,1,Infiltration
+00028072_000.png,28072,images_011/images/00028072_000.png,1,Infiltration
+00028661_006.png,28661,images_012/images/00028661_006.png,0,No Finding
+00028808_004.png,28808,images_012/images/00028808_004.png,0,No Finding
+00030609_025.png,30609,images_012/images/00030609_025.png,1,Infiltration
