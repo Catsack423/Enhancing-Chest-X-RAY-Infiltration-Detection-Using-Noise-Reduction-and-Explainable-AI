@@ -1,9 +1,9 @@
 # ใช้ v3 release บน Colab
 
 1. อัปโหลด `Notebook_3_release_colab.zip` ไป **MyDrive/nih -xray/** และเปิด `run_all.ipynb` บน Colab
-2. เลือก Runtime → Change runtime type → GPU แล้วรัน setup cell; mount Drive และตรวจว่า DATA_ROOT คือ `/content/drive/MyDrive/nih -xray/data/3`
+2. อัปโหลด dataset ZIP 13 ส่วนและ `dataset_zip_index.json` ไป **MyDrive/nih -xray/data/v3_selected_zip/** ตาม `ZIP_DATA_GUIDE.md` เลือก GPU แล้วรัน setup เพื่อ copy/extract ZIP ลง VM; DATA_ROOT ต้องเป็น `/content/cxr_v3_originals`
 3. หาก pip แจ้งให้ restart runtime เพราะเปลี่ยน library ให้ restart แล้วรัน setup ใหม่ก่อนเปิดrun
-4. รันตรวจข้อมูล/cache: จะยืนยัน source hashes และ counts แล้วอ่านภาพที่ใช้เพื่อสร้างtemporaryshardsบนVM ไม่อัปโหลดภาพใหม่
+4. รันตรวจข้อมูล/cache: ยืนยัน source hashes/counts แล้วอ่านภาพต้นฉบับจาก VM เพื่อสร้าง working shards โดยไม่เปิดภาพผ่าน Drive ทีละไฟล์
 5. รันDAE → CNN → Grad-CAM → SHAP → Reports ตามลำดับ; default3seeds ใช้fullcountsและ20epochs สลับไปรันnotebookแยกได้จากoutputเดียวกัน
 6. เปิดผลใน `MyDrive/nih -xray/Notebook_3_release/runs/release_full/seed_42/` และseed43/44; รวม3seedsที่ `seed_summary/`
 
@@ -21,8 +21,8 @@ Observerอยู่ในnotebookเท่านั้น ไม่เปลี
 ```python
 from pathlib import Path
 import build_notebooks as builder
-builder.OPEN = Path("prepare_progress_cell.txt").read_text(encoding="utf-8")
-builder.package()
+import runpy
+runpy.run_path("tools/build_zip_release.py", run_name="__main__")
 ```
 
 หลังruntimeหลุด เปิดnotebookเดิม รันsetupและcacheใหม่ แล้วรันstageที่ต้องการต่อ

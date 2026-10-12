@@ -9,7 +9,7 @@ def preparation_progress(seed, interval=10):
     from shared.runtime_cache import RuntimeCache
     started = time.monotonic()
     status = {"phase": "opening run / checking configuration", "done": 0, "total": 0,
-              "image": None, "reading_since": None}
+              "image": None, "reading_since": None, "reads": 0, "first_read": None}
     stop = threading.Event()
     original_manifests = data_module.prepare_manifests
     original_verify = data_module.verify_manifests
@@ -29,6 +29,9 @@ def preparation_progress(seed, interval=10):
                 message += f" | image {status['image']}"
                 if status["reading_since"] is not None:
                     message += f" | current read {time.monotonic()-status['reading_since']:.0f}s"
+            if status["first_read"] is not None:
+                rate = status["reads"] / max(time.monotonic()-status["first_read"], .001)
+                message += f" | newly read {status['reads']:,} | {rate:.2f} images/s"
             emit(message)
 
     def manifests(exp):
@@ -48,7 +51,7 @@ def preparation_progress(seed, interval=10):
     def prepare(cache, frames):
         status.update(phase="checking runtime cache and Drive folder layout", done=0,
                       total=len(set().union(*(set(frame.image) for frame in frames.values()))),
-                      image=None, reading_since=None)
+                      image=None, reading_since=None, reads=0, first_read=None)
         emit(f"source cache: {status['total']:,} unique images | cache={cache.root}")
         result = original_prepare(cache, frames)
         status.update(phase="cache verified and ready", done=status["total"], image=None, reading_since=None)
@@ -56,10 +59,12 @@ def preparation_progress(seed, interval=10):
         return result
 
     def read(cache, row):
-        status.update(phase="reading Drive image / resizing / caching", image=row["image"], reading_since=time.monotonic())
-        if status["done"] == 0:
+        status.update(phase="reading source image / resizing / caching", image=row["image"], reading_since=time.monotonic())
+        if status["first_read"] is None:
+            status["first_read"] = time.monotonic()
             emit(f"first image read: {row['image']}; heartbeat every {interval}s")
         result = original_read(cache, row)
+        status["reads"] += 1
         status["done"] = max(status["done"], cache.indices[row["image"]]+1)
         status["reading_since"] = None
         return result

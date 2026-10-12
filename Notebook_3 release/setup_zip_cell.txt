@@ -1,0 +1,60 @@
+from pathlib import Path
+import importlib, importlib.util, sys, zipfile, shutil, subprocess
+
+try:
+    IN_COLAB = importlib.util.find_spec("google.colab") is not None
+except ModuleNotFoundError:
+    IN_COLAB = False
+if IN_COLAB:
+    from google.colab import drive
+    drive.mount("/content/drive")
+    DATA_ROOT = Path("/content/drive/MyDrive/nih -xray/data/3")
+    RELEASE_ROOT = Path("/content/drive/MyDrive/nih -xray/Notebook_3_release")
+    CODE_ZIP = Path("/content/drive/MyDrive/nih -xray/Notebook_3_release_colab.zip")
+    if CODE_ZIP.is_file():
+        ROOT = Path("/content/Notebook_3_release")
+        with zipfile.ZipFile(CODE_ZIP) as archive:
+            for member in archive.infolist():
+                relative = Path(member.filename)
+                if relative.is_absolute() or ".." in relative.parts or not relative.parts or relative.parts[0] != "Notebook_3_release":
+                    raise ValueError("Invalid source package path")
+                if member.is_dir():
+                    continue
+                target = Path("/content").joinpath(*relative.parts).resolve()
+                if not target.is_relative_to(ROOT.resolve()):
+                    raise ValueError("Invalid source package destination")
+                target.parent.mkdir(parents=True, exist_ok=True)
+                with archive.open(member) as source, target.open("wb") as destination:
+                    shutil.copyfileobj(source, destination)
+    elif (RELEASE_ROOT / "pipeline.py").is_file():
+        ROOT = RELEASE_ROOT
+    else:
+        raise FileNotFoundError("Upload Notebook_3_release_colab.zip to MyDrive/nih -xray, or upload the source folder as Notebook_3_release")
+    import runpy
+    ZIP_ROOT = Path("/content/drive/MyDrive/nih -xray/data/v3_selected_zip")
+    stage_dataset = runpy.run_path(str(ROOT / "tools/stage_dataset.py"))["stage_dataset"]
+    DATA_ROOT = stage_dataset(ROOT, ZIP_ROOT, Path("/content/cxr_v3_originals"))
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "-r", str(ROOT / "requirements.txt")])
+    OUTPUT_ROOT = RELEASE_ROOT / "runs/release_full"
+    CACHE_ROOT = Path("/content/cxr_v3_cache")
+else:
+    candidates = [Path.cwd(), *Path.cwd().parents, Path.cwd() / "Notebook_3 release"]
+    ROOT = next((p for p in candidates if (p / "configs/release_full.json").is_file()), None)
+    if ROOT is None:
+        raise FileNotFoundError("Open from Notebook_3 release or its repository directory")
+    DATA_ROOT = None  # locate local data/versions/3 without changing the frozen manifests
+    OUTPUT_ROOT = ROOT / "runs/release_full"
+    CACHE_ROOT = ROOT / ".runtime/cache"
+
+sys.path.insert(0, str(ROOT))
+for name in tuple(sys.modules):
+    if name == "shared" or name.startswith("shared.") or name in ("pipeline", "check_overfit", "export_results_colab"):
+        del sys.modules[name]
+importlib.invalidate_caches()
+import torch
+from pipeline import open_run, run_stages
+SEEDS = [42, 43, 44]
+SMOKE = False  # True = isolated tiny validation run with random initialization; not research scores
+CONDITIONS = None  # None = all 12 controlled conditions
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+print("Data:", DATA_ROOT, "| Results:", OUTPUT_ROOT, "| Device:", DEVICE)
