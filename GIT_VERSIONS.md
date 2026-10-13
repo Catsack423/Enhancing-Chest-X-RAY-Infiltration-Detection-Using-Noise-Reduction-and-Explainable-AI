@@ -15,6 +15,7 @@ scripts and existing reports. Folder names are preserved so notebook paths keep 
 | `codex/notebook-v4-release` | `Notebook_3 release` (protocol v4; same folder, Drive paths and source fingerprints) |
 | `codex/notebook-v4.1-release` | `Notebook_3 release` (v4 protocol unchanged; sessions can share one seed's conditions) |
 | `codex/notebook-v4.2-release` | `Notebook_3 release` (v4 protocol unchanged; speed-only runtime patches in the queue) |
+| `codex/notebook-v4.3-release` | `Notebook_3 release` (queue paste cell keeps a session's SHARE_SEED/REVERSE_ORDER) |
 
 v4 keeps the `Notebook_3 release` folder because Colab paths (`Notebook_3_release`) and
 the running `runs/release_v4` provenance depend on unchanged bytes. v4 changes the CNN

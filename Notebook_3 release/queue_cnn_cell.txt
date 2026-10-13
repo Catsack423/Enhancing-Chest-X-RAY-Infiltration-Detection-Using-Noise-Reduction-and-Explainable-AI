@@ -4,7 +4,9 @@ import runpy, zipfile
 with zipfile.ZipFile(CODE_ZIP) as archive:
     (Path(ROOT) / "tools/parallel_session.py").write_bytes(archive.read("Notebook_3_release/tools/parallel_session.py"))
 parallel = runpy.run_path(str(Path(ROOT) / "tools/parallel_session.py"))
-SHARE_SEED, REVERSE_ORDER = False, False
+# Keep values already set in this session (e.g. REVERSE_ORDER=True in a helper session).
+SHARE_SEED = globals().get("SHARE_SEED", False)
+REVERSE_ORDER = globals().get("REVERSE_ORDER", False)
 import threading
 import time
 import inspect
