@@ -1,0 +1,1 @@
+Snapshots are descriptive and do not replace validation-selected best.pt. Epoch 2 vs 7 crosses head warm-up and layer4 fine-tuning, so it does not isolate epoch count. Missing snapshots stay unavailable. Data and model protocol differ from older releases; this does not isolate the effect of adding data.
