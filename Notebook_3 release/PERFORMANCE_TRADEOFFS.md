@@ -119,6 +119,35 @@ config และ source code hash เปลี่ยน ทำให้ `config_
 - snapshot epoch 10 อาจไม่มีถ้าหยุดก่อน `compare_epochs` จะแสดงเป็น `not_available`
 - provenance ผูก config/code ทั้งหมด DAE จาก run แรกจึงใช้ตรง ๆ ไม่ได้ `tools/import_dae.py` นำเข้า DAE ที่ train ครบแล้วเมื่อ config นอก `cnn`, manifests, source pixels, package versions และ shared source ที่ DAE ใช้ตรงกันทุกอย่าง ส่วน `shared/training.py` เทียบทุก function ของ DAE กับ `tools/release_full_training_reference.py` ซึ่งต้องมี SHA-256 ตรงกับที่ run เก่าบันทึกไว้ checkpoint ที่นำเข้าถูก re-sign ด้วย provenance ใหม่และมี `imported_from` เก็บ hash เดิม ข้อเสีย: เป็นข้อยกเว้นเดียวจากกฎ "hash ต้องตรงทั้งหมด" ต้องระบุใน Methods
 
+## v4.2: runtime speedups ใน condition queue (2026-10-13)
+
+พบจาก log ของ DFT fusion: ช่วงประเมิน (balanced loss บน train/validation) ได้ 88–100 images/s ขณะ train ได้ 243 images/s ทำให้ 1 epoch ใช้ 13–14 นาที (baseline 5.5 นาที)
+
+ตรวจทุก stage ที่เหลือแล้ววัดบนภาพจริง (RTX 4060 ในเครื่อง ลำดับใกล้ L4):
+
+| จุด | ต้นทุน | สาเหตุ | แก้ |
+|---|---|---|---|
+| CNN evaluation loaders | DFT/DWT ~10–11 ms/ภาพบน CPU, ทำบน main process | `train_condition`/`evaluate_classifier` สร้าง loader ประเมินด้วย workers=0 | ใช้ workers เท่ากับ train (4–8 ตาม vCPU) |
+| XAI preprocessing | สร้าง derived cache ใหม่ทั้ง 70,012 ภาพทุก condition × explainer: DAE+CLAHE ~15 นาที, CLAHE+DWT ~4, median ~2 (~2 ชม./seed) เพื่อใช้แค่ 155 ภาพ | `evaluate_condition` เรียก `prep.prepare(manifests)` | XAI คำนวณ `apply_condition` เฉพาะภาพที่ใช้ บน device และ deterministic backend เดียวกับตอนสร้าง cache |
+| SHAP | 1 view ~3 นาที/condition, 3 views ~9, 5 views ~16 | งานจริงของ GradientExplainer 200 samples | ไม่แก้ |
+| Reports | ~1.5 นาที/seed (bootstrap 2,000 ครั้ง) | — | ไม่แก้ |
+| DAE training / CNN derived cache | ใช้ workers แล้ว / ต้องใช้ทุกภาพ train | — | ไม่แก้ |
+| `compare_epochs` (Analysis, ไม่บังคับ) | ทำ test 12k ภาพบน main process ต่อ snapshot | ไม่อยู่ใน pipeline หลัก | ไม่แก้ |
+
+ทั้งสอง patch อยู่ใน `tools/parallel_session.py` (`runtime_speedups`) ไม่แตะ `shared/` จึงไม่เปลี่ยน source hash หรือ `config_hash` run เดิมใน `runs/release_v4` resume ต่อได้ และทุก seed ยังรวม summary ได้
+
+หลักฐานว่าผลไม่เปลี่ยน (smoke data จริง, GPU):
+
+- XAI แบบไม่ใช้ derived cache ได้ tensor เท่ากับแบบ cache ทุก byte ครบ 12 conditions
+- loader 0 กับ N workers ได้ batch เท่ากันทุก byte ทั้ง evaluation และ train ที่มี augmentation (augmentation seed ต่อภาพ)
+- `tests/test_parallel_speedups.py` กัน regression
+
+ข้อเสีย:
+
+- พฤติกรรม runtime ต่างจากสิ่งที่ source hash ระบุ (ความเร็วเท่านั้น) ทุก condition ที่ผ่าน queue บันทึก `parallel_claims/seed_<n>/patches_<stage>_<condition>.json` ไว้ให้ระบุใน Methods ได้ว่า condition ไหนใช้ patch
+- DataLoader workers มากขึ้นใช้ RAM เพิ่ม ถ้า VM มี vCPU น้อย `loader_workers()` จะไม่เกิน vCPU − 2 และไม่ต่ำกว่า 4
+- XAI ที่ไม่มี derived cache เก็บ DAE ไว้บน GPU ระหว่างอธิบาย ใช้ VRAM เพิ่มเล็กน้อย
+
 ## สิ่งที่ต้องเขียนใน paper
 
 ตัวอย่างข้อความ Methods:

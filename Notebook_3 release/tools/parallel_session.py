@@ -6,10 +6,12 @@ except claims and the final seed summary. Within one seed, sessions can also sha
 12 conditions: run_queue leases one condition folder at a time per stage.
 """
 import json
+import os
 import socket
 import threading
 import time
 import uuid
+from contextlib import contextmanager
 from pathlib import Path
 
 STALE_SECONDS = 15 * 60
@@ -174,11 +176,64 @@ def _complete(exp, stage, condition):
     return (exp.results(STAGE_CRITERION[stage], condition) / 'complete.json').is_file()
 
 
+@contextmanager
+def _no_patches():
+    yield {}
+
+
 def pending_conditions(exp):
     return {stage: [c for c in exp.condition_ids if not _complete(exp, stage, c)] for stage in STAGE_CRITERION}
 
 
-def run_queue(exp, manifests, base, stage, device='cuda', reverse=False, poll=60):
+def loader_workers():
+    """CPU workers for CNN loaders: at least the configured 4, up to 8 when the VM has cores."""
+    return max(4, min(8, (os.cpu_count() or 4) - 2))
+
+
+@contextmanager
+def runtime_speedups(stage, workers=None):
+    """Speed-only patches that leave every batch and pixel unchanged.
+
+    1. CNN loaders for evaluation (train-eval, validation, test predictions) ran on the main
+       process (workers=0); DFT/DWT fusion computes 3-5 views per image there, so evaluation
+       was ~4x slower than training. Unshuffled, unaugmented loaders yield the same batches in
+       the same order with any worker count, and augmentation is seeded per image, so the
+       training loader may use more workers too.
+    2. XAI explains 155 images per condition but ReleasePreprocessor.prepare rebuilt the whole
+       70,012-image derived cache (~15 min for DAE+CLAHE) for every condition and explainer.
+       Without it, image() runs the same apply_condition per image on the same device and
+       deterministic backend that built the cache.
+    Patches live here (outside the source fingerprint); applied() lists them for the record.
+    """
+    import shared.training as training
+    from shared.preprocessing import ReleasePreprocessor
+    from shared.runtime_cache import RuntimeCache
+    minimum = workers or loader_workers()
+    original_loader, original_prepare = training.loader, ReleasePreprocessor.prepare
+
+    def loader(dataset, batch_size, seed, shuffle=False, workers=0):
+        if isinstance(dataset, training.ImageDataset):
+            workers = max(int(workers), minimum)
+        return original_loader(dataset, batch_size, seed, shuffle, workers)
+
+    def prepare_without_derived_cache(preprocessor, frames):
+        preprocessor._shards.clear()
+        preprocessor.directory = None
+        if preprocessor.exp.cache is None or not getattr(preprocessor.exp.cache, "ready", True):
+            RuntimeCache(preprocessor.exp).prepare(frames)
+        return preprocessor
+
+    training.loader = loader
+    if stage != 'cnn':
+        ReleasePreprocessor.prepare = prepare_without_derived_cache
+    try:
+        yield {'cnn_loader_workers': minimum, 'xai_without_derived_cache': stage != 'cnn'}
+    finally:
+        training.loader = original_loader
+        ReleasePreprocessor.prepare = original_prepare
+
+
+def run_queue(exp, manifests, base, stage, device='cuda', reverse=False, poll=60, speedups=True):
     """Take the next unleased condition until none is left for this session.
 
     Two sessions on one seed never write the same condition folder: each holds a Drive lease
@@ -211,11 +266,16 @@ def run_queue(exp, manifests, base, stage, device='cuda', reverse=False, poll=60
             try:
                 lease.check()
                 print(f'Seed {seed} | {criterion} | {condition}', flush=True)
-                if stage == 'cnn':
-                    training.train_condition(exp, manifests, condition, device=device)
-                    training.evaluate_classifier(exp, manifests, condition, device=device)
-                else:
-                    xai.evaluate_condition(exp, manifests, criterion, condition, device=device)
+                with (runtime_speedups(stage) if speedups else _no_patches()) as patches:
+                    if stage == 'cnn':
+                        training.train_condition(exp, manifests, condition, device=device)
+                        training.evaluate_classifier(exp, manifests, condition, device=device)
+                    else:
+                        xai.evaluate_condition(exp, manifests, criterion, condition, device=device)
+                from shared.experiment import write_json
+                write_json(base / 'parallel_claims' / f'seed_{seed}' / f'patches_{stage}_{condition}.json',
+                           {'stage': stage, 'condition': condition, 'host': socket.gethostname(),
+                            'finished': time.time(), 'runtime_speedups': patches})
                 finished.append(condition)
                 progressed = True
             finally:
