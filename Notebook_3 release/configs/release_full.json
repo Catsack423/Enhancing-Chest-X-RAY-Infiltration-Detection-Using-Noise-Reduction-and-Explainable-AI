@@ -8,13 +8,13 @@
   ],
   "dataset_seed": 42,
   "profile": "release_controlled",
-  "output_subdirectory": "runs/release_full",
+  "output_subdirectory": "runs/release_v4",
   "training": {
     "images_per_epoch": 46108
   },
   "data": {
     "colab_data_root": "/content/drive/MyDrive/nih -xray/data/3",
-    "colab_output_root": "/content/drive/MyDrive/nih -xray/Notebook_3_release/runs/release_full",
+    "colab_output_root": "/content/drive/MyDrive/nih -xray/Notebook_3_release/runs/release_v4",
     "validation_patient_fraction": 0.2,
     "test_scope": "official_filtered_full",
     "source_hashes": {
@@ -75,7 +75,7 @@
   "dae": {
     "base_channels": 32,
     "epochs": 20,
-    "batch_size": 16,
+    "batch_size": 64,
     "learning_rate": 0.001,
     "gaussian_sigma": 0.05,
     "poisson_scale": 30.0,
@@ -93,6 +93,7 @@
     "effective_batch_size": 16,
     "epochs": 20,
     "warmup_epochs": 3,
+    "early_stopping_patience": 3,
     "learning_rate": 0.0001,
     "head_learning_rate": 0.0001,
     "layer4_learning_rate": 1e-05,
@@ -101,6 +102,7 @@
     "trainable_layers": "layer4_after_warmup",
     "freeze_batchnorm": true,
     "classification_threshold": 0.5,
+    "threshold_policy": "validation_youden",
     "num_workers": 4,
     "deterministic": false,
     "channels_last": true,
@@ -109,7 +111,16 @@
       2,
       7,
       10
-    ]
+    ],
+    "augmentation": {
+      "max_rotation_degrees": 7.0,
+      "max_translation_fraction": 0.05,
+      "scale_range": [
+        0.95,
+        1.05
+      ],
+      "padding": "reflection"
+    }
   },
   "xai": {
     "iou_thresholds": [

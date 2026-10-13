@@ -38,7 +38,7 @@ if IN_COLAB:
     else:
         raise FileNotFoundError("Upload Notebook_3_release_colab.zip to MyDrive/nih -xray, or upload the source folder as Notebook_3_release")
     subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "-r", str(ROOT / "requirements.txt")])
-    OUTPUT_ROOT = RELEASE_ROOT / "runs/release_full"
+    OUTPUT_ROOT = RELEASE_ROOT / "runs/release_v4"
     CACHE_ROOT = Path("/content/cxr_v3_cache")
 else:
     candidates = [Path.cwd(), *Path.cwd().parents, Path.cwd() / "Notebook_3 release"]
@@ -46,7 +46,7 @@ else:
     if ROOT is None:
         raise FileNotFoundError("Open from Notebook_3 release or its repository directory")
     DATA_ROOT = None  # locate local data/versions/3 without changing the frozen manifests
-    OUTPUT_ROOT = ROOT / "runs/release_full"
+    OUTPUT_ROOT = ROOT / "runs/release_v4"
     CACHE_ROOT = ROOT / ".runtime/cache"
 
 sys.path.insert(0, str(ROOT))
@@ -145,9 +145,9 @@ assert np.allclose(dwt.sum(0), x, atol=1e-5) and np.allclose(dft.sum(0), x, atol
 try:
     from google.colab import drive
     drive.mount("/content/drive")
-    RUN_ROOT = Path("/content/drive/MyDrive/nih -xray/Notebook_3_release/runs/release_full/seed_42")
+    RUN_ROOT = Path("/content/drive/MyDrive/nih -xray/Notebook_3_release/runs/release_v4/seed_42")
 except ImportError:
-    RUN_ROOT = Path.cwd() / "runs/release_full/seed_42"
+    RUN_ROOT = Path.cwd() / "runs/release_v4/seed_42"
 '''
     paths.append(write_notebook(Path("check_overfit.ipynb"), [("markdown", "# Check overfit — CPU ได้ ไม่โหลดโมเดล ไม่ฝึกซ้ำ\nแก้ RUN_ROOT ให้ตรง seed/output; ต้องมี history อย่างน้อยหนึ่ง method"), ("code", overfit_setup), ("code", overfit_source + "\nplot_overfit(RUN_ROOT)\n")]))
     export_source = (ROOT / "export_results_colab.py").read_text().split('if __name__ == "__main__":')[0]

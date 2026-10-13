@@ -16,17 +16,45 @@ from .experiment import deterministic_backend, digest, file_hash, save_torch, se
 from .models import ReleaseResNet50, load_cnn
 
 
+def random_affine(views, rng, settings):
+    """One small rotation/shift/zoom shared by every view; intensities are untouched.
+
+    Geometry only: brightness, contrast or noise augmentation would interact with
+    the denoising and CLAHE conditions under study.
+    """
+    degrees = float(settings.get("max_rotation_degrees", 0.0))
+    shift = float(settings.get("max_translation_fraction", 0.0))
+    low, high = settings.get("scale_range", [1.0, 1.0])
+    if degrees < 0 or not 0 <= shift < 0.5 or not 0 < low <= high:
+        raise ValueError("Invalid geometric augmentation settings")
+    angle = np.deg2rad(rng.uniform(-degrees, degrees))
+    scale = rng.uniform(low, high)
+    tx, ty = 2 * rng.uniform(-shift, shift, size=2)  # affine_grid spans [-1, 1]
+    cos, sin = np.cos(angle) / scale, np.sin(angle) / scale
+    theta = torch.tensor([[cos, -sin, tx], [sin, cos, ty]], dtype=views.dtype).expand(len(views), 2, 3)
+    grid = nn.functional.affine_grid(theta, list(views.shape), align_corners=False)
+    return nn.functional.grid_sample(views, grid, mode="bilinear", padding_mode=settings.get("padding", "reflection"),
+                                     align_corners=False)
+
+
 class ImageDataset(Dataset):
-    def __init__(self, frame, preprocessor):
+    def __init__(self, frame, preprocessor, augmentation=None, seed=0, epoch=0):
         self.rows = frame.to_dict("records")
         self.preprocessor = preprocessor
+        self.augmentation, self.seed, self.epoch = augmentation, int(seed), int(epoch)
 
     def __len__(self):
         return len(self.rows)
 
     def __getitem__(self, index):
         row = self.rows[index]
-        return self.preprocessor.tensor(row), torch.tensor([float(row["label"])])
+        tensor = self.preprocessor.tensor(row)
+        if self.augmentation:
+            # Seeded per image like DenoiseDataset, so worker count and resume keep the same draws.
+            identity = int(digest(row["image"])[:8], 16)
+            rng = np.random.default_rng(np.random.SeedSequence([self.seed, self.epoch, identity]))
+            tensor = random_affine(tensor, rng, self.augmentation)
+        return tensor, torch.tensor([float(row["label"])])
 
 
 def synthetic_noise(clean, settings, rng):
@@ -251,6 +279,19 @@ def _restore_training(checkpoint, model, optimizer, scaler, *, warmup_epochs=Non
     return epoch, float(checkpoint["best_loss"]), history
 
 
+def _early_stop(history, settings, warmup_epochs):
+    """True once validation loss has not improved for `patience` epochs, counted after warm-up.
+
+    The best epoch is the first minimum, matching the strict improvement rule for best.pt.
+    Counting from the later of best epoch and warm-up gives layer4 at least `patience` epochs.
+    """
+    patience = settings.get("early_stopping_patience")
+    if not patience or not history:
+        return False
+    best_epoch = int(np.argmin([row["validation_loss"] for row in history])) + 1
+    return len(history) - max(best_epoch, int(warmup_epochs)) >= int(patience)
+
+
 def _completed(exp, folder, condition_id=None):
     marker = folder / "complete.json"
     if not marker.is_file():
@@ -259,8 +300,9 @@ def _completed(exp, folder, condition_id=None):
     exp.check_provenance(saved["provenance"], condition_id)
     exp.load_checkpoint(folder / "best.pt", condition_id)
     for name, key in (("best.pt", "checkpoint_hash"), ("history.csv", "history_hash"),
-                      ("test_predictions.csv", "predictions_hash"), ("metrics.json", "metrics_hash")):
-        if condition_id is None and name in ("test_predictions.csv", "metrics.json"):
+                      ("test_predictions.csv", "predictions_hash"), ("metrics.json", "metrics_hash"),
+                      ("validation_predictions.csv", "validation_predictions_hash")):
+        if condition_id is None and name in ("test_predictions.csv", "metrics.json", "validation_predictions.csv"):
             continue
         if file_hash(folder / name) != saved[key]:
             raise ValueError(f"Completed artifact changed: {folder / name}")
@@ -409,8 +451,13 @@ def train_condition(exp, manifests, condition_id, device="cuda", *,
         epoch, best, history = _restore_training(checkpoint, model, optimizer, scaler, warmup_epochs=warmup)
         _repair_epoch_writes(exp, folder, checkpoint, condition_id, settings.get("snapshot_epochs", [2, 7, 10]))
     for epoch in range(epoch + 1, settings["epochs"] + 1):
+        if _early_stop(history, settings, warmup):
+            print(f"{condition_id}: early stop after epoch {epoch - 1}; no validation improvement for "
+                  f"{settings['early_stopping_patience']} epochs", flush=True)
+            break
         stage = model.set_stage(epoch, warmup)
-        batches = loader(ImageDataset(train, prep), batch_size, seed + epoch, True, settings.get("num_workers", 0))
+        batches = loader(ImageDataset(train, prep, settings.get("augmentation"), seed, epoch), batch_size, seed + epoch, True,
+                         settings.get("num_workers", 0))
         started = perf_counter()
         if device.type == "cuda":
             torch.cuda.reset_peak_memory_stats(device)
@@ -447,33 +494,50 @@ def evaluate_classifier(exp, manifests, condition_id, device="cuda", *,
     if _completed(exp, folder, condition_id) is not None:
         return json.loads((folder / "metrics.json").read_text(encoding="utf-8"))
     last = exp.load_checkpoint(folder / "last.pt", condition_id)
-    if last["epoch"] != settings["epochs"]:
-        raise ValueError("Classification completion requires the entire configured epoch budget")
+    if last["epoch"] != settings["epochs"] and not _early_stop(last["history"], settings, settings.get("warmup_epochs", 3)):
+        raise ValueError("Classification completion requires the epoch budget or a met early-stopping rule")
     checkpoint = exp.load_checkpoint(folder / "best.pt", condition_id)
     if preprocessor_factory is None:
         from .preprocessing import ReleasePreprocessor
         preprocessor_factory = ReleasePreprocessor
     _ensure_cache(exp, manifests)
     prep = preprocessor_factory(exp, condition_id, device)
-    prep.prepare([manifests["test"]])
-    batches = loader(ImageDataset(manifests["test"], prep), settings["batch_size"], exp.config["seed"])
+    prep.prepare([manifests["validation"], manifests["test"]])
     model = load_cnn(exp, condition_id, device, model_factory=model_factory)
-    probabilities = predict(model, batches, device)
-    if len(probabilities) != len(manifests["test"]):
-        raise ValueError("Every test image must have one prediction")
-    threshold = settings.get("classification_threshold", 0.5)
-    predictions = manifests["test"].copy()
-    predictions["prob_infiltration"] = probabilities
-    predictions["pred_label"] = (probabilities >= threshold).astype(int)
-    from .evaluation import classification_metrics, classification_bootstrap
+    from .evaluation import classification_metrics, classification_bootstrap, youden_threshold
+    outputs = {}
+    for split in ("validation", "test"):
+        probabilities = predict(model, loader(ImageDataset(manifests[split], prep), settings["batch_size"], exp.config["seed"]), device)
+        if len(probabilities) != len(manifests[split]):
+            raise ValueError(f"Every {split} image must have one prediction")
+        outputs[split] = manifests[split].copy()
+        outputs[split]["prob_infiltration"] = probabilities
+    reference = settings.get("classification_threshold", 0.5)
+    policy = settings.get("threshold_policy", "fixed")
+    validation, predictions = outputs["validation"], outputs["test"]
+    if policy == "validation_youden":
+        # Chosen on validation only; test never sets the operating point.
+        threshold = youden_threshold(validation.label.to_numpy(), validation.prob_infiltration.to_numpy())
+    elif policy == "fixed":
+        threshold = reference
+    else:
+        raise ValueError(f"Unknown threshold policy: {policy}")
+    for frame in outputs.values():
+        frame["pred_label"] = (frame.prob_infiltration >= threshold).astype(int)
+    probabilities = predictions.prob_infiltration.to_numpy()
     result = classification_metrics(predictions.label.to_numpy(), probabilities, threshold)
     history = pd.DataFrame(last["history"])
+    result.update(threshold=threshold, threshold_policy=policy, reference_threshold=reference,
+                  reference_threshold_metrics=classification_metrics(predictions.label.to_numpy(), probabilities, reference),
+                  validation_metrics=classification_metrics(validation.label.to_numpy(), validation.prob_infiltration.to_numpy(), threshold),
+                  stopped_early=bool(last["epoch"] < settings["epochs"]))
     result.update(condition_id=condition_id, epochs_run=int(last["epoch"]), best_epoch=int(checkpoint["epoch"]),
                   training_seconds=float(history.seconds.sum()), pos_weight=float(last["pos_weight"]),
                   peak_vram_bytes=int(history.peak_vram_bytes.max()), total_parameters=sum(p.numel() for p in model.parameters()),
                   trainable_parameters=sum(p.numel() for p in model.parameters() if p.requires_grad),
                   provenance=exp.provenance(condition_id), checkpoint_hash=file_hash(folder / "best.pt"))
     _write_csv(folder / "test_predictions.csv", predictions)
+    _write_csv(folder / "validation_predictions.csv", validation)
     _write_csv(folder / "history.csv", history)
     _write_csv(folder / "classification_bootstrap.csv", classification_bootstrap(predictions, threshold=threshold,
                seed=exp.config["seed"], replicates=exp.config.get("reporting", {}).get("classification_bootstrap_replicates", exp.config["xai"].get("bootstrap_replicates", 2000))))
@@ -484,6 +548,7 @@ def evaluate_classifier(exp, manifests, condition_id, device="cuda", *,
     plot_training_history(history, folder / "training_history.png", condition_id, best_epoch=checkpoint["epoch"])
     write_json(folder / "complete.json", {"provenance": exp.provenance(condition_id), "checkpoint_hash": file_hash(folder / "best.pt"),
                "predictions_hash": file_hash(folder / "test_predictions.csv"), "metrics_hash": file_hash(folder / "metrics.json"),
+               "validation_predictions_hash": file_hash(folder / "validation_predictions.csv"),
                "history_hash": file_hash(folder / "history.csv"), "best_epoch": int(checkpoint["epoch"]), "epochs_run": int(last["epoch"])})
     return result
 

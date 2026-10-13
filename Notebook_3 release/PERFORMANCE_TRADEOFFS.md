@@ -78,7 +78,7 @@ config และ source code hash เปลี่ยน ทำให้ `config_
 
 ### 6. ผลต่างตาม GPU ชัดขึ้น
 
-แม้แบบ deterministic ผลบน L4 กับ A100 ก็ต่างกันอยู่แล้ว แต่ `cudnn.benchmark` ทำให้ผลขึ้นกับ GPU และสภาพเครื่องมากขึ้น ควรรันทุก seed และทุก condition บน GPU รุ่นเดียวกัน และบันทึกรุ่น GPU ไว้ (`gpu_batch_probe.json` บันทึกให้แล้ว)
+แม้แบบ deterministic ผลบน L4 กับ A100 ก็ต่างกันอยู่แล้ว แต่ `cudnn.benchmark` ทำให้ผลขึ้นกับ GPU และสภาพเครื่องมากขึ้น ควรรันทุก seed และทุก condition บน GPU รุ่นเดียวกัน และบันทึกรุ่น GPU ไว้ (`run_parallel.ipynb` บันทึกใน `parallel_claims/seed_<n>.json` และเตือนเมื่อ GPU ต่างกัน)
 
 ### 7. DataLoader workers ใช้ RAM และ CPU มากขึ้น
 
@@ -91,6 +91,33 @@ config และ source code hash เปลี่ยน ทำให้ `config_
 
 - checkpoint เก็บ tensor แบบ channels_last stride โหลดกลับเข้า model NCHW ได้ปกติ (`load_state_dict` copy ให้) แต่ file hash จะต่างจาก checkpoint ที่บันทึกแบบ NCHW
 - ถ้าใช้เดี่ยว ๆ แบบ deterministic จะช้าลงนิดหน่อย (37.5 เป็น 36.3 images/s) ได้ประโยชน์เฉพาะเมื่อใช้คู่กับ non-deterministic
+
+## Protocol v4: early stopping, augmentation, validation threshold (2026-10-13)
+
+เหตุผล: run แรก baseline seed 42 overfit หลังเปิด layer4 validation balanced BCE ต่ำสุดที่ epoch 4 (0.640) แล้วขึ้นถึง 3.5–6.6 ขณะ train-eval ลงถึง 0.01 เวลา CNN ประมาณ 80% หมดกับ epoch 5–20 ที่ไม่ได้ใช้ ดูตัวเลขใน `guideline.md` หัวข้อ 9
+
+| ส่วน | ก่อน | หลัง |
+|---|---|---|
+| จำนวน epoch | ครบ 20 ทุก method | สูงสุด 20, หยุดเมื่อ validation ไม่ดีขึ้น 3 epochs (`cnn.early_stopping_patience`) |
+| Augmentation | ไม่มี | train เท่านั้น: หมุน ±7°, เลื่อน ±5%, scale 0.95–1.05 (`cnn.augmentation`) |
+| Threshold | 0.5 คงที่ | Youden J บน validation ของแต่ละ model (`cnn.threshold_policy`) และเก็บผลที่ 0.5 ไว้เป็น reference |
+| DAE batch | probe ตาม GPU แล้วแยก output root | 64 ใน config, probe ปิดเป็นค่าเริ่มต้น |
+| Output root | `runs/release_full*` | `runs/release_v4` |
+
+ได้:
+
+- baseline รูปแบบเดิมจะหยุดที่ epoch 7 แทน 20 ลดเวลา CNN ได้ราว 60% ต่อ condition ตัวเลขจริงขึ้นกับว่า augmentation ทำให้ best epoch เลื่อนไปเท่าไร
+- accuracy/F1/recall/specificity มาจากจุดตัดที่เลือกบน validation ไม่ได้มาจาก 0.5 ที่ใช้ไม่ได้กับ score จาก weighted BCE
+
+เสีย:
+
+- จำนวน epoch ต่างกันในแต่ละ method และ seed กฎเดียวกันทุก run แต่ "training budget" ไม่เท่ากัน ต้องรายงาน `epochs_run` และ `best_epoch` (อยู่ใน `classification.csv` และ seed summary แล้ว)
+- validation loss ที่แกว่งอาจทำให้หยุดเร็วเกินไป patience 3 เลือกจากรูป history ของ run แรก ยังไม่ได้ทดลองค่าอื่น
+- threshold ต่างกันในแต่ละ model metrics ที่ขึ้นกับ threshold จึงเทียบกันที่ operating point คนละจุด ROC-AUC และ PR-AUC ไม่กระทบ paired delta ใช้ threshold ของแต่ละ model
+- Youden J ถ่วง sensitivity กับ specificity เท่ากัน ไม่ได้สะท้อนต้นทุนทางคลินิก
+- augmentation ทำบน CPU ใน DataLoader workers (`grid_sample` ต่อภาพ) frequency methods ที่มี 3–5 views ใช้ CPU มากกว่า ถ้า CPU เป็นคอขวด throughput จะลดลง ยังไม่ได้วัดบน Colab
+- snapshot epoch 10 อาจไม่มีถ้าหยุดก่อน `compare_epochs` จะแสดงเป็น `not_available`
+- provenance ผูก config/code ทั้งหมด DAE จาก run แรกจึงใช้ตรง ๆ ไม่ได้ `tools/import_dae.py` นำเข้า DAE ที่ train ครบแล้วเมื่อ config นอก `cnn`, manifests, source pixels, package versions และ shared source ที่ DAE ใช้ตรงกันทุกอย่าง ส่วน `shared/training.py` เทียบทุก function ของ DAE กับ `tools/release_full_training_reference.py` ซึ่งต้องมี SHA-256 ตรงกับที่ run เก่าบันทึกไว้ checkpoint ที่นำเข้าถูก re-sign ด้วย provenance ใหม่และมี `imported_from` เก็บ hash เดิม ข้อเสีย: เป็นข้อยกเว้นเดียวจากกฎ "hash ต้องตรงทั้งหมด" ต้องระบุใน Methods
 
 ## สิ่งที่ต้องเขียนใน paper
 

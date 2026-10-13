@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import pandas as pd
 from sklearn.metrics import (accuracy_score, average_precision_score, confusion_matrix,
-                             f1_score, precision_score, recall_score, roc_auc_score)
+                             f1_score, precision_score, recall_score, roc_auc_score, roc_curve)
 
 CLASSIFICATION_METRICS = ("accuracy", "balanced_accuracy", "precision", "recall",
                           "specificity", "f1", "roc_auc", "pr_auc")
@@ -35,6 +35,20 @@ def classification_metrics(truth, probabilities, threshold=0.5):
             "positive_prevalence": float(np.mean(truth)),
             "constant_score_pr_auc": float(np.mean(truth)),
             "confusion_matrix": matrix.tolist()}
+
+
+def youden_threshold(truth, probabilities):
+    """Validation operating point maximizing sensitivity + specificity - 1."""
+    truth, probabilities = np.asarray(truth), np.asarray(probabilities, dtype=float)
+    if set(np.unique(truth)) != {0, 1} or not np.isfinite(probabilities).all():
+        raise ValueError("Youden threshold requires both classes and finite scores")
+    fpr, tpr, thresholds = roc_curve(truth, probabilities, drop_intermediate=False)
+    finite = np.isfinite(thresholds)  # roc_curve prepends an infinite "predict none" threshold
+    j = tpr[finite] - fpr[finite]
+    # Thresholds descend: keep the highest (most specific) one among float-level ties.
+    best = thresholds[finite][int(np.flatnonzero(j >= j.max() - 1e-12)[0])]
+    # classification_metrics needs an open (0,1) threshold; prediction rule stays score >= threshold.
+    return float(np.clip(best, np.nextafter(0.0, 1.0), np.nextafter(1.0, 0.0)))
 
 
 def resize_map(values, shape):
@@ -146,14 +160,17 @@ def pair_records(frame, baseline, fields=()):
     return paired
 
 
-def classification_bootstrap(frame, threshold=0.5, seed=42, replicates=2000, baseline=None):
+def classification_bootstrap(frame, threshold=0.5, seed=42, replicates=2000, baseline=None,
+                             baseline_threshold=None):
+    """Each model keeps its own validation-selected threshold in paired deltas."""
+    baseline_threshold = threshold if baseline_threshold is None else baseline_threshold
     _validate_frame(frame, ["image", "patient_id", "label", "prob_infiltration"])
     measured = classification_metrics(frame.label, frame.prob_infiltration, threshold)
     reference = None
     if baseline is not None:
         paired = pair_records(frame, baseline, ["label"])
         reference = baseline.set_index("image").loc[frame.image].reset_index()
-        reference_metrics = classification_metrics(reference.label, reference.prob_infiltration, threshold)
+        reference_metrics = classification_metrics(reference.label, reference.prob_infiltration, baseline_threshold)
     if replicates < 2:
         raise ValueError("Bootstrap requires at least two replicates")
     patients, patient_index = np.unique(frame.patient_id.to_numpy(), return_inverse=True)
@@ -165,7 +182,7 @@ def classification_bootstrap(frame, threshold=0.5, seed=42, replicates=2000, bas
         weights = counts[:, patient_index].astype(float)
         scores = _weighted_scores(frame, weights, threshold)
         if reference is not None:
-            other = _weighted_scores(reference, weights, threshold)
+            other = _weighted_scores(reference, weights, baseline_threshold)
             scores = {metric: values-other[metric] for metric, values in scores.items()}
         for metric, values in scores.items():
             samples[metric].extend(values)

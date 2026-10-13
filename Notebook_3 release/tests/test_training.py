@@ -15,9 +15,9 @@ from torch.utils.data import TensorDataset
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from shared.models import ReleaseResNet50
-from shared.training import (balanced_loss_epoch, capture_rng_state, checkpoint_state,
-                             cnn_optimizer, loader, optimization_epoch, restore_rng_state,
-                             _restore_training, _scaler, _ensure_cache)
+from shared.training import (ImageDataset, balanced_loss_epoch, capture_rng_state, checkpoint_state,
+                             cnn_optimizer, loader, optimization_epoch, random_affine, restore_rng_state,
+                             _early_stop, _restore_training, _scaler, _ensure_cache)
 
 
 class TinyBackbone(nn.Module):
@@ -221,6 +221,46 @@ class TrainingTests(unittest.TestCase):
         invalid["next_stage"] = "head_only"
         with self.assertRaisesRegex(ValueError, "stage"):
             _restore_training(invalid, resumed, resumed_optimizer, resumed_scaler, warmup_epochs=3)
+
+    def test_affine_is_identity_without_range_and_shared_across_views(self):
+        views = torch.randn(1, 3, 16, 16)
+        rng = np.random.default_rng(1)
+        identity = random_affine(views, rng, {})
+        torch.testing.assert_close(identity, views, rtol=0, atol=1e-5)
+        settings = {"max_rotation_degrees": 7.0, "max_translation_fraction": .05, "scale_range": [.95, 1.05]}
+        stacked = views.repeat(5, 1, 1, 1)
+        moved = random_affine(stacked, np.random.default_rng(2), settings)
+        self.assertEqual(moved.shape, stacked.shape)
+        for view in moved[1:]:
+            torch.testing.assert_close(view, moved[0], rtol=0, atol=0)
+        self.assertFalse(torch.allclose(moved[0], views[0]))
+        with self.assertRaises(ValueError):
+            random_affine(views, rng, {"max_translation_fraction": .6})
+
+    def test_augmentation_seeded_per_image_and_epoch_and_off_for_evaluation(self):
+        class Prep:
+            def tensor(self, row):
+                return torch.arange(3 * 16 * 16, dtype=torch.float32).reshape(1, 3, 16, 16) / 100 + row["label"]
+        import pandas as pd
+        frame = pd.DataFrame({"image": ["a.png", "b.png"], "label": [0, 1]})
+        settings = {"max_rotation_degrees": 7.0, "max_translation_fraction": .05, "scale_range": [.95, 1.05]}
+        first = ImageDataset(frame, Prep(), settings, seed=42, epoch=1)
+        torch.testing.assert_close(first[0][0], ImageDataset(frame, Prep(), settings, seed=42, epoch=1)[0][0], rtol=0, atol=0)
+        self.assertFalse(torch.equal(first[0][0], ImageDataset(frame, Prep(), settings, seed=42, epoch=2)[0][0]))
+        torch.testing.assert_close(ImageDataset(frame, Prep())[1][0], Prep().tensor({"label": 1}), rtol=0, atol=0)
+
+    def test_early_stop_counts_patience_after_best_and_after_warmup(self):
+        settings = {"early_stopping_patience": 3}
+        history = lambda losses: [{"epoch": i + 1, "validation_loss": v} for i, v in enumerate(losses)]
+        losses = [.67, .66, .66, .64, .645, .66, .77]  # released baseline shape: best at epoch 4
+        self.assertFalse(_early_stop(history(losses[:6]), settings, 3))
+        self.assertTrue(_early_stop(history(losses), settings, 3))
+        # Best during head warm-up still gives layer4 `patience` epochs before stopping.
+        self.assertFalse(_early_stop(history([.6, .7, .7, .7, .7]), settings, 3))
+        self.assertTrue(_early_stop(history([.6, .7, .7, .7, .7, .7]), settings, 3))
+        # A tie is not an improvement, matching best.pt's strict rule.
+        self.assertTrue(_early_stop(history([.7, .7, .7, .5, .5, .5, .5]), settings, 3))
+        self.assertFalse(_early_stop(history([.7] * 20), {}, 3))
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@
   "colab_mount_root": "/content/drive",
   "colab_data_root": "/content/drive/MyDrive/nih -xray/data/3",
   "colab_release_root": "/content/drive/MyDrive/nih -xray/Notebook_3_release",
-  "colab_output_root": "/content/drive/MyDrive/nih -xray/Notebook_3_release/runs/release_full",
+  "colab_output_root": "/content/drive/MyDrive/nih -xray/Notebook_3_release/runs/release_v4",
   "colab_cache_root": "/content/cxr_v3_cache",
   "local_data_root": "D:/kaggle_cache/datasets/nih-chest-xrays/data/versions/3",
   "dataset_zip_required": false,

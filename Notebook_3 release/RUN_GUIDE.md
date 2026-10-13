@@ -5,11 +5,15 @@
 3. หาก pip แจ้งให้ restart runtime เพราะเปลี่ยน library ให้ restart แล้วรัน setup ใหม่ก่อนเปิดrun
 4. รันตรวจข้อมูล/cache: ยืนยัน source hashes/counts แล้วอ่านภาพต้นฉบับจาก VM เพื่อสร้าง working shards โดยไม่เปิดภาพผ่าน Drive ทีละไฟล์
 5. รันDAE → CNN → Grad-CAM → SHAP → Reports ตามลำดับ; default3seeds ใช้fullcountsและ20epochs สลับไปรันnotebookแยกได้จากoutputเดียวกัน
-6. เปิดผลใน `MyDrive/nih -xray/Notebook_3_release/runs/release_full/seed_42/` และseed43/44; รวม3seedsที่ `seed_summary/`
+6. เปิดผลใน `MyDrive/nih -xray/Notebook_3_release/runs/release_v4/seed_42/` และseed43/44; รวม3seedsที่ `seed_summary/`
+7. รันหลาย Colab session พร้อมกัน: เปิด `run_parallel.ipynb` ในแต่ละ session (`SESSION_SEED="auto"` เลือก seed ที่ยังว่าง) ให้ session แรกขึ้น `Claimed seed` ก่อนเปิด session ถัดไป session ที่เสร็จก่อนให้ Run all ใหม่เพื่อรับ seed ที่เหลือ
 
 ## Resume
 
 ### ใช้ GPU VRAM เพิ่มสำหรับ DAE
+
+ตั้งแต่ protocol v4 config ใช้ DAE batch 64 (วัดบน L4) และปิด probe เป็นค่าเริ่มต้น (`USE_GPU_DAE_BATCH=False`) ต้องใช้ GPU ที่มี VRAM >= 20 GiB ข้อความด้านล่างใช้เมื่อเปิด probe เองเท่านั้น
+
 
 run_all / DAE notebook รุ่นล่าสุดมี GPU batch tuning ก่อนฝึก (USE_GPU_DAE_BATCH=True): ลองbatch16/32/48/64/80/96/... วัดforward/backward/Adamจริง เลือกbatchเร็วที่สุดที่อยู่ในงบ90%ของVRAM และเลือกbatchใหญ่กว่าเมื่อความเร็วห่างไม่เกิน5% มีAMPตามconfigเดิม และเผื่อOOM ผลprobeเป็นsyntheticGPUsteps ไม่ใช่เวลาของepochรวมโหลดข้อมูล
 หยุดDAEเดิมก่อน ใช้ `dae_gpu_batch_cell.txt` หลังsetup/preparation หรือเปิดnotebookใหม่ หากGPUยังมีmodelเก่าค้างให้Restart sessionบนVMเดิมแล้วรันsetup/preparationใหม่ ไม่ลบcache/dataset
@@ -79,5 +83,5 @@ python pipeline.py --data-root D:/kaggle_cache/datasets/nih-chest-xrays/data/ver
 python pipeline.py --data-root D:/kaggle_cache/datasets/nih-chest-xrays/data/versions/3 --stage all --all-seeds
 ```
 
-รันจากNotebook_3 releaseด้วยPythonenvironmentCUDA; localdefaultsใช้`.runtime/cache`และ`runs/release_full`
+รันจากNotebook_3 releaseด้วยPythonenvironmentCUDA; localdefaultsใช้`.runtime/cache`และ`runs/release_v4`
 Fulltrainingต้องGPU; CPUใช้unit tests/check_overfit/readingreportsได้

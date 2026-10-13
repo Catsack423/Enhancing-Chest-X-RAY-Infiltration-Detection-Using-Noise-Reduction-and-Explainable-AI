@@ -194,7 +194,7 @@ def report_all(exp):
     expected_test = pd.read_csv(exp.artifacts/"manifests/test.csv")
     expected_xai = pd.read_csv(exp.artifacts/"manifests/xai.csv")
     cnn_rows, summaries, ci_rows, paired_class, paired_xai, image_deltas = [], [], [], [], [], []
-    predictions, details, statuses, evidence = {}, {}, [], {}
+    predictions, thresholds, details, statuses, evidence = {}, {}, {}, [], {}
     replicates = exp.config.get("reporting", {}).get("classification_bootstrap_replicates", exp.config["xai"]["bootstrap_replicates"])
     for condition in exp.condition_ids:
         status = {"condition_id": condition}
@@ -210,7 +210,9 @@ def report_all(exp):
                 measured = json.loads((folder/"metrics.json").read_text(encoding="utf-8"))
                 frame = pd.read_csv(folder/"test_predictions.csv")
                 _same_manifest(frame, expected_test, ["patient_id", "label"])
-                calculated = classification_metrics(frame.label, frame.prob_infiltration, exp.config["cnn"]["classification_threshold"])
+                # Each model's operating point was chosen on its own validation predictions.
+                threshold = measured["threshold"]
+                calculated = classification_metrics(frame.label, frame.prob_infiltration, threshold)
                 for key, value in calculated.items():
                     if key == "confusion_matrix":
                         if measured[key] != value:
@@ -220,10 +222,10 @@ def report_all(exp):
                             raise ValueError(f"Stored classification metric differs: {key}")
                     elif not np.isclose(measured.get(key, np.nan), value):
                         raise ValueError(f"Stored classification metric differs: {key}")
-                row.update({k: v for k,v in measured.items() if k not in ("provenance", "confusion_matrix")})
+                row.update({k: v for k,v in measured.items() if k not in ("provenance", "confusion_matrix") and not isinstance(v, dict)})
                 row["status"] = "complete"
-                predictions[condition] = frame
-                ci = classification_bootstrap(frame, exp.config["cnn"]["classification_threshold"], exp.config["seed"], replicates)
+                predictions[condition], thresholds[condition] = frame, threshold
+                ci = classification_bootstrap(frame, threshold, exp.config["seed"], replicates)
                 ci.insert(0, "condition_id", condition)
                 ci_rows.append(ci)
                 plot_confusion(calculated["confusion_matrix"], stage/condition/"confusion.png", condition)
@@ -254,7 +256,8 @@ def report_all(exp):
         for condition, frame in predictions.items():
             if condition == "baseline":
                 continue
-            paired = classification_bootstrap(frame, exp.config["cnn"]["classification_threshold"], exp.config["seed"], replicates, predictions["baseline"])
+            paired = classification_bootstrap(frame, thresholds[condition], exp.config["seed"], replicates, predictions["baseline"],
+                                              thresholds["baseline"])
             paired.insert(0, "condition_id", condition)
             paired_class.append(paired)
     for criterion in ("Grad-CAM", "SHAP"):
@@ -296,9 +299,10 @@ def report_all(exp):
             "Classification uses Infiltration-only vs No Finding-only. XAI includes all bbox cases, wrong predictions and empty maps. "
             "PR-AUC uses average precision. Patient-bootstrap intervals and paired deltas use matched patient draws within this seed; "
             "between-seed mean/SD is reported separately. No clinical significance is inferred from a delta interval.\n\n"
-            "Scores from weighted BCE are not assumed to be calibrated population probabilities. "
+            "Scores from weighted BCE are not assumed to be calibrated population probabilities; each model's threshold "
+            "maximizes Youden J on its own validation predictions, and paired deltas keep both models' thresholds. "
             "SHAP explains processed spatial views; signed RGB/view arrays are retained and localization uses positive evidence only. "
-            "Frequency fusion is a separate representation experiment.\n\n"+_table(cnn, ["condition_id", "status", "n", *CLASSIFICATION_METRICS])+"\n")
+            "Frequency fusion is a separate representation experiment.\n\n"+_table(cnn, ["condition_id", "status", "n", "best_epoch", "epochs_run", "threshold", *CLASSIFICATION_METRICS])+"\n")
     (stage/"README.md").write_text(note, encoding="utf-8")
     hashes = {}
     for path in sorted(stage.rglob("*")):
@@ -361,7 +365,8 @@ def summarize_seeds(output_root):
         if records.duplicated(["condition_id", "seed"]).any():
             raise ValueError("Duplicate training seed results")
         for condition, frame in records.groupby("condition_id", sort=False):
-            for metric in CLASSIFICATION_METRICS:
+            training = [m for m in ("threshold", "best_epoch", "epochs_run") if m in frame]
+            for metric in (*CLASSIFICATION_METRICS, *training):
                 cnn_rows.append({"condition_id":condition, "metric":metric, "n_seeds":frame[metric].count(),
                                  "mean":frame[metric].mean(), "sd":frame[metric].std(ddof=1)})
     if not xai.empty:

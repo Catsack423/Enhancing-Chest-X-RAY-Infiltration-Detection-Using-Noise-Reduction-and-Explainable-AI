@@ -29,9 +29,11 @@ SHAP backgrounds32ภาพเดิมจาก train; pure19XAIภาพอย
 | DFT fusion | low/mid/high radial bands, 3views |
 
 รวม12conditions ใช้ ResNet50 ImageNet V2 ตัวเดียวกันต่อmodel; เฉลี่ยfeatures2,048ค่าก่อนDropout0.3+Linear
-20epochs: head-only1–3, layer4+head4–20, freezeearlylayersและBatchNormstatisticsทั้งหมด
+สูงสุด20epochs: head-only1–3, layer4+head ตั้งแต่4 พร้อม early stopping patience3 (นับหลัง warmup/best epoch), freezeearlylayersและBatchNormstatisticsทั้งหมด
+Train-only geometric augmentation: หมุน±7°, เลื่อน±5%, scale0.95–1.05, ทุก view ใช้ transform เดียวกัน; ไม่ปรับ intensity/noise/flip
 AdamW, headlr1e-4/layer4lr1e-5, weightedBCEpos_weight≈7.037, effectivebatch16 (microbatch4×accumulation4)
-เลือกbestcheckpointด้วยvalidationbalancedBCE ไม่เลือกจากtest; เก็บbest/last/snapshots2/7/10
+เลือกbestcheckpointด้วยvalidationbalancedBCE ไม่เลือกจากtest; เก็บbest/last/snapshots2/7/10 (snapshot ที่เกิน epoch ที่หยุดจะไม่มี)
+Threshold แต่ละ model = Youden J บน validation (`validation_predictions.csv`); `metrics.json` เก็บผลที่ 0.5 ใน `reference_threshold_metrics`
 Trainทุกภาพหนึ่งครั้งต่อepoch ไม่ downsample/oversample; lastaccumulationwindowหารตามจำนวนsourceimagesจริง
 ค่าเริ่มต้น3seeds42/43/44 รวม36CNN+3DAE; fullrunต้องGPUและใช้เวลามากกว่ารุ่นpilotมาก
 
@@ -41,7 +43,7 @@ Trainทุกภาพหนึ่งครั้งต่อepoch ไม่ do
 - ZIP มีภาพที่ใช้จริง70,012ภาพ รวม26.26GiB; ตรวจSHA-256ก่อนใช้และแสดงcopy/extractprogress ส่วนที่แตกครบใช้ต่อได้
 - Frozenmanifestsแนบในsourcepackage; ตรวจmetadata/splits/bboxhashesและpixelhashก่อนใช้ ไม่สแกนDriveทุกepoch
 - Workingcacheuint8shards256²บน`/content/cxr_v3_cache` ประมาณ4.27GiB plusnativeXAI; derivedcacheจำกัด6GiB
-- Resultsอยู่`MyDrive/nih -xray/Notebook_3_release/runs/release_full/seed_42` และseed43/44
+- Resultsอยู่`MyDrive/nih -xray/Notebook_3_release/runs/release_v4/seed_42` และseed43/44; run แรก `runs/release_full*` (ไม่มี augmentation/early stopping) ยกเลิกแล้ว ไม่รวมกับ v4
 - Runtimeเปลี่ยนแล้วcacheอาจหาย; สร้างใหม่และresumeได้จากDriveเมื่อsourcepixels/config/code/packageversionsตรงกัน
 - ห้ามเปลี่ยนภาพ/manifests/configแล้วresumeoutputเดิม ระบบปฏิเสธprovenanceที่ต่างแทนใช้คะแนนเก่าปนใหม่
 - CNN-onlycellจะตรวจ/ฝึกDAEให้ครบbudgetก่อนใช้; `best.pt` จากDAEที่ยังฝึกไม่จบใช้ไม่ได้

@@ -1,0 +1,9 @@
+# Reuse a completed DAE from the cancelled release_full run instead of retraining (~1.9 h per seed).
+# tools/import_dae.py copies it only if DAE config, DAE code, manifests, source pixels and package
+# versions all match; any mismatch stops here. Set IMPORT_DAE_FROM = None to always train a new DAE.
+import runpy
+IMPORT_DAE_FROM = Path(OUTPUT_ROOT).parent / "release_full_dae_b064_gpu"
+if IMPORT_DAE_FROM is not None and not SMOKE:
+    dae_import = runpy.run_path(str(Path(ROOT) / "tools/import_dae.py"))
+    for seed, (exp, manifests) in runs.items():
+        dae_import["import_if_available"](exp, IMPORT_DAE_FROM / f"seed_{seed}")

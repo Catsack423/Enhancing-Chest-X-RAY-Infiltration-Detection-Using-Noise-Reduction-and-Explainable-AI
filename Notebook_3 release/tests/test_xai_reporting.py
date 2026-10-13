@@ -13,7 +13,8 @@ from torch import nn
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from shared.evaluation import (bbox_mask, resize_map, positive_normalize, localization_metrics,
-                               classification_metrics, classification_bootstrap, _weighted_scores, pair_records)
+                               classification_metrics, classification_bootstrap, _weighted_scores, pair_records,
+                               youden_threshold)
 from shared.explainers import gradcam_maps, extract_shap_channels, shap_maps
 from shared.experiment import digest, file_hash, write_json
 from shared.xai import evaluate_condition
@@ -144,6 +145,26 @@ class ClusteredMetricsTests(unittest.TestCase):
         np.testing.assert_allclose(result[["mean_delta","ci_low","ci_high"]], 0)
         self.assertEqual(set(result.n_patients), {4})
         self.assertEqual(set(result.n_images), {6})
+    def test_youden_threshold_maximizes_validation_j_inside_open_interval(self):
+        truth = np.array([0, 0, 0, 1, 1, 1])
+        scores = np.array([.1, .2, .5, .6, .7, .9])
+        threshold = youden_threshold(truth, scores)
+        self.assertEqual(threshold, .6)
+        self.assertEqual(youden_threshold(truth, [.1, .3, .6, .4, .7, .9]), .7)  # tie .4/.7 keeps the higher
+        best = classification_metrics(truth, scores, threshold)["balanced_accuracy"]
+        for candidate in scores:
+            self.assertLessEqual(classification_metrics(truth, scores, candidate)["balanced_accuracy"], best)
+        self.assertTrue(0 < youden_threshold([0, 1], [0., 1.]) < 1)
+        with self.assertRaises(ValueError):
+            youden_threshold([0, 0], [.1, .2])
+    def test_paired_bootstrap_keeps_each_models_threshold(self):
+        frame = self.frame()
+        result = classification_bootstrap(frame, .5, replicates=100, baseline=frame, baseline_threshold=.15).set_index("metric")
+        np.testing.assert_allclose(result.loc[["roc_auc", "pr_auc"], ["mean_delta", "ci_low", "ci_high"]], 0)
+        expected = classification_metrics(frame.label, frame.prob_infiltration, .5)["specificity"] - \
+            classification_metrics(frame.label, frame.prob_infiltration, .15)["specificity"]
+        self.assertAlmostEqual(result.loc["specificity", "mean_delta"], expected)
+        self.assertNotEqual(expected, 0)
     def test_paired_comparison_rejects_patient_metadata_changes(self):
         frame = self.frame()
         other = frame.copy()
@@ -186,7 +207,7 @@ class DurableResultTests(unittest.TestCase):
                 history = pd.DataFrame({"epoch":[1,2],"train_eval_loss":[.5,.4],"validation_loss":[.6,.5]})
                 history.to_csv(folder/"history.csv",index=False)
                 scores = classification_metrics(predictions.label,predictions.prob_infiltration)
-                scores.update(condition_id=condition,best_epoch=2)
+                scores.update(condition_id=condition,best_epoch=2,threshold=.5)
                 write_json(folder/"metrics.json",scores)
                 write_json(folder/"complete.json",{"provenance":provenance(condition),"checkpoint_hash":file_hash(folder/"best.pt"),
                            "predictions_hash":file_hash(folder/"test_predictions.csv"),"history_hash":file_hash(folder/"history.csv"),"metrics_hash":file_hash(folder/"metrics.json")})

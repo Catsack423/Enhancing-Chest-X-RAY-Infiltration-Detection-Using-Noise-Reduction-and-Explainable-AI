@@ -61,10 +61,15 @@ old_write_for_summary = builder.write_notebook
 def write_with_summary(relative_path, cells):
     cells = [(kind, summary_code if kind == 'code' and text.startswith('from shared.reporting import summarize_seeds\n') else text) for kind, text in cells]
     if relative_path.as_posix() in ('run_all.ipynb', 'DAE/train_dae.ipynb'):
-        gpu_code = 'USE_GPU_DAE_BATCH = not SMOKE\nif USE_GPU_DAE_BATCH:\n' + ''.join('    '+line+'\n' for line in (ROOT / 'dae_gpu_batch_cell.txt').read_text(encoding='utf-8').splitlines())
+        gpu_code = 'USE_GPU_DAE_BATCH = False  # config pins DAE batch 64 (measured on L4); True re-probes into a separate output root\nif USE_GPU_DAE_BATCH:\n' + ''.join('    '+line+'\n' for line in (ROOT / 'dae_gpu_batch_cell.txt').read_text(encoding='utf-8').splitlines())
         insertion = next(i for i, (kind, text) in enumerate(cells) if kind == 'code' and 'TRAIN_STAGE = "dae"' in text)
-        cells[insertion:insertion] = [('markdown', '### GPU batch tuning — เพิ่ม DAE batch จากผลวัด VRAM/ความเร็ว\nใช้ VRAM budget90%; เปลี่ยน batch แล้วเริ่ม output ใหม่ เก็บผลเดิมไว้ ตั้ง USE_GPU_DAE_BATCH=False เพื่อใช้แผนเดิม'), ('code',gpu_code)]
+        cells[insertion:insertion] = [('markdown', '### GPU batch tuning — เพิ่ม DAE batch จากผลวัด VRAM/ความเร็ว\nปิดไว้เป็นค่าเริ่มต้น: config ใช้ batch64 ที่วัดบน L4 แล้ว ตั้ง USE_GPU_DAE_BATCH=True เพื่อ probe ใหม่ ซึ่งจะเริ่ม output แยก'), ('code',gpu_code)]
+    if relative_path.as_posix() in ('run_all.ipynb', 'DAE/train_dae.ipynb', 'CNN/train_all_methods.ipynb'):
+        # Before the first training cell: CNN also trains a missing DAE.
+        insertion = next(i for i, (kind, text) in enumerate(cells) if kind == 'code' and ('TRAIN_STAGE = "dae"' in text or 'TRAIN_STAGE = "cnn"' in text))
+        cells[insertion:insertion] = [('markdown', '### ใช้ DAE เดิมจาก run ที่ยกเลิก (ถ้าตรวจผ่าน)\nคัดลอก DAE ที่ train ครบแล้วจาก `release_full_dae_b064_gpu` เมื่อ config/code/data/versions ของ DAE ตรงกันทุกอย่าง ไม่ตรงจะหยุด ตั้ง `IMPORT_DAE_FROM = None` เพื่อ train ใหม่'), ('code', import_dae_cell)]
     return old_write_for_summary(relative_path, cells)
+import_dae_cell = (ROOT / 'import_dae_cell.txt').read_text(encoding='utf-8')
 builder.write_notebook = write_with_summary
 def logged_stage_code(stage):
     return {'dae': dae_cell, 'cnn': cnn_cell, **activity_cells}.get(stage) or original_stage_code(stage)
@@ -83,6 +88,8 @@ if not setup_file.exists() or setup_file.read_text(encoding='utf-8') != builder.
     setup_tmp = setup_file.with_suffix('.txt.tmp')
     setup_tmp.write_text(builder.SETUP, encoding='utf-8')
     setup_tmp.replace(setup_file)
+import runpy
+runpy.run_path(str(ROOT / 'tools/build_parallel_notebook.py'))['build']()
 package = builder.package()
 for name, payload in standalone.items():
     (ROOT / name).write_bytes(payload)
