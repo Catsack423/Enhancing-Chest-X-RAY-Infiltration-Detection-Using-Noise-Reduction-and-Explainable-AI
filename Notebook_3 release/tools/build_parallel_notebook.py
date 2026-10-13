@@ -25,15 +25,21 @@ INTRO = """# Notebook v3 release — Parallel sessions (1 seed ต่อ 1 sessi
 - Package versions ต้องตรงกับ seed ที่มีอยู่แล้ว ไม่งั้น `summarize_seeds` จะปฏิเสธ preflight จะหยุดก่อน train
 - Claim ส่ง heartbeat ไป Drive ทุก 1 นาที ถ้าอีก session ถือ seed เดียวกันอยู่จะถูกปฏิเสธ หลัง runtime ตาย claim หมดอายุใน 15 นาที
 - Resume: เปิดซ้ำด้วย seed เดิมแล้วรันทุก cell ใหม่ งานที่ complete แล้วจะข้าม
+- ช่วยกันทำ seed เดียว: session หลักถือ seed ตามปกติ session ช่วยตั้ง `SESSION_SEED=42`, `SHARE_SEED=True`, `REVERSE_ORDER=True`
+  CNN/Grad-CAM/SHAP แบ่งกันทีละ condition ผ่าน lease ใน `parallel_claims/seed_<n>/` session ช่วยไม่ train DAE และไม่ทำ report
 """
 
 SETTINGS = '''SESSION_SEED = "auto"  # "auto" หรือระบุ 42 / 43 / 44 ไม่ซ้ำกันในแต่ละ session
 ALL_SEEDS = [42, 43, 44]
 FORCE_CLAIM = False  # True เฉพาะเมื่อแน่ใจว่า session เดิมของ seed นี้หยุดแล้ว
+SHARE_SEED = False     # True = ช่วย session อื่นทำ seed เดียวกัน (ต้องระบุ SESSION_SEED)
+REVERSE_ORDER = False  # True ใน session ช่วย: เริ่มจาก condition ท้ายสุด
 '''
 
 CLAIM = '''import runpy
 parallel = runpy.run_path(str(Path(ROOT) / "tools/parallel_session.py"))
+if SESSION_SEED == "auto" and SHARE_SEED:
+    raise ValueError("SHARE_SEED=True ต้องระบุ SESSION_SEED ของ session หลัก เช่น 42")
 if SESSION_SEED == "auto":
     SESSION_SEED = parallel["next_seed"](ROOT, OUTPUT_ROOT, ALL_SEEDS)
     if SESSION_SEED is None:
@@ -41,16 +47,64 @@ if SESSION_SEED == "auto":
     print("auto seed:", SESSION_SEED, flush=True)
 SEEDS = [SESSION_SEED]
 parallel["preflight"](OUTPUT_ROOT, SESSION_SEED, ALL_SEEDS)
-claim = parallel["SeedClaim"](OUTPUT_ROOT, SESSION_SEED).acquire(force=FORCE_CLAIM)
+claim = parallel["NoClaim"]() if SHARE_SEED else parallel["SeedClaim"](OUTPUT_ROOT, SESSION_SEED).acquire(force=FORCE_CLAIM)
 parallel["print_status"](ROOT, OUTPUT_ROOT, ALL_SEEDS)
 '''
 
 STATUS = '''parallel["print_status"](ROOT, OUTPUT_ROOT, ALL_SEEDS)
 '''
 
+HELPER_DAE_GUARD = '''if SHARE_SEED and not (runs[SESSION_SEED][0].artifacts / "dae_checkpoint/complete.json").is_file():
+    raise RuntimeError("session ช่วยไม่ train DAE: รอให้ session หลักทำ DAE ของ seed นี้เสร็จก่อน")
+'''
+
+REPORT_GUARD = '''pending = parallel["pending_conditions"](runs[SESSION_SEED][0])
+if SHARE_SEED:
+    print("session ช่วย: report ทำใน session หลักของ seed นี้", flush=True)
+elif any(pending.values()):
+    print("ยังไม่ทำ report: condition ที่ยังไม่เสร็จ", pending, "- รัน cell นี้อีกครั้งเมื่อครบ", flush=True)
+else:
+'''
+
+
+def queue_cell(cell_text, marker, stage, observer):
+    """Replace the run_stages loop of a progress cell with the shared condition queue."""
+    head = cell_text.split(marker, 1)[0]
+    return head + marker + f'''
+for seed, (exp, manifests) in runs.items():
+    with {observer}(seed, {marker.split(" = ")[0]}):
+        parallel["run_queue"](exp, manifests, OUTPUT_ROOT, "{stage}", device=DEVICE, reverse=REVERSE_ORDER)
+'''
+
+
+def write_text(name, content):
+    path = ROOT / name
+    if not path.exists() or path.read_bytes().decode('utf-8') != content:
+        path.write_bytes(content.encode('utf-8'))
+
+
+HANDOFF = '''# วางใน session ที่รัน run_parallel.ipynb (v4) อยู่แล้ว แทน cell 5: หยุด CNN cell เดิมก่อน แล้วรัน cell นี้
+# โหลด tools/parallel_session.py รุ่นที่มี condition queue จาก ZIP บน Drive (tools ไม่อยู่ใน source fingerprint)
+import runpy, zipfile
+with zipfile.ZipFile(CODE_ZIP) as archive:
+    (Path(ROOT) / "tools/parallel_session.py").write_bytes(archive.read("Notebook_3_release/tools/parallel_session.py"))
+parallel = runpy.run_path(str(Path(ROOT) / "tools/parallel_session.py"))
+SHARE_SEED, REVERSE_ORDER = False, False
+'''
+
 
 def build():
     guarded = lambda cell: 'claim.check()\n' + cell
+    cnn = queue_cell(text('train_cnn_progress_cell.txt'), 'TRAIN_STAGE = "cnn"', 'cnn', 'training_progress')
+    gradcam = queue_cell(text('gradcam_progress_cell.txt'), 'PIPELINE_STAGE = "gradcam"', 'gradcam', 'activity_progress')
+    shap = queue_cell(text('shap_progress_cell.txt'), 'PIPELINE_STAGE = "shap"', 'shap', 'activity_progress')
+    report = text('reports_progress_cell.txt')
+    head, tail = report.split('\nPIPELINE_STAGE = "reports"', 1)
+    report = head + '\n' + REPORT_GUARD + '    PIPELINE_STAGE = "reports"' + tail.replace('\n', '\n    ').rstrip(' ')
+    # Paste-in cells for a session already running the v4 notebook (no new VM needed).
+    write_text('queue_cnn_cell.txt', HANDOFF + cnn)
+    write_text('queue_gradcam_cell.txt', gradcam)
+    write_text('queue_shap_cell.txt', shap)
     summary = text('seed_summary_progress_cell.txt')
     head, tail = summary.split('\nwith activity_progress("all", "seed_summary"):', 1)
     summary = head + '''
@@ -66,12 +120,12 @@ else:
         ('markdown', '## 2. เลือก seed + preflight + claim'), ('code', CLAIM),
         ('markdown', '## 3. ตรวจข้อมูลและเตรียม working cache บน VM'), ('code', guarded(text('prepare_progress_cell.txt'))),
         ('markdown', '## 4a. ใช้ DAE เดิมจาก run ที่ยกเลิก (ถ้าตรวจผ่าน)\nคัดลอก DAE ที่ train ครบแล้วจาก `release_full_dae_b064_gpu` เมื่อ config/code/data/versions ของ DAE ตรงกันทุกอย่าง ไม่ตรงจะหยุด ตั้ง `IMPORT_DAE_FROM = None` เพื่อ train ใหม่'),
-        ('code', guarded(text('import_dae_cell.txt'))),
-        ('markdown', '## 4. DAE ของ seed นี้ (ข้ามถ้า import แล้ว)'), ('code', guarded(text('train_dae_progress_cell.txt'))),
-        ('markdown', '## 5. CNN ทั้ง 12 methods (early stopping)'), ('code', guarded(text('train_cnn_progress_cell.txt'))),
-        ('markdown', '## 6. Grad-CAM'), ('code', guarded(text('gradcam_progress_cell.txt'))),
-        ('markdown', '## 7. SHAP'), ('code', guarded(text('shap_progress_cell.txt'))),
-        ('markdown', '## 8. Report ของ seed นี้'), ('code', guarded(text('reports_progress_cell.txt'))),
+        ('code', guarded(HELPER_DAE_GUARD + text('import_dae_cell.txt'))),
+        ('markdown', '## 4. DAE ของ seed นี้ (ข้ามถ้า import แล้ว)'), ('code', guarded(HELPER_DAE_GUARD + text('train_dae_progress_cell.txt'))),
+        ('markdown', '## 5. CNN ทั้ง 12 methods (early stopping, แบ่ง condition กับ session อื่นได้)'), ('code', guarded(cnn)),
+        ('markdown', '## 6. Grad-CAM'), ('code', guarded(gradcam)),
+        ('markdown', '## 7. SHAP'), ('code', guarded(shap)),
+        ('markdown', '## 8. Report ของ seed นี้ (session หลัก เมื่อทุก condition เสร็จ)'), ('code', guarded(report)),
         ('markdown', '## 9. ปล่อย claim และดูสถานะทุก seed\nถ้ายังมี seed เหลือ ให้ Runtime → Run all ใหม่ใน session นี้ `auto` จะเลือก seed ถัดไป'),
         ('code', 'claim.release()\n' + STATUS),
         ('markdown', '## 10. รวม 3 seeds (รันใน session ที่เสร็จหลังสุด)'), ('code', summary),

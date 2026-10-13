@@ -7,6 +7,7 @@
 5. รันDAE → CNN → Grad-CAM → SHAP → Reports ตามลำดับ; default3seeds ใช้fullcountsและ20epochs สลับไปรันnotebookแยกได้จากoutputเดียวกัน
 6. เปิดผลใน `MyDrive/nih -xray/Notebook_3_release/runs/release_v4/seed_42/` และseed43/44; รวม3seedsที่ `seed_summary/`
 7. รันหลาย Colab session พร้อมกัน: เปิด `run_parallel.ipynb` ในแต่ละ session (`SESSION_SEED="auto"` เลือก seed ที่ยังว่าง) ให้ session แรกขึ้น `Claimed seed` ก่อนเปิด session ถัดไป session ที่เสร็จก่อนให้ Run all ใหม่เพื่อรับ seed ที่เหลือ
+8. ช่วยกันทำ seed เดียว (v4.1): session หลักรันตามปกติ session ช่วยตั้ง `SESSION_SEED=42`, `SHARE_SEED=True`, `REVERSE_ORDER=True` CNN/Grad-CAM/SHAP จะแบ่งกันทีละ condition ผ่าน lease ใน `parallel_claims/seed_<n>/` session ช่วยไม่ train DAE และไม่ทำ report session ที่รัน notebook v4 อยู่แล้วให้หยุด CNN cell แล้ววาง `queue_cnn_cell.txt` แทน (ไม่ต้องเปิด VM ใหม่) condition ที่ถูกหยุดกลางคันจะว่างให้รับต่อหลังไม่มีการเขียนไฟล์ 15 นาที
 
 ## Resume
 

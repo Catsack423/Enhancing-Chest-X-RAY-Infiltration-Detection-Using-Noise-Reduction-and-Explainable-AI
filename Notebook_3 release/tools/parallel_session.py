@@ -1,8 +1,9 @@
-"""Coordinate Colab sessions that each own one seed of one shared release run.
+"""Coordinate Colab sessions on one shared release run.
 
 Lives in tools/ so source fingerprints (root *.py, shared/*.py) and config_hash stay unchanged.
 Seeds share nothing below seed_<n>/, so one seed per session needs no cross-session writes
-except claims and the final seed summary.
+except claims and the final seed summary. Within one seed, sessions can also share the
+12 conditions: run_queue leases one condition folder at a time per stage.
 """
 import json
 import socket
@@ -58,11 +59,15 @@ def preflight(base, seed, all_seeds):
     print(f'Preflight ok | seed {seed} | {gpu} {vram:.1f} GiB | versions match | {base}', flush=True)
 
 
-def recent_writes(seed_root, seconds=STALE_SECONDS):
+STAGE_CRITERION = {'cnn': 'CNN', 'gradcam': 'Grad-CAM', 'shap': 'SHAP'}
+
+
+def recent_writes(seed_root, seconds=STALE_SECONDS, folders=None):
     """Age of the newest DAE/CNN checkpoint write, to catch a writer that holds no claim."""
     seed_root = Path(seed_root)
     newest = 0.0
-    folders = [seed_root / 'shared/artifacts/dae_checkpoint', *(seed_root / 'CNN/results').glob('*')]
+    if folders is None:
+        folders = [seed_root / 'shared/artifacts/dae_checkpoint', *(seed_root / 'CNN/results').glob('*')]
     for folder in folders:
         if folder.is_dir():
             for path in folder.iterdir():
@@ -76,11 +81,15 @@ class SeedClaim:
     """Best-effort Drive lease: one live session per seed, refreshed every minute.
 
     Released claims stay on Drive (released=True) so later sessions can compare GPU types.
+    With `unit` (e.g. "cnn_baseline") the lease covers one condition folder of the seed.
     """
 
-    def __init__(self, base, seed, interval=60):
+    def __init__(self, base, seed, interval=60, unit=None, watch=None):
         self.base, self.seed, self.interval = Path(base), int(seed), interval
-        self.path = self.base / 'parallel_claims' / f'seed_{self.seed}.json'
+        self.unit, self.watch = unit, watch
+        name = f'seed_{self.seed}.json' if unit is None else f'seed_{self.seed}/{unit}.json'
+        self.path = self.base / 'parallel_claims' / name
+        self.label = f'seed {self.seed}' + (f' {unit}' if unit else '')
         self.token = uuid.uuid4().hex
         self.started = time.time()
         self._stop = threading.Event()
@@ -89,7 +98,7 @@ class SeedClaim:
 
     def _record(self, released=False):
         import torch
-        return {'token': self.token, 'seed': self.seed, 'host': socket.gethostname(),
+        return {'token': self.token, 'seed': self.seed, 'unit': self.unit, 'host': socket.gethostname(),
                 'gpu': torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'cpu',
                 'started': self.started, 'heartbeat': time.time(), 'released': released}
 
@@ -103,20 +112,20 @@ class SeedClaim:
         if held and not force:
             age = time.time() - existing['heartbeat']
             if age < STALE_SECONDS:
-                raise RuntimeError(f"seed {self.seed} is claimed by {existing['host']} ({existing['gpu']}), "
+                raise RuntimeError(f"{self.label} is claimed by {existing['host']} ({existing['gpu']}), "
                                    f"heartbeat {age/60:.1f} min ago. Pick another seed, or wait {STALE_SECONDS//60} min "
                                    'after that session stops; FORCE_CLAIM=True only if it is surely dead.')
-        age = recent_writes(self.base / f'seed_{self.seed}')
+        age = recent_writes(self.base / f'seed_{self.seed}', folders=self.watch)
         if age is not None and not force and not (existing and existing.get('released')):
-            raise RuntimeError(f'seed_{self.seed} checkpoints were written {age/60:.1f} min ago by a session without a '
+            raise RuntimeError(f'{self.label}: checkpoints were written {age/60:.1f} min ago by a session without a '
                                'live claim. Stop that cell, then rerun with FORCE_CLAIM=True.')
         self._write()
         time.sleep(5)  # Let a racing session's write land, then confirm who won.
         if (_read(self.path) or {}).get('token') != self.token:
-            raise RuntimeError(f'Another session claimed seed {self.seed} at the same time; pick another seed')
+            raise RuntimeError(f'Another session claimed {self.label} at the same time')
         self._thread = threading.Thread(target=self._beat, daemon=True)
         self._thread.start()
-        print(f'Claimed seed {self.seed} | {self.path}', flush=True)
+        print(f'Claimed {self.label} | {self.path}', flush=True)
         return self
 
     def _beat(self):
@@ -127,15 +136,15 @@ class SeedClaim:
                     return
                 self._write()
             except OSError as error:  # Transient Drive errors; next beat retries.
-                print(f'[claim seed={self.seed}] heartbeat write failed: {error}', flush=True)
+                print(f'[claim {self.label}] heartbeat write failed: {error}', flush=True)
 
     def check(self):
         """Call before each stage; refuse to keep writing after losing the claim."""
         if self.error or self._thread is None or not self._thread.is_alive():
-            raise RuntimeError(f'Lost claim on seed {self.seed}: {self.error or "heartbeat stopped"}. '
+            raise RuntimeError(f'Lost claim on {self.label}: {self.error or "heartbeat stopped"}. '
                                'Rerun the claim cell before continuing.')
         if (_read(self.path) or {}).get('token') != self.token:
-            raise RuntimeError(f'seed {self.seed} is now claimed by another session; stop here')
+            raise RuntimeError(f'{self.label} is now claimed by another session; stop here')
 
     def release(self):
         self._stop.set()
@@ -143,7 +152,88 @@ class SeedClaim:
             self._thread.join(timeout=5)
         if (_read(self.path) or {}).get('token') == self.token:
             self._write(released=True)
-        print(f'Released seed {self.seed}', flush=True)
+        print(f'Released {self.label}', flush=True)
+
+
+class NoClaim:
+    """Helper session sharing another session's seed: leases are per condition only."""
+
+    def check(self):
+        pass
+
+    def release(self):
+        pass
+
+
+def _live(path):
+    record = _read(path)
+    return bool(record and not record.get('released') and time.time() - record['heartbeat'] < STALE_SECONDS)
+
+
+def _complete(exp, stage, condition):
+    return (exp.results(STAGE_CRITERION[stage], condition) / 'complete.json').is_file()
+
+
+def pending_conditions(exp):
+    return {stage: [c for c in exp.condition_ids if not _complete(exp, stage, c)] for stage in STAGE_CRITERION}
+
+
+def run_queue(exp, manifests, base, stage, device='cuda', reverse=False, poll=60):
+    """Take the next unleased condition until none is left for this session.
+
+    Two sessions on one seed never write the same condition folder: each holds a Drive lease
+    while it trains/explains a condition. XAI waits for that condition's CNN to complete.
+    reverse=True starts from the last condition so two sessions meet in the middle.
+    """
+    import shared.training as training
+    import shared.xai as xai
+    base, seed = Path(base), exp.config['seed']
+    criterion = STAGE_CRITERION[stage]
+    order = list(reversed(exp.condition_ids)) if reverse else list(exp.condition_ids)
+    needs_dae = stage == 'cnn' and any(exp.condition(c)['group'] == 'dae_clahe' for c in order)
+    if needs_dae and not (exp.artifacts / 'dae_checkpoint/complete.json').is_file():
+        raise RuntimeError(f'seed {seed}: finish or import the DAE first (cells 4a/4); the queue never trains a DAE')
+    lease_path = lambda condition: base / 'parallel_claims' / f'seed_{seed}' / f'{stage}_{condition}.json'
+    finished = []
+    while True:
+        pending = [c for c in order if not _complete(exp, stage, c)]
+        ready = [c for c in pending if stage == 'cnn' or _complete(exp, 'cnn', c)]
+        progressed = False
+        for condition in ready:
+            if _complete(exp, stage, condition) or _live(lease_path(condition)):
+                continue
+            lease = SeedClaim(base, seed, unit=f'{stage}_{condition}', watch=[exp.results(criterion, condition)])
+            try:
+                lease.acquire()
+            except RuntimeError as error:
+                print(f'skip {condition} for now: {error}', flush=True)
+                continue
+            try:
+                lease.check()
+                print(f'Seed {seed} | {criterion} | {condition}', flush=True)
+                if stage == 'cnn':
+                    training.train_condition(exp, manifests, condition, device=device)
+                    training.evaluate_classifier(exp, manifests, condition, device=device)
+                else:
+                    xai.evaluate_condition(exp, manifests, criterion, condition, device=device)
+                finished.append(condition)
+                progressed = True
+            finally:
+                lease.release()
+        if progressed:
+            continue
+        blocked = [c for c in ready if not _complete(exp, stage, c) and not _live(lease_path(c))]
+        if not blocked:
+            break
+        # Unleased but recently written (e.g. an interrupted cell): wait until it is stale.
+        print(f'waiting {poll}s for recently written conditions to go stale: {blocked}', flush=True)
+        time.sleep(poll)
+    if stage == 'cnn' and finished:
+        from check_overfit import plot_overfit
+        plot_overfit(exp.output_root, display_plots=False)
+    left = [c for c in exp.condition_ids if not _complete(exp, stage, c)]
+    print(f'{criterion} queue done in this session: {finished} | still pending elsewhere or waiting for CNN: {left}', flush=True)
+    return finished, left
 
 
 def seed_status(root, base, seeds):
