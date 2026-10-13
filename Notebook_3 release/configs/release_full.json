@@ -80,6 +80,9 @@
     "gaussian_sigma": 0.05,
     "poisson_scale": 30.0,
     "l1_weight": 0.2,
+    "num_workers": 4,
+    "deterministic": false,
+    "channels_last": true,
     "amp": true
   },
   "cnn": {
@@ -98,7 +101,9 @@
     "trainable_layers": "layer4_after_warmup",
     "freeze_batchnorm": true,
     "classification_threshold": 0.5,
-    "num_workers": 0,
+    "num_workers": 4,
+    "deterministic": false,
+    "channels_last": true,
     "amp": true,
     "snapshot_epochs": [
       2,

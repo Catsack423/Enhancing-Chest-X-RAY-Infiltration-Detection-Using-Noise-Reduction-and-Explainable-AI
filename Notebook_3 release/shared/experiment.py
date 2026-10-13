@@ -35,15 +35,21 @@ def versions():
     return result
 
 
-def set_seed(seed):
+def deterministic_backend(enabled=True):
+    # Disabling trades bitwise-repeatable GPU arithmetic for faster cuDNN kernels;
+    # seeds still fix data order, noise and initial weights.
+    torch.backends.cudnn.benchmark = not enabled
+    torch.backends.cudnn.deterministic = enabled
+    torch.use_deterministic_algorithms(enabled, warn_only=True)
+
+
+def set_seed(seed, deterministic=True):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.benchmark = False
-    torch.backends.cudnn.deterministic = True
-    torch.use_deterministic_algorithms(True, warn_only=True)
+    deterministic_backend(deterministic)
 
 
 def write_json(path, value):

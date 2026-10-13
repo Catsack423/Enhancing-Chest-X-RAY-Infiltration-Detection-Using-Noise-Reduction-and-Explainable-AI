@@ -12,7 +12,7 @@ from torch import nn
 from torch.utils.data import DataLoader, Dataset
 
 from .dae_model import DAE
-from .experiment import digest, file_hash, save_torch, set_seed, write_json
+from .experiment import deterministic_backend, digest, file_hash, save_torch, set_seed, write_json
 from .models import ReleaseResNet50, load_cnn
 
 
@@ -58,8 +58,10 @@ def loader(dataset, batch_size, seed, shuffle=False, workers=0):
     if batch_size < 1 or len(dataset) < 1:
         raise ValueError("A loader requires a nonempty dataset and positive batch size")
     generator = torch.Generator().manual_seed(int(seed))
+    # Items are seeded per image, so worker count changes speed but not the data.
     return DataLoader(dataset, batch_size=int(batch_size), shuffle=shuffle, generator=generator,
-                      num_workers=int(workers), pin_memory=torch.cuda.is_available(), drop_last=False)
+                      num_workers=int(workers), pin_memory=torch.cuda.is_available(), drop_last=False,
+                      persistent_workers=int(workers) > 0)
 
 
 def capture_rng_state():
@@ -292,9 +294,18 @@ def _dae_class_reconstruction(model, exp, frame, settings, device, criterion):
     for label in (0, 1):
         subset = frame[frame.label == label]
         if len(subset):
-            batches = loader(DenoiseDataset(exp, subset), settings["batch_size"], exp.config["seed"])
+            batches = loader(DenoiseDataset(exp, subset), settings["batch_size"], exp.config["seed"],
+                             workers=settings.get("num_workers", 0))
             result[str(label)] = _reconstruction_epoch(model, batches, criterion, device)
     return result
+
+
+def _training_backend(model, settings, device):
+    """Apply the configured speed/determinism trade-off for one training run."""
+    if settings.get("channels_last", False):
+        model = model.to(device, memory_format=torch.channels_last)
+    deterministic_backend(settings.get("deterministic", True))
+    return model
 
 
 def _ensure_cache(exp, manifests):
@@ -314,7 +325,7 @@ def train_dae(exp, manifests, device="cuda"):
         return folder / "best.pt"
     _ensure_cache(exp, manifests)
     set_seed(exp.config["seed"])
-    model = DAE(base_channels=settings.get("base_channels", 32), residual=True).to(device)
+    model = _training_backend(DAE(base_channels=settings.get("base_channels", 32), residual=True).to(device), settings, device)
     optimizer = torch.optim.Adam(model.parameters(), lr=settings.get("learning_rate", 1e-3))
     amp = settings.get("amp", exp.config["cnn"].get("amp", True))
     scaler = _scaler(device, amp)
@@ -325,23 +336,28 @@ def train_dae(exp, manifests, device="cuda"):
     if checkpoint:
         epoch, best, history = _restore_training(checkpoint, model, optimizer, scaler)
         _repair_epoch_writes(exp, folder, checkpoint)
-    validation = loader(DenoiseDataset(exp, manifests["validation"]), settings["batch_size"], exp.config["seed"])
-    for epoch in range(epoch + 1, settings["epochs"] + 1):
-        batches = loader(DenoiseDataset(exp, manifests["train"], epoch), settings["batch_size"], exp.config["seed"] + epoch, True)
-        started = perf_counter()
-        train_loss = _reconstruction_epoch(model, batches, criterion, device, optimizer, scaler, amp)
-        val_loss = _reconstruction_epoch(model, validation, criterion, device)
-        by_class = _dae_class_reconstruction(model, exp, manifests["validation"], settings, device, criterion)
-        history.append({"epoch": epoch, "train_images": len(manifests["train"]), "train_ids_hash": digest(manifests["train"].image.tolist()),
-                        "train_loss": train_loss, "validation_loss": val_loss, "validation_normal_loss": by_class.get("0"),
-                        "validation_infiltration_loss": by_class.get("1"), "seconds": perf_counter() - started})
-        improved, best = val_loss < best, min(best, val_loss)
-        state = checkpoint_state(exp, model, optimizer, scaler, epoch, best, history)
-        if improved:
-            save_torch(folder / "best.pt", state)
-        save_torch(folder / "last.pt", state)
-        _write_csv(folder / "history.csv", pd.DataFrame(history))
-        print(f"DAE epoch {epoch}/{settings['epochs']}: all {len(manifests['train'])} images, train={train_loss:.5f}, validation={val_loss:.5f}", flush=True)
+    workers = settings.get("num_workers", 0)
+    validation = loader(DenoiseDataset(exp, manifests["validation"]), settings["batch_size"], exp.config["seed"], workers=workers)
+    try:
+        for epoch in range(epoch + 1, settings["epochs"] + 1):
+            batches = loader(DenoiseDataset(exp, manifests["train"], epoch), settings["batch_size"], exp.config["seed"] + epoch, True, workers)
+            started = perf_counter()
+            train_loss = _reconstruction_epoch(model, batches, criterion, device, optimizer, scaler, amp)
+            val_loss = _reconstruction_epoch(model, validation, criterion, device)
+            by_class = _dae_class_reconstruction(model, exp, manifests["validation"], settings, device, criterion)
+            history.append({"epoch": epoch, "train_images": len(manifests["train"]), "train_ids_hash": digest(manifests["train"].image.tolist()),
+                            "train_loss": train_loss, "validation_loss": val_loss, "validation_normal_loss": by_class.get("0"),
+                            "validation_infiltration_loss": by_class.get("1"), "seconds": perf_counter() - started})
+            improved, best = val_loss < best, min(best, val_loss)
+            state = checkpoint_state(exp, model, optimizer, scaler, epoch, best, history)
+            if improved:
+                save_torch(folder / "best.pt", state)
+            save_torch(folder / "last.pt", state)
+            _write_csv(folder / "history.csv", pd.DataFrame(history))
+            print(f"DAE epoch {epoch}/{settings['epochs']}: all {len(manifests['train'])} images, train={train_loss:.5f}, validation={val_loss:.5f}", flush=True)
+    finally:
+        # Denoising inference, evaluation and XAI stay bitwise deterministic.
+        deterministic_backend(True)
     best_checkpoint = exp.load_checkpoint(folder / "best.pt")
     last_checkpoint = exp.load_checkpoint(folder / "last.pt")
     if last_checkpoint["epoch"] != settings["epochs"]:
@@ -366,6 +382,7 @@ def train_condition(exp, manifests, condition_id, device="cuda", *,
     settings = exp.config["cnn"]
     if settings.get("pretrained", True) is False and exp.config.get("run_mode") != "smoke":
         raise ValueError("Full release training requires pretrained ImageNet weights")
+    deterministic_backend(True)  # DAE denoising cache must not inherit a fast training backend.
     prep = preprocessor_factory(exp, condition_id, device)
     prep.prepare([manifests[name] for name in ("train", "validation", "test")])
     train = manifests["train"]
@@ -380,6 +397,7 @@ def train_condition(exp, manifests, condition_id, device="cuda", *,
     set_seed(seed)
     model = model_factory(pretrained=settings.get("pretrained", True) if checkpoint is None else False, weights_name=settings.get("weights", "IMAGENET1K_V2"),
                           dropout=settings.get("head_dropout", 0.3), trainable_layers=settings.get("trainable_layers", "layer4_after_warmup")).to(device)
+    model = _training_backend(model, settings, device)
     optimizer = cnn_optimizer(model, settings)
     amp = settings.get("amp", True)
     scaler = _scaler(device, amp)
@@ -424,6 +442,7 @@ def evaluate_classifier(exp, manifests, condition_id, device="cuda", *,
                         model_factory=ReleaseResNet50, preprocessor_factory=None):
     """Evaluate the validation-selected model; test never chooses a checkpoint."""
     exp.lock()
+    deterministic_backend(True)
     folder, settings = exp.results("CNN", condition_id), exp.config["cnn"]
     if _completed(exp, folder, condition_id) is not None:
         return json.loads((folder / "metrics.json").read_text(encoding="utf-8"))

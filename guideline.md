@@ -174,5 +174,6 @@ Implementation อยู่ `Notebook_3 release/` บน branch `codex/notebook-
 - เก็บ v2 parameterpreset เป็นlegacyแยก Controlledstrengthไม่ได้ใช้CLAHEclipเป็นตัวแทนdenoisingstrengthโดยลำพัง
 - ResNet50ImageNetV2ทุกmethod: headwarmup3epochs จากนั้นlayer4+headจน20epochs, freezeearlylayers/BatchNormstatisticsทั้งหมด; AdamW/dropout0.3/weightedBCEtrain-onlypos_weight≈7.037/effectivebatch16
 - 3trainingseeds42/43/44 แต่manifestsคงที่ รวม36CNN+3DAE; bestเลือกvalidationbalancedBCE ไม่ใช้test/XAIเลือกcheckpointหรือthreshold
+- Training DAE/CNN ใช้ non-deterministic cuDNN (benchmark) + channels_last เพื่อความเร็ว (~5× บน L4); seed ยังคุมลำดับข้อมูล, noise และ weight เริ่มต้น แต่ weight ที่ได้อาจต่างกันเล็กน้อยระดับทศนิยมเมื่อรันซ้ำ ความแปรปรวนนี้รวมอยู่ใน mean±SD ข้าม 3 seeds; DAE denoising inference, test evaluation และ Grad-CAM/SHAP ยัง deterministic
 - Runtimecacheuint8shardsอยู่ColabVM, results/checkpointsอยู่Drive; durablemetadata/manifest/sourcepixel/code/versionhashesใช้ตรวจresume
 - ผลvalidationและข้อจำกัดอยู่ `Notebook_3 release/VALIDATION.md` การทดสอบชุดเล็กไม่ใช่ผลclassificationงานวิจัยเต็ม
