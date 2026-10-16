@@ -14,9 +14,9 @@ ROOT = Path(__file__).resolve().parent
 
 def build():
     paths = []
-    for folder in ("v7", "configs", "partition_reference", "tests", "validation"):
+    for folder in ("v7", "configs", "partition_reference", "v3_zip_reference", "tests", "validation"):
         paths.extend(p for p in (ROOT / folder).rglob("*") if p.is_file() and p.suffix in (".py", ".json", ".csv"))
-    paths.extend(ROOT / name for name in ("run.py", "xai_interface.py", "build_notebook.py", "requirements.txt", "VENDOR_MANIFEST.json", "README.md", "VALIDATION.md") if (ROOT / name).exists())
+    paths.extend(ROOT / name for name in ("run.py", "progress.py", "xai_interface.py", "build_notebook.py", "requirements.txt", "VENDOR_MANIFEST.json", "README.md", "VALIDATION.md") if (ROOT / name).exists())
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
         for path in sorted(set(paths)):
@@ -29,7 +29,9 @@ def build():
     sha = hashlib.sha256(source).hexdigest()
     intro = """# v7 beta — class160: noise audit → noise simulation → CNN
 
-อ่าน NIH เดิมจาก `MyDrive/nih -xray/data/3` วิเคราะห์ครบ **112,120 ภาพ** แล้วคัดภาพ estimated noise ต่ำ
+ใช้ ZIP v3 เดิมจาก `MyDrive/nih -xray/data/v3_selected_zip/` **70,012 ภาพ**
+คัดลอก ZIP ทีละส่วน แตกและวิเคราะห์บน Colab VM แล้วคัดภาพ estimated noise ต่ำ
+ชุด ZIP นี้เป็นส่วนหนึ่งของ NIH 112,120 ภาพ; ไม่รายงานว่า audit ครบ NIH ทั้งหมด
 Train **160+160**, validation **40+40**, test **50+50** ตาม patient partition เดิม
 
 ทดลอง **12 วิธีเดิม ไม่มี strength L4**, noise 5 ชนิด × 3 ระดับ + ภาพก่อนเติม, seed 42
@@ -40,7 +42,8 @@ Train **160+160**, validation **40+40**, test **50+50** ตาม patient partit
 3. ผลและข้อมูลใช้ซ้ำอยู่ `MyDrive/nih -xray/Notebook_7_beta/`
 
 ถ้า runtime หลุด เปิด notebook นี้แล้ว Run all ใหม่ จะใช้ audit chunks / ชุดภาพที่คัด / checkpoint บน Drive ต่อ
-ไม่ต้องอัปโหลด ZIP ภาพใหม่ และ notebook มี source code ฝังไว้แล้ว
+ไม่ต้องอัปโหลด ZIP ภาพใหม่ ใช้ loader v3 เดิมและ notebook มี source code ฝังไว้แล้ว
+มี log ทันทีและสถานะทุก 10 วินาที ทั้งโหลด ZIP / แตกไฟล์ / วิเคราะห์ noise
 
 ภาพที่คัดเป็น **low estimated noise reference** ไม่อ้างว่าเป็นภาพไร้ noise จริง
 รอบนี้เป็น beta pilot หนึ่ง seed ไม่ใช่ผลสรุปหลาย training seeds
@@ -75,18 +78,20 @@ MOUNT = mount_on_fresh_path(drive.mount)
 import torch
 print("GPU:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "No GPU selected")
 '''
-    configure = '''from v7.colab import ensure_source
-import os
-DATA_ROOT = MOUNT / "MyDrive/nih -xray/data/3"  # ภาพเดิม
+    configure = '''import os
+ZIP_ROOT = MOUNT / "MyDrive/nih -xray/data/v3_selected_zip"
+DATA_ROOT = Path("/content/cxr_v7_originals")  # แตก ZIP ลง VM; ไม่อ่าน PNG ทีละภาพบน Drive
 WORK = MOUNT / "MyDrive/nih -xray/Notebook_7_beta"  # ผลและข้อมูลใช้ซ้ำ
-ensure_source(DATA_ROOT)
+if not (ZIP_ROOT / "dataset_zip_index.json").is_file():
+    raise FileNotFoundError(f"Missing v3 ZIP catalog: {ZIP_ROOT}; authorize faceyuslay@gmail.com and check folder access")
 WORK.mkdir(parents=True, exist_ok=True)
 os.environ["TORCH_HOME"] = str(WORK / "cache/torch")  # reuse ImageNet weights across runtimes
-print("Read-only source:", DATA_ROOT)
+print("Read-only ZIP source:", ZIP_ROOT)
+print("VM-local originals:", DATA_ROOT)
 print("Durable outputs:", WORK)
 '''
-    prepare = '''from v7.colab import prepare_on_drive
-prepare_on_drive(ROOT, DATA_ROOT, WORK, workers=4)
+    prepare = '''from progress import prepare_with_logs
+prepare_with_logs(ROOT, DATA_ROOT, WORK, workers=4, zip_root=ZIP_ROOT)
 '''
     stage = '''from v7.colab import stage_selected
 LOCAL_DATA = stage_selected(WORK, Path("/content/v7_cache"))
@@ -106,12 +111,12 @@ print("Checkpoints / XAI loader metadata:", REPORTS.parent)
 '''
     notebook = nbf.v4.new_notebook(cells=[nbf.v4.new_markdown_cell(intro), nbf.v4.new_code_cell(setup),
         nbf.v4.new_markdown_cell("## 1. ตำแหน่งข้อมูลและผลบน Drive"), nbf.v4.new_code_cell(configure),
-        nbf.v4.new_markdown_cell("## 2. วิเคราะห์ noise และคัดภาพ — บันทึก checkpoint ลง Drive\nรอบแรกอ่านภาพทั้งหมด; รอบถัดไปใช้ชุดที่คัดไว้แล้ว"), nbf.v4.new_code_cell(prepare),
+        nbf.v4.new_markdown_cell("## 2. โหลด ZIP v3 → แตกบน Colab → วิเคราะห์ noise 70,012 ภาพ\nใช้ loader v3 เดิม มี log ทุก 10 วินาที; checkpoint และชุดที่คัดบันทึกลง Drive"), nbf.v4.new_code_cell(prepare),
         nbf.v4.new_markdown_cell("## 3. โหลดชุดภาพที่คัดจาก Drive เข้า Colab VM"), nbf.v4.new_code_cell(stage),
         nbf.v4.new_markdown_cell("## 4. ฝึก DAE และ CNN 12 วิธี — เก็บ checkpoint ทุก epoch บน Drive"), nbf.v4.new_code_cell(train),
         nbf.v4.new_markdown_cell("## 5. ผล CNN และคุณภาพภาพ"), nbf.v4.new_code_cell(results)])
     notebook.metadata = {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
-        "language_info": {"name": "python"}, "colab": {"name": "run_v7_colab.ipynb"}, "accelerator": "GPU"}
+        "language_info": {"name": "python"}, "colab": {"name": "run_v7_colab_v3_zip.ipynb"}, "accelerator": "GPU"}
     notebook.cells[1].metadata["cellView"] = "form"
     for cell in notebook.cells:
         if cell.cell_type == "code":

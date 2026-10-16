@@ -2,7 +2,8 @@
   "schema_version": 7,
   "seed": 42,
   "run_mode": "full",
-  "expected_audit_images": 112120,
+  "expected_audit_images": 70012,
+  "audit_scope": "v3_zip_originals",
   "counts_per_class": {
     "train": 160,
     "validation": 40,

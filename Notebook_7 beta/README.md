@@ -1,13 +1,14 @@
 # v7 beta — low-estimated-noise class160 CNN pilot
 
-Run **run_v7_colab.ipynb** in Google Colab with a GPU. The notebook embeds its source code;
+Run **run_v7_colab_v3_zip.ipynb** (built locally as run_v7_colab.ipynb) in Google Colab with a GPU. The notebook embeds its source code;
 no clone or new full-dataset upload is needed. `v7_source.zip` is a source-only recovery package.
 
 ## Drive paths
 
-- Read-only NIH input: `/content/drive/MyDrive/nih -xray/data/3`
+- Read-only v3 ZIP input: `MyDrive/nih -xray/data/v3_selected_zip/` (13 ZIPs + dataset_zip_index.json)
+- VM-local originals: `/content/cxr_v7_originals` (70,012 images; a subset of NIH's 112,120)
 - Durable v7 workspace: `/content/drive/MyDrive/nih -xray/Notebook_7_beta`
-- Windows mapping supplied by the user: `G:\My Drive\nih -xray\data\3`
+- Windows mapping supplied by the user: `G:\My Drive\nih -xray\data\v3_selected_zip`
 
 Open the notebook from Drive, select **Runtime → Change runtime type → GPU**, then **Run all**.
 Authorize the Drive mount using **faceyuslay@gmail.com only** (Windows G:).
@@ -21,15 +22,16 @@ in the authorization flow. If the source remains invisible, rerun setup to recon
 The mounted account cannot be verified from the folder name alone; also check for
 duplicate nih -xray folders if the source remains invisible. Source validation runs
 before creating an output directory. Missing data stops the run without selecting images.
-The corrected audit uses audit_io_v2, preserving the earlier failed audit directory.
+The ZIP audit uses audit_v3_zip_70012, preserving the earlier full-source audit directories.
 An audit with any image read errors is incomplete and cannot proceed to selection.
 
 The notebook writes these reusable artifacts to the v7 workspace:
 
 | Artifact | Purpose |
 |---|---|
-| `audit_io_v2/chunks/` | Atomic 256-image audit checkpoints; safe to resume on another VM |
-| `audit_io_v2/noise_audit.csv`, `audit_io_v2/summary.json` | Full 112,120-image noise proxy and audit integrity |
+| `audit_v3_zip_70012/chunks/` | Atomic 256-image audit checkpoints; safe to resume on another VM |
+| `audit_v3_zip_70012/noise_audit.csv`, `audit_v3_zip_70012/summary.json` | All 70,012 ZIP images; separately records NIH metadata count 112,120 and full_nih_complete=false |
+| `zip_source.json` | ZIP catalog, archive and reused v3 loader hashes |
 | `prepared/manifests/`, `prepared/figures/` | Frozen selections, AP/PA counts, noise distributions and examples |
 | `selected_data/`, `v7_selected_data.zip`, `selected_package.json` | Native selected images, XAI reference, manifests and package hashes |
 | `runs/v7_beta/seed_42/DAE/` | One DAE's best/last checkpoints, epoch history and corruption logs |
@@ -38,10 +40,18 @@ The notebook writes these reusable artifacts to the v7 workspace:
 | `runs/v7_beta/seed_42/xai_ready/` | Native input geometry, original 123 bbox manifest and train-only SHAP background metadata; images remain in the selected package |
 
 After a disconnected runtime, Run all again. Completed audit chunks, the selected-image package,
-and completed epochs are reused. Only the selected-image ZIP is staged onto the Colab VM for
-fast training. This version does not stage the entire NIH corpus or consume `v3_selected_zip`,
-which does not cover all 112,120 images required by the audit. Dataset folders may contain
-`images_001/images/*.png` or `images_001/*.png`.
+and completed epochs are reused. The user approved replacing the full-NIH scan with the existing
+v3 ZIP scope of **70,012 originals**. The notebook reuses the byte-identical v3
+`tools/stage_dataset.py` under `v3_zip_reference/`, including its five frozen manifests.
+It copies one ZIP at a time, verifies archive and original-image SHA-256 hashes, extracts to
+the VM and removes only the consumed local ZIP. Unpacked images total about 26.26 GiB;
+the loader checks disk capacity before transfer. No individual PNG is read from Drive.
+The ZIP index must cover every frozen train/validation/test/XAI image; partition hashes must
+match. Source metadata and official lists remain unchanged at the full NIH release size.
+Resume on the same VM verifies and reuses extracted files. After a VM reset, ZIPs must be
+staged again until the selected-image package is complete; later runs reuse that small package.
+`progress.py` prints immediately and emits a heartbeat every 10 seconds even during slow
+Drive operations, with decoded-image and written-checkpoint counts for the current call.
 
 ## Locked experiment
 

@@ -69,7 +69,7 @@ def read_image(path):
     return image, sha256(raw).hexdigest()
 
 
-def audit(data_root, output, partition_root, *, workers=4, limit=None, reuse_complete=False):
+def audit(data_root, output, partition_root, *, workers=4, limit=None, reuse_complete=False, image_ids=None):
     data_root, output, partition_root = Path(data_root).resolve(), Path(output), Path(partition_root)
     if output.resolve().is_relative_to(data_root):
         raise ValueError("Audit output must be outside the read-only dataset")
@@ -85,6 +85,12 @@ def audit(data_root, output, partition_root, *, workers=4, limit=None, reuse_com
     patients_train = set(metadata.loc[metadata["Image Index"].isin(official_train), "Patient ID"])
     if patients_test & patients_train:
         raise ValueError("Official patients overlap")
+    requested = metadata
+    if image_ids is not None:
+        image_ids = set(image_ids)
+        if not image_ids or not image_ids <= set(metadata["Image Index"]):
+            raise ValueError("ZIP image IDs are empty or outside the official metadata")
+        requested = metadata[metadata["Image Index"].isin(image_ids)]
     partition = {}
     for split in ("train", "validation", "test"):
         frame = pd.read_csv(partition_root / f"{split}.csv")
@@ -92,7 +98,8 @@ def audit(data_root, output, partition_root, *, workers=4, limit=None, reuse_com
     sources = [data_root / name for name in ("Data_Entry_2017.csv", "train_val_list.txt", "test_list.txt")]
     sources += sorted(partition_root.glob("*.csv"))
     signature = digest({"algorithm": AUDIT_VERSION, "source": file_hash(__file__),
-                        "inputs": {p.name: file_hash(p) for p in sources}})
+                        "inputs": {p.name: file_hash(p) for p in sources},
+                        "image_ids": sorted(image_ids) if image_ids is not None else None})
     output.mkdir(parents=True, exist_ok=True)
     lock = output / "audit_config.json"
     if lock.exists() and json.loads(lock.read_text())["signature"] != signature:
@@ -115,7 +122,7 @@ def audit(data_root, output, partition_root, *, workers=4, limit=None, reuse_com
             raise ValueError("Incompatible audit chunk")
         known.update({record["image"]: record for record in saved["records"]})
     lookup = image_index(data_root)
-    items = metadata.to_dict("records")[:limit]
+    items = requested.to_dict("records")[:limit]
     missing_images = [row["Image Index"] for row in items if row["Image Index"] not in lookup]
     if missing_images:
         raise FileNotFoundError(
@@ -176,7 +183,10 @@ def audit(data_root, output, partition_root, *, workers=4, limit=None, reuse_com
     temporary.replace(output / "noise_audit.csv")
     error_count = int((frame.status == "error").sum())
     summary = {"signature": signature, "algorithm": AUDIT_VERSION, "metadata_images": len(metadata),
-               "audited_images": len(frame), "complete": len(frame) == len(metadata) and error_count == 0,
+               "requested_images": len(requested),
+               "scope": "v3_zip_originals" if image_ids is not None else "full_metadata",
+               "audited_images": len(frame), "complete": len(frame) == len(requested) and error_count == 0,
+               "full_nih_complete": len(frame) == len(metadata) and error_count == 0,
                "readable_images": int(frame.status.isin(["ok", "insufficient_patches"]).sum()),
                "statuses": {str(k): int(v) for k, v in frame.status.value_counts().items()},
                "csv_sha256": file_hash(output / "noise_audit.csv"), "estimate_units": "intensity normalized to [0,1]",

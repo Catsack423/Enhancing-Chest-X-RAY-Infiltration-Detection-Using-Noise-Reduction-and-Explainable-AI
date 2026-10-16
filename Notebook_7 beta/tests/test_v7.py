@@ -1,6 +1,7 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import json
+import shutil
 import zipfile
 import sys
 import unittest
@@ -146,6 +147,32 @@ class ProtocolTests(unittest.TestCase):
             verified = InputData(local, full_config)
             self.assertEqual(len(verified.frames["train"]), 4)
             self.assertEqual(len(verified.frames["xai"]), 123)
+            # Same 135 originals via ZIP while metadata retains an extra NIH image.
+            from test_zip_v3 import make_catalog
+            from progress import prepare_with_logs
+            (root / "v3_zip_reference/manifests").mkdir(parents=True)
+            shutil.copyfile(ROOT / "v3_zip_reference/stage_dataset.py", root / "v3_zip_reference/stage_dataset.py")
+            for path in (root / "partition_reference").glob("*.csv"):
+                shutil.copyfile(path, root / "v3_zip_reference/manifests" / path.name)
+            metadata.append({"Image Index": "99999999_000.png", "Patient ID": 99999999,
+                             "Finding Labels": "Effusion", "View Position": "AP"})
+            pd.DataFrame(metadata).to_csv(nih / "Data_Entry_2017.csv", index=False)
+            with (nih / "train_val_list.txt").open("a") as handle:
+                handle.write("\n99999999_000.png")
+            files = {p.relative_to(nih).as_posix(): p.read_bytes() for p in nih.rglob("*") if p.is_file()}
+            archives = base / "Drive/v3_selected_zip"
+            make_catalog(root, archives, files)
+            zip_work = base / "Drive/zip_v7"
+            prepare_with_logs(root, base / "ZIP_VM", zip_work, workers=2, zip_root=archives)
+            summary = json.loads((zip_work / "audit_v3_zip_70012/summary.json").read_text())
+            self.assertEqual(summary["audited_images"], 135)
+            self.assertEqual(summary["metadata_images"], 136)
+            self.assertTrue(summary["complete"])
+            self.assertFalse(summary["full_nih_complete"])
+            self.assertEqual(before, {s: file_hash(zip_work / f"selected_data/{s}.csv") for s in before})
+            receipt = (zip_work / "selected_package.json").read_bytes()
+            prepare_with_logs(root, base / "ZIP_VM", zip_work, workers=2, zip_root=archives)
+            self.assertEqual(receipt, (zip_work / "selected_package.json").read_bytes())
 
     def test_drive_package_roundtrip_and_integrity(self):
         with TemporaryDirectory() as temporary:

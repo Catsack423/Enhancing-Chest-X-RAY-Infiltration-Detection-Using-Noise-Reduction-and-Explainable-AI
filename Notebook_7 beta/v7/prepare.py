@@ -124,8 +124,10 @@ def prepare(root, data_root, audit_dir, work_root=None):
         raise ValueError("Prepared outputs must be outside the original dataset")
     config = json.loads((root / "configs/protocol.json").read_text())
     summary = json.loads((audit_dir / "summary.json").read_text())
-    if not summary["complete"] or summary["metadata_images"] != config["expected_audit_images"]:
-        raise ValueError("Prepare requires the complete 112,120-image audit")
+    if not summary["complete"] or summary.get("requested_images", summary["metadata_images"]) != config["expected_audit_images"]:
+        raise ValueError(f"Prepare requires the complete configured {config['expected_audit_images']:,}-image audit")
+    if summary.get("scope") == "v3_zip_originals" and config.get("audit_scope") != "v3_zip_originals":
+        raise ValueError("ZIP-subset audit cannot satisfy a full-NIH protocol")
     if summary["csv_sha256"] != file_hash(audit_dir / "noise_audit.csv"):
         raise ValueError("Audit CSV integrity failed")
     audit = pd.read_csv(audit_dir / "noise_audit.csv")
@@ -160,6 +162,9 @@ def prepare(root, data_root, audit_dir, work_root=None):
         (frozen / f"{name}.csv").write_bytes(payload)
         (destination / f"{name}.csv").write_bytes(payload)
     receipt = {"schema_version": 7, "audit_signature": summary["signature"],
+               "audit_scope": summary.get("scope", "full_metadata"),
+               "audited_images": summary["audited_images"], "metadata_images": summary["metadata_images"],
+               "source_zip": json.loads((work_root / "zip_source.json").read_text()) if (work_root / "zip_source.json").exists() else None,
                "audit_csv_sha256": summary["csv_sha256"], "selection": "lowest estimated sigma per class/frozen split, tie=image",
                "counts_per_class": config["counts_per_class"], "native_images": len(unique),
                "manifest_hashes": {name: file_hash(frozen / f"{name}.csv") for name in MANIFESTS},

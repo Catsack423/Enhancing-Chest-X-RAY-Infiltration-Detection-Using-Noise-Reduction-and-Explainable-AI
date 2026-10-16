@@ -184,8 +184,9 @@ Implementation อยู่ `Notebook_3 release/` บน branch `codex/notebook-
 ## 10. v7 beta — noise-controlled class160 pilot (16 October 2026)
 
 - โค้ดแยก `Notebook_7 beta/`, branch `codex/notebook-v7-beta`; ไม่เปลี่ยนผลหรือโค้ดของ v4 เดิม
-- ทำงานจริงบน Colab: อ่าน `/content/drive/MyDrive/nih -xray/data/3`, เก็บ audit/ชุดภาพที่คัด/checkpoints/results ที่ `/content/drive/MyDrive/nih -xray/Notebook_7_beta`
-- วิเคราะห์ 112,120 ภาพด้วย db2 wavelet MAD บน patch64 ในกลาง80%, ตัด patch สีคงที่/อิ่มตัว, ใช้ patch gradient ต่ำสุด25%; ค่าเป็น estimated noise ไม่ใช่หลักฐานว่าภาพไม่มี noise
+- ทำงานจริงบน Colab: ใช้ ZIP v3 เดิมใน `MyDrive/nih -xray/data/v3_selected_zip` (บัญชี faceyuslay@gmail.com เท่านั้น) กับ loader `stage_dataset.py` ของ v3 แบบ byte-identical; copy/ตรวจ SHA-256/แตกบน `/content/cxr_v7_originals` ทีละ ZIP แล้วลบ ZIP ชั่วคราว ไม่ไล่อ่าน PNG บน Drive; เก็บ audit/ชุดภาพที่คัด/checkpoints/results ที่ `MyDrive/nih -xray/Notebook_7_beta`
+- ผู้ใช้อนุมัติเปลี่ยน scope จาก NIH ทั้งหมดเป็น ZIP เดิม 70,012 ภาพ ซึ่งครอบคลุม frozen partitions/XAI ครบ; metadata/official lists ต้นฉบับยังครบ 112,120 ภาพ บันทึก requested/audited/metadata counts และ full_nih_complete=false แยกกัน ไม่อ้างว่า audit ครบ NIH ทั้งหมด
+- วิเคราะห์ภาพใน ZIP ทั้ง 70,012 ภาพด้วย db2 wavelet MAD บน patch64 ในกลาง80%, ตัด patch สีคงที่/อิ่มตัว, ใช้ patch gradient ต่ำสุด25%; ค่าเป็น estimated noise ไม่ใช่หลักฐานว่าภาพไม่มี noise; log เริ่มทันทีและ heartbeat ทุก10วินาที มีจำนวนภาพที่ decode/checkpoint และความคืบหน้า copy/extract
 - คัดคะแนนต่ำสุดต่อ class/partition (tie=image ID): train160+160, validation40+40, test50+50; reuse frozen patient partition v4.3, Infiltration-only vs strictly No Finding; ไม่ลดเกณฑ์เมื่อภาพไม่พอ
 - ใช้ 12 methods v4.3 ตรงสูตรเดิม ไม่มี strength L4; DWT fusion ยังคง decomposition4ระดับ และ DFT3views ตามเดิม
 - Gaussian, Poisson, Poisson–Gaussian, salt-and-pepper, speckle อย่างละ3ระดับ + ภาพก่อนเติม รวม16สภาวะ; trainสุ่มหนึ่งสภาวะต่อภาพต่อepochเหมือนกันทุกmethod, validation/testใช้corruptionคงที่; parametersอยู่ใน `v7/noise.py` และบันทึกในexperiment.json
