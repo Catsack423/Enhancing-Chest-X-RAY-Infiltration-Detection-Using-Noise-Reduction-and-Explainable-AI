@@ -15,6 +15,8 @@ from copy import deepcopy
 from pathlib import Path
 
 REFERENCE = Path(__file__).with_name('release_full_training_reference.py')
+# shared/denoising.py exactly as release_v4 ran it; the L4 version only adds denoising conditions.
+DENOISING_REFERENCE = Path(__file__).with_name('release_v4_denoising_reference.py')
 # Source files that may differ: none of them is used to train the DAE.
 NON_DAE_SOURCES = {'shared/training.py', 'shared/evaluation.py', 'shared/reporting.py', 'build_notebooks.py'}
 # Everything train_dae runs; _completed is excluded because only its CNN branch changed.
@@ -22,6 +24,11 @@ DAE_FUNCTIONS = ('train_dae', 'DenoiseDataset', 'synthetic_noise', 'loader', 'ca
                  'restore_rng_state', '_autocast', '_scaler', '_finite_loss', '_write_csv',
                  '_resume_checkpoint', '_repair_epoch_writes', '_restore_training', '_reconstruction_epoch',
                  '_dae_class_reconstruction', '_training_backend', '_ensure_cache', 'checkpoint_state')
+# denoising.py functions that build DAE training inputs (runtime_cache imports working_image).
+DENOISING_DAE_FUNCTIONS = ('read_gray', 'working_image')
+# Source files whose DAE-relevant functions are compared one by one against the code that trained the old DAE.
+CHECKED_SOURCES = {'shared/training.py': (REFERENCE, DAE_FUNCTIONS),
+                   'shared/denoising.py': (DENOISING_REFERENCE, DENOISING_DAE_FUNCTIONS)}
 
 
 def _read(path):
@@ -34,9 +41,12 @@ def _definitions(source):
 
 
 def _dae_scope(config):
-    """Config fields that can influence the DAE; CNN settings and output paths cannot."""
+    """Config fields that can influence the DAE; CNN settings, conditions and output paths cannot.
+
+    `conditions` only choose CNN inputs; train_dae never reads them.
+    """
     scope = deepcopy(config)
-    for key in ('cnn', 'output_subdirectory', 'source_code_hashes'):
+    for key in ('cnn', 'conditions', 'output_subdirectory', 'source_code_hashes'):
         scope.pop(key, None)
     scope['data'].pop('colab_output_root', None)
     return scope
@@ -74,16 +84,19 @@ def verify(exp, old_seed_root):
             raise ValueError(f'Old DAE {key} differs from this run; train a new DAE')
     old_sources, new_sources = saved['config']['source_code_hashes'], current['config']['source_code_hashes']
     changed = {k for k in set(old_sources) | set(new_sources) if old_sources.get(k) != new_sources.get(k)}
-    if changed - NON_DAE_SOURCES:
-        raise ValueError(f'Source files used by DAE training changed: {sorted(changed - NON_DAE_SOURCES)}')
-    if 'shared/training.py' in changed:
-        if file_hash(REFERENCE) != old_sources['shared/training.py']:
-            raise ValueError('Reference training.py is not the code that trained the old DAE')
-        before = _definitions(REFERENCE.read_text(encoding='utf-8'))
-        after = _definitions((Path(exp.root) / 'shared/training.py').read_text(encoding='utf-8'))
-        altered = [name for name in DAE_FUNCTIONS if before.get(name) is None or before.get(name) != after.get(name)]
+    unchecked = changed - NON_DAE_SOURCES - set(CHECKED_SOURCES)
+    if unchecked:
+        raise ValueError(f'Source files used by DAE training changed: {sorted(unchecked)}')
+    for source, (reference, functions) in CHECKED_SOURCES.items():
+        if source not in changed:
+            continue
+        if file_hash(reference) != old_sources[source]:
+            raise ValueError(f'Reference for {source} is not the code that trained the old DAE')
+        before = _definitions(reference.read_text(encoding='utf-8'))
+        after = _definitions((Path(exp.root) / source).read_text(encoding='utf-8'))
+        altered = [name for name in functions if before.get(name) is None or before.get(name) != after.get(name)]
         if altered:
-            raise ValueError(f'DAE training code changed: {altered}')
+            raise ValueError(f'DAE training code changed in {source}: {altered}')
     return completed, checkpoint
 
 
@@ -108,7 +121,8 @@ def import_dae(exp, old_seed_root):
     record = {'source': str(old_seed_root), 'config_hash': completed['provenance']['config_hash'],
               'checkpoint_hash': completed['checkpoint_hash'], 'complete_json_hash': source_marker,
               'reference_training_sha256': file_hash(REFERENCE),
-              'reason': 'DAE code/config/data/versions identical; only CNN protocol changed'}
+              'reference_denoising_sha256': file_hash(DENOISING_REFERENCE),
+              'reason': 'DAE code/config/data/versions identical; only CNN protocol or conditions changed'}
     provenance = exp.provenance()
     for name in ('best.pt', 'last.pt'):
         state = torch.load(old / name, map_location='cpu', weights_only=True)

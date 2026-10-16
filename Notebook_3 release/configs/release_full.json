@@ -8,13 +8,13 @@
   ],
   "dataset_seed": 42,
   "profile": "release_controlled",
-  "output_subdirectory": "runs/release_v4",
+  "output_subdirectory": "runs/release_v4_L4",
   "training": {
     "images_per_epoch": 46108
   },
   "data": {
     "colab_data_root": "/content/drive/MyDrive/nih -xray/data/3",
-    "colab_output_root": "/content/drive/MyDrive/nih -xray/Notebook_3_release/runs/release_v4",
+    "colab_output_root": "/content/drive/MyDrive/nih -xray/Notebook_3_release/runs/release_v4_L4",
     "validation_patient_fraction": 0.2,
     "test_scope": "official_filtered_full",
     "source_hashes": {
@@ -161,6 +161,12 @@
       "kernel": 7
     },
     {
+      "id": "median_L4",
+      "group": "median",
+      "level": 4,
+      "kernel": 9
+    },
+    {
       "id": "clahe_dwt_strength_L1",
       "group": "clahe_dwt",
       "level": 1,
@@ -197,6 +203,19 @@
       "order": "DWT_then_CLAHE"
     },
     {
+      "id": "clahe_dwt_strength_L4",
+      "group": "clahe_dwt",
+      "level": 4,
+      "clip_limit": 2.0,
+      "wavelet": "db1",
+      "dwt_depth": 1,
+      "mode": "periodization",
+      "threshold_ratio": 0.35,
+      "threshold_policy": "max_detail_ratio",
+      "order": "DWT_then_CLAHE",
+      "source": "Seminae_source_code DWT L4 (db1, one level, soft 0.35*max detail)"
+    },
+    {
       "id": "dae_clahe_strength_L1",
       "group": "dae_clahe",
       "level": 1,
@@ -216,6 +235,14 @@
       "level": 3,
       "clip_limit": 2.0,
       "alpha": 1.0
+    },
+    {
+      "id": "dae_clahe_strength_L4",
+      "group": "dae_clahe",
+      "level": 4,
+      "clip_limit": 2.0,
+      "alpha": 1.0,
+      "dae_passes": 2
     },
     {
       "id": "dwt_L1_L4_fusion",

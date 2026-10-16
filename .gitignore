@@ -6,7 +6,7 @@ outputs/teachable_machine_pilot
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
-
+gcs-public-data--healthcare-nih-chest-xray-labels
 # Keep datasets, generated packages and model weights outside Git.
 *.zip
 *.pth
@@ -28,3 +28,8 @@ desktop.ini
 /Notebook_3 beta/
 /Notebook_3 beta e7/
 /notebooks v1/
+
+# Preserve local files belonging to other notebook versions.
+/Notebook_5 beta/
+/Notebook_6 class200 methods/
+/eval_google_labels_colab result.ipynb

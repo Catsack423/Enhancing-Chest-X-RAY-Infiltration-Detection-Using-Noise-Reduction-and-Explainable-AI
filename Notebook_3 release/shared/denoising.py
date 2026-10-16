@@ -20,7 +20,26 @@ def working_image(raw, config):
     return cv2.resize(raw, (size, size), interpolation=cv2.INTER_AREA)
 
 
+def dwt_max_ratio_denoise(image, condition):
+    """Seminae DWT L4: one soft cutoff = ratio * largest detail coefficient magnitude."""
+    wavelet = condition.get("wavelet", "db1")
+    mode = condition.get("mode", "periodization")
+    depth = condition.get("dwt_depth", 1)
+    if pywt.dwtn_max_level(image.shape, wavelet) < depth:
+        raise ValueError("Insufficient working size for DWT depth")
+    ratio = condition["threshold_ratio"]
+    if not 0 <= ratio <= 1:
+        raise ValueError("DWT threshold ratio must be in [0,1]")
+    coeffs = pywt.wavedec2(image.astype(np.float64), wavelet, mode=mode, level=depth)
+    cutoff = ratio * max(np.abs(c).max() for band in coeffs[1:] for c in band)
+    details = [tuple(pywt.threshold(c, cutoff, mode="soft") if cutoff > 0 else c for c in band) for band in coeffs[1:]]
+    result = pywt.waverec2([coeffs[0]] + details, wavelet, mode=mode)[:image.shape[0], :image.shape[1]]
+    return np.clip(np.round(result), 0, 255).astype(np.uint8)
+
+
 def dwt_denoise(image, condition):
+    if condition.get("threshold_policy") == "max_detail_ratio":
+        return dwt_max_ratio_denoise(image, condition)
     legacy = condition.get("profile") == "legacy_v2" or condition.get("threshold_scope") == "image"
     wavelet = condition.get("wavelet", "db1")
     mode = condition.get("mode", "symmetric" if legacy else "periodization")
@@ -41,15 +60,20 @@ def dwt_denoise(image, condition):
     return np.clip(np.round(result), 0, 255).astype(np.uint8)
 
 
-def dae_blend(image, dae, alpha, device="cpu"):
+def dae_blend(image, dae, alpha, device="cpu", passes=1):
     if dae is None:
         raise RuntimeError("DAE requires the verified project-trained checkpoint")
     if not 0 <= alpha <= 1:
         raise ValueError("DAE blend alpha must be in [0,1]")
+    if int(passes) != passes or passes < 1:
+        raise ValueError("DAE passes must be a positive integer")
     x = image.astype(np.float32)/255
     tensor = torch.from_numpy(x)[None, None].to(device)
     with torch.no_grad():
-        denoised = dae(tensor)[0, 0].cpu().numpy()
+        # passes>1 feeds the DAE output back in (L4: stronger than alpha=1).
+        for _ in range(int(passes)):
+            tensor = dae(tensor)
+        denoised = tensor[0, 0].cpu().numpy()
     if denoised.shape != x.shape or not np.isfinite(denoised).all():
         raise ValueError("Invalid DAE output")
     return np.clip(np.round(((1-alpha)*x+alpha*denoised)*255), 0, 255).astype(np.uint8)
@@ -70,7 +94,8 @@ def apply_condition(image, condition, config, dae=None, device="cpu"):
             raise ValueError("Unexpected DWT/CLAHE order")
         result = dwt_denoise(image, condition)
     elif group == "dae_clahe":
-        result = dae_blend(image, dae, condition.get("blend_alpha", condition.get("alpha", 1.0)), device)
+        result = dae_blend(image, dae, condition.get("blend_alpha", condition.get("alpha", 1.0)), device,
+                           condition.get("dae_passes", 1))
     else:
         raise ValueError(f"Unknown denoising group {group}")
     return cv2.createCLAHE(clipLimit=float(condition.get("clip_limit", 2.0)),

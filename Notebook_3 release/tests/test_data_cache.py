@@ -175,6 +175,28 @@ class DataCacheTests(TestCase):
         with self.assertRaises(ValueError):
             dae_blend(image, ConstantDAE(), 2)
 
+    def test_l4_dae_passes_and_seminae_dwt_ratio(self):
+        image = np.arange(64*64).reshape(64, 64).astype(np.uint8)
+        class HalfDAE(torch.nn.Module):
+            def forward(self, x):
+                return x*.5
+        twice = np.round(image.astype(np.float32)/255*.25*255).astype(np.uint8)
+        np.testing.assert_array_equal(dae_blend(image, HalfDAE(), 1, passes=2), twice)
+        np.testing.assert_array_equal(dae_blend(image, HalfDAE(), 1), dae_blend(image, HalfDAE(), 1, passes=1))
+        with self.assertRaises(ValueError):
+            dae_blend(image, HalfDAE(), 1, passes=0)
+        import pywt
+        condition = {"threshold_policy": "max_detail_ratio", "threshold_ratio": .35, "dwt_depth": 1, "wavelet": "db1"}
+        rng = np.random.default_rng(3)
+        noisy = rng.integers(0, 256, (64, 64)).astype(np.uint8)
+        # Seminae used float32; float64 here differs by at most one grey level after rounding.
+        LL, (LH, HL, HH) = pywt.dwt2(noisy.astype(np.float64), "db1")
+        cutoff = .35*np.max([np.abs(LH), np.abs(HL), np.abs(HH)])
+        bands = tuple(pywt.threshold(c, cutoff, mode="soft") for c in (LH, HL, HH))
+        seminae = np.clip(np.round(pywt.idwt2((LL, bands), "db1")), 0, 255).astype(np.uint8)
+        np.testing.assert_array_equal(dwt_denoise(noisy, condition), seminae)
+        np.testing.assert_array_equal(dwt_denoise(noisy, {**condition, "threshold_ratio": 0}), noisy)
+
     def test_derived_cache_checks_integrity_and_budget(self):
         RuntimeCache(self.exp).prepare(self.frames)
         prep = ReleasePreprocessor(self.exp, "median").prepare(self.frames)
