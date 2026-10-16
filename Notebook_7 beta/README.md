@@ -337,21 +337,33 @@ Median L1 มี AUC สูงสุด แต่ paired ΔAUC เทียบ B
 Baseline มี recall **84%** แต่ specificity **32%**: confusion matrix `[[16,34],[8,42]]`
 ในลำดับ `[[TN,FP],[FN,TP]]` จึงไม่ควรใช้ F1 ที่สูงกว่าบางวิธีเพียงค่าเดียวเพื่อสรุปภาพรวม
 
-### 5.3 Confusion Matrix และความต่างของ Accuracy — ดูเป็นกราฟ
+### 5.3 ตารางเปรียบเทียบ ROC-AUC, Accuracy และ Confusion Matrix
 
-**อ่านกราฟแรกเพื่อเทียบ Accuracy และผลต่าง จากนั้นดู Confusion Matrix ที่วาง Baseline กับวิธีทดลองคู่กัน**
-ใช้วิธีเดิมตามแถว ROC-AUC ในแต่ละ state ไม่ได้เปลี่ยนไปเลือก Max Accuracy
-ทุกค่ามาจาก test predictions ของ checkpoint และ validation threshold ที่บันทึกไว้เดิม
+**ตารางเปรียบเทียบ ROC-AUC และ Accuracy กับ Baseline ครบ 16 states**
+Accuracy มาจาก Confusion Matrix ของโมเดลเดียวกับแต่ละแถว ณ checkpoint และ validation threshold เดิม
+ΔAccuracy แสดงเป็น **จุดเปอร์เซ็นต์**; รูป Confusion Matrix สำหรับอ่านรายละเอียดอยู่ถัดจากตาราง
 
-#### Accuracy เทียบ Baseline ครบ 16 states
+| State | วิธีตามแถว AUC | ROC-AUC | Baseline AUC | ΔAUC | Accuracy จาก CM | Baseline Accuracy จาก CM | ΔAccuracy (จุดเปอร์เซ็นต์) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| clean | Median L1 (3×3) | 0.6980 | 0.6580 | +0.0400 | 60% | 58% | +2 |
+| gaussian_N1 | DAE→CLAHE L3 | 0.6792 | 0.6400 | +0.0392 | 66% | 53% | +13 |
+| gaussian_N2 | DAE→CLAHE L3 | 0.7156 | 0.6492 | +0.0664 | 66% | 56% | +10 |
+| gaussian_N3 | DAE→CLAHE L3 | 0.7036 | 0.6688 | +0.0348 | 66% | 60% | +6 |
+| poisson_N1 | DAE→CLAHE L3 | 0.6912 | 0.6580 | +0.0332 | 64% | 58% | +6 |
+| poisson_N2 | DAE→CLAHE L1 | 0.6992 | 0.6588 | +0.0404 | 62% | 57% | +5 |
+| poisson_N3 | DAE→CLAHE L3 | 0.6808 | 0.6104 | +0.0704 | 56% | 59% | -3 |
+| poisson_gaussian_N1 | DAE→CLAHE L3 | 0.6876 | 0.6276 | +0.0600 | 65% | 56% | +9 |
+| poisson_gaussian_N2 | DAE→CLAHE L1 | 0.6980 | 0.6388 | +0.0592 | 63% | 59% | +4 |
+| poisson_gaussian_N3 | DAE→CLAHE L3 | 0.6756 | 0.6368 | +0.0388 | 57% | 62% | -5 |
+| salt_pepper_N1 | Median L1 (3×3) | 0.6952 | 0.6268 | +0.0684 | 62% | 60% | +2 |
+| salt_pepper_N2 | Median L1 (3×3) | 0.6904 | 0.5808 | +0.1096 | 62% | 57% | +5 |
+| salt_pepper_N3 | Median L1 (3×3) | 0.7108 | 0.6000 | +0.1108 | 61% | 53% | +8 |
+| speckle_N1 | DAE→CLAHE L2 | 0.6892 | 0.6500 | +0.0392 | 62% | 56% | +6 |
+| speckle_N2 | DAE→CLAHE L1 | 0.6928 | 0.6468 | +0.0460 | 60% | 56% | +4 |
+| speckle_N3 | DAE→CLAHE L2 | 0.6824 | 0.6356 | +0.0468 | 62% | 59% | +3 |
 
-กราฟซ้ายแสดง Accuracy ของ Baseline และวิธีทดลอง; กราฟขวาแสดงผลต่างเป็น **จุดเปอร์เซ็นต์ (pp)**
-**สีเขียว = Accuracy เพิ่ม, สีแดง = ลด** เช่น +13 pp หมายถึงทายถูกเพิ่ม 13 ภาพใน test 100 ภาพ
-
-![Accuracy เทียบ Baseline และผลต่างครบ 16 states](results_summary/figures/accuracy_vs_baseline.png)
-
-จุดที่เห็นชัด: Gaussian N1 เพิ่ม **53% → 66% (+13 pp)** แต่ Poisson N3 ลด **59% → 56% (−3 pp)**
-และ Poisson–Gaussian N3 ลด **62% → 57% (−5 pp)** แม้ AUC ของวิธีทดลองสูงกว่าในสอง state หลัง
+Gaussian N1 มี Accuracy เพิ่ม **53% → 66% (+13 จุดเปอร์เซ็นต์)** ส่วน Poisson N3 ลด **59% → 56% (−3)**
+และ Poisson–Gaussian N3 ลด **62% → 57% (−5)** แม้ AUC ของวิธีทดลองสูงกว่าในสอง state หลัง
 
 #### Confusion Matrix: Baseline อยู่ซ้าย วิธีทดลองอยู่ขวา
 

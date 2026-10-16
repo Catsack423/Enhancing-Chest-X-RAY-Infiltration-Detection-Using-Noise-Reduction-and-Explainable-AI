@@ -6,7 +6,7 @@
 หัวรูปแสดง Accuracy จาก matrix และ Δ เทียบ Baseline เป็นจุดเปอร์เซ็นต์
 ใช้ checkpoint/threshold จาก validation เดิม; ตารางตัวเลขต้นฉบับยังอยู่ใน results_summary/tables/
 
-[กลับ README ข้อ 5.3](README.md#53-confusion-matrix-และความต่างของ-accuracy--ดูเป็นกราฟ)
+[กลับ README ข้อ 5.3](README.md)
 
 ## clean
 
