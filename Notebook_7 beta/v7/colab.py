@@ -8,6 +8,31 @@ from .release.experiment import file_hash
 
 DRIVE_DATA_ROOT = "/content/drive/MyDrive/nih -xray/data/3"
 DRIVE_WORK_ROOT = "/content/drive/MyDrive/nih -xray/Notebook_7_beta"
+AUDIT_DIRECTORY = "audit_io_v2"
+
+
+def ensure_source(data_root, remount=None):
+    """A mounted MyDrive is insufficient: the NIH dataset must be visible there."""
+    root = Path(data_root)
+    required = ("Data_Entry_2017.csv", "train_val_list.txt", "test_list.txt")
+    missing = [name for name in required if not (root / name).is_file()]
+    if missing and remount is not None:
+        print("The NIH source is not visible in this Drive mount. Remount and select faceyuslay@gmail.com (the dataset/G: account).", flush=True)
+        remount()
+        missing = [name for name in required if not (root / name).is_file()]
+    if missing:
+        parent = root.parent.parent
+        try:
+            visible = sorted(p.name for p in parent.iterdir())[:25] if parent.is_dir() else []
+        except OSError:
+            visible = []
+        raise FileNotFoundError(
+            f"NIH data is not accessible at {root}; missing {missing}. "
+            f"Visible entries under {parent}: {visible}. "
+            "Mount faceyuslay@gmail.com (the account on G:) and check for duplicate nih -xray folders, "
+            "or set DATA_ROOT to an accessible existing dataset. A newly created Notebook_7_beta folder "
+            "does not mean the dataset is present. No audit or cohort selection has started.")
+    return root
 
 
 def safe_extract(package, destination):
@@ -38,10 +63,12 @@ def prepare_on_drive(root, data_root, work, workers=4):
     if selected_bundle(work):
         print("Reusing the verified class160 selected-image package on Drive.", flush=True)
         return
+    ensure_source(data_root)
     from .audit import audit
     from .prepare import prepare
-    audit(data_root, work / "audit", root / "partition_reference", workers=workers, reuse_complete=True)
-    prepare(root, data_root, work / "audit", work)
+    # Preserve the old all-error audit; do not reuse its incorrect complete flag.
+    audit(data_root, work / AUDIT_DIRECTORY, root / "partition_reference", workers=workers, reuse_complete=True)
+    prepare(root, data_root, work / AUDIT_DIRECTORY, work)
 
 
 def stage_selected(work, cache):

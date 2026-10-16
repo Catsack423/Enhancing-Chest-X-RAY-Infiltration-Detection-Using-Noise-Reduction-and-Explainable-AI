@@ -36,7 +36,7 @@ Train **160+160**, validation **40+40**, test **50+50** ตาม patient partit
 ฝึก **1 DAE + 12 CNN**; เก็บ checkpoint และโครงสำหรับ XAI แต่ **ยังไม่รัน Grad-CAM/SHAP**
 
 1. เลือก **Runtime → Change runtime type → GPU**
-2. กด **Run all** แล้วอนุญาต mount Google Drive
+2. กด **Run all** แล้วอนุญาต mount Google Drive ด้วย **faceyuslay@gmail.com เท่านั้น**
 3. ผลและข้อมูลใช้ซ้ำอยู่ `MyDrive/nih -xray/Notebook_7_beta/`
 
 ถ้า runtime หลุด เปิด notebook นี้แล้ว Run all ใหม่ จะใช้ audit chunks / ชุดภาพที่คัด / checkpoint บน Drive ต่อ
@@ -50,6 +50,7 @@ from pathlib import Path
 import base64, hashlib, subprocess, sys, zipfile, io
 import importlib.util
 from google.colab import drive
+print("Authorize Google Drive using faceyuslay@gmail.com only. A browser account and a mounted Drive account can differ.")
 drive.mount("/content/drive")
 dependencies = {{"numpy": "numpy", "pandas": "pandas", "PIL": "Pillow", "cv2": "opencv-python-headless", "pywt": "PyWavelets", "scipy": "scipy", "sklearn": "scikit-learn", "matplotlib": "matplotlib", "nbformat": "nbformat"}}
 missing = [package for module, package in dependencies.items() if importlib.util.find_spec(module) is None]
@@ -74,16 +75,13 @@ sys.path.insert(0, str(ROOT))
 import torch
 print("GPU:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "No GPU selected")
 '''
-    configure = '''from v7.colab import DRIVE_DATA_ROOT, DRIVE_WORK_ROOT
+    configure = '''from v7.colab import DRIVE_DATA_ROOT, DRIVE_WORK_ROOT, ensure_source
 import os
 DATA_ROOT = Path(DRIVE_DATA_ROOT)  # MyDrive/nih -xray/data/3 (ภาพเดิม)
 WORK = Path(DRIVE_WORK_ROOT)       # MyDrive/nih -xray/Notebook_7_beta (ผลและข้อมูลใช้ซ้ำ)
+ensure_source(DATA_ROOT, remount=lambda: drive.mount("/content/drive", force_remount=True))
 WORK.mkdir(parents=True, exist_ok=True)
 os.environ["TORCH_HOME"] = str(WORK / "cache/torch")  # reuse ImageNet weights across runtimes
-required = ["Data_Entry_2017.csv", "train_val_list.txt", "test_list.txt"]
-missing = [name for name in required if not (DATA_ROOT / name).is_file()]
-if missing:
-    raise FileNotFoundError(f"Check DATA_ROOT={DATA_ROOT}; missing {missing}")
 print("Read-only source:", DATA_ROOT)
 print("Durable outputs:", WORK)
 '''

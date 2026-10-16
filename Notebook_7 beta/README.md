@@ -10,14 +10,23 @@ no clone or new full-dataset upload is needed. `v7_source.zip` is a source-only 
 - Windows mapping supplied by the user: `G:\My Drive\nih -xray\data\3`
 
 Open the notebook from Drive, select **Runtime → Change runtime type → GPU**, then **Run all**.
-Authorize the Drive mount. The full scan runs in Colab, not on the local PC.
+Authorize the Drive mount using **faceyuslay@gmail.com only** (Windows G:).
+The full scan runs in Colab, not on the local PC.
+
+If Colab sees only Notebook_7_beta while the Drive website shows data, the notebook
+requests a force remount. Choose faceyuslay@gmail.com in that authorization flow.
+The mounted account cannot be verified from the folder name alone; also check for
+duplicate nih -xray folders if the source remains invisible. Source validation runs
+before creating an output directory. Missing data stops the run without selecting images.
+The corrected audit uses audit_io_v2, preserving the earlier failed audit directory.
+An audit with any image read errors is incomplete and cannot proceed to selection.
 
 The notebook writes these reusable artifacts to the v7 workspace:
 
 | Artifact | Purpose |
 |---|---|
-| `audit/chunks/` | Atomic 256-image audit checkpoints; safe to resume on another VM |
-| `audit/noise_audit.csv`, `audit/summary.json` | Full 112,120-image noise proxy and audit integrity |
+| `audit_io_v2/chunks/` | Atomic 256-image audit checkpoints; safe to resume on another VM |
+| `audit_io_v2/noise_audit.csv`, `audit_io_v2/summary.json` | Full 112,120-image noise proxy and audit integrity |
 | `prepared/manifests/`, `prepared/figures/` | Frozen selections, AP/PA counts, noise distributions and examples |
 | `selected_data/`, `v7_selected_data.zip`, `selected_package.json` | Native selected images, XAI reference, manifests and package hashes |
 | `runs/v7_beta/seed_42/DAE/` | One DAE's best/last checkpoints, epoch history and corruption logs |

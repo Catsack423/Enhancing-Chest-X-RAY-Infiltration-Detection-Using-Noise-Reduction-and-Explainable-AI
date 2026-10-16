@@ -4,6 +4,7 @@ import json
 import zipfile
 import sys
 import unittest
+from unittest.mock import patch
 
 import cv2
 import numpy as np
@@ -19,7 +20,7 @@ from v7.report import image_quality
 from v7.dataset import InputData, Preprocessor
 from v7.runner import Run
 from v7.smoke import fixture
-from v7.colab import selected_bundle, stage_selected, safe_extract
+from v7.colab import selected_bundle, stage_selected, safe_extract, ensure_source
 from v7.release.experiment import file_hash
 from xai_interface import open_experiment
 
@@ -73,6 +74,19 @@ class NoiseTests(unittest.TestCase):
 
 
 class ProtocolTests(unittest.TestCase):
+    def test_mounted_drive_without_source_and_remount_recovery(self):
+        with TemporaryDirectory() as temporary:
+            drive = Path(temporary) / "MyDrive/nih -xray"
+            (drive / "Notebook_7_beta").mkdir(parents=True)
+            source = drive / "data/3"
+            with self.assertRaisesRegex(FileNotFoundError, "Notebook_7_beta"):
+                ensure_source(source)
+            def remount():
+                source.mkdir(parents=True)
+                for name in ("Data_Entry_2017.csv", "train_val_list.txt", "test_list.txt"):
+                    (source / name).write_text("fixture")
+            self.assertEqual(ensure_source(source, remount=remount), source)
+
     def test_preparation_full_xai_package_and_frozen_selection(self):
         with TemporaryDirectory() as temporary:
             base = Path(temporary)
@@ -200,6 +214,21 @@ class ProtocolTests(unittest.TestCase):
             pd.DataFrame(meta).to_csv(dataset / "Data_Entry_2017.csv", index=False)
             (dataset / "train_val_list.txt").write_text("\n".join(pd.concat([frames["train"], frames["validation"]]).image))
             (dataset / "test_list.txt").write_text("\n".join(frames["test"].image))
+            with patch("v7.audit.image_index", return_value={}):
+                with self.assertRaisesRegex(FileNotFoundError, "Image index found 0"):
+                    audit(dataset, root / "empty_index", reference, workers=2)
+            self.assertFalse((root / "empty_index/summary.json").exists())
+            self.assertEqual(list((root / "empty_index/chunks").glob("*.json")), [])
+            with patch("v7.audit.read_image", side_effect=OSError("Drive inaccessible")):
+                with self.assertRaisesRegex(OSError, "All image reads failed"):
+                    audit(dataset, root / "unreadable", reference, workers=2)
+            broken = json.loads((root / "unreadable/summary.json").read_text())
+            self.assertFalse(broken["complete"])
+            self.assertEqual(broken["readable_images"], 0)
+            broken["complete"] = True
+            (root / "unreadable/summary.json").write_text(json.dumps(broken))
+            recovered = audit(dataset, root / "unreadable", reference, workers=2, reuse_complete=True)
+            self.assertTrue((recovered.status == "ok").all())
             result = audit(dataset, root / "audit", reference, workers=2)
             again = audit(dataset, root / "audit", reference, workers=2)
             pd.testing.assert_frame_equal(result, again)

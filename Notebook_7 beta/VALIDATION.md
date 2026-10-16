@@ -2,7 +2,7 @@
 
 ## Passed locally
 
-- **9 focused tests passed** in the repository `.gpu` Python 3.11 environment.
+- **10 focused tests passed** in the repository `.gpu` Python 3.11 environment.
 - Gaussian sigma calibration (0.01/0.03/0.05), black borders, constant/too-small images,
   corruption formulas and fixed RNG, PSNR/SSIM identity, frozen strict-label selection,
   patient isolation, insufficient quotas, corrupt images, vendor byte hashes and view shapes.
@@ -11,6 +11,9 @@
   including a complete 123-image bbox manifest and repeatable frozen selections.
 - Package corruption and ZIP path escape are rejected. Read-only XAI opening preserves
   the saved experiment record and does not invalidate a run when explainer scripts are added.
+- A mounted Drive containing only Notebook_7_beta fails before audit/selection. Remount
+  recovery is tested. Missing indexed PNGs fail before checkpoint creation; all-read-error
+  audits stop as incomplete, and legacy incorrect complete flags are not reused.
 
 ## GPU integration passed
 
@@ -30,6 +33,7 @@ Device: **NVIDIA GeForce RTX 4060**, PyTorch 2.13.0+cu130.
 
 Machine-readable proof: `validation/gpu_smoke.json` (copied from the ignored smoke runtime).
 Full checkpoints and plots remain under `.runtime/gpu_smoke_v2/`, excluded from source packages.
+This GPU proof predates the Drive I/O fix; that fix is covered by the focused tests above.
 
 ## Bounds of this evidence
 
@@ -41,5 +45,7 @@ No full 112,120-image research audit or full ImageNet class160 training has been
 on Colab in this validation session. The user requested those stages on Colab/Drive;
 the notebook performs them when run. No Grad-CAM/SHAP was computed.
 
-The supplied Drive dataset path was confirmed accessible through the user's G: mount.
+The supplied Drive dataset path was confirmed accessible through the user's G: mount,
+whose Windows volume label identifies faceyuslay@gmail.com. Colab's current mount did
+not expose the data directory; cloud access is not confirmed by the local checks.
 Google Drive mount authorization and Colab GPU runtime selection remain interactive steps.

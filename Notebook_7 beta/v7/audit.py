@@ -101,7 +101,7 @@ def audit(data_root, output, partition_root, *, workers=4, limit=None, reuse_com
     completed = output / "summary.json"
     if reuse_complete and limit is None and completed.exists():
         receipt = json.loads(completed.read_text())
-        if receipt["complete"] and receipt["signature"] == signature:
+        if receipt["complete"] and receipt["signature"] == signature and receipt["statuses"].get("error", 0) == 0:
             if file_hash(output / "noise_audit.csv") != receipt["csv_sha256"]:
                 raise ValueError("Frozen audit CSV changed")
             print("Reusing the complete, verified Drive audit.", flush=True)
@@ -116,6 +116,13 @@ def audit(data_root, output, partition_root, *, workers=4, limit=None, reuse_com
         known.update({record["image"]: record for record in saved["records"]})
     lookup = image_index(data_root)
     items = metadata.to_dict("records")[:limit]
+    missing_images = [row["Image Index"] for row in items if row["Image Index"] not in lookup]
+    if missing_images:
+        raise FileNotFoundError(
+            f"Image index found {len(lookup):,} PNGs under {data_root}; "
+            f"{len(missing_images):,} requested images are missing, e.g. {missing_images[:3]}. "
+            "Check the mounted Google account, folder access and images_001/images/*.png layout. "
+            "No image audit batches were written.")
     started = time.monotonic()
 
     def inspect(entry):
@@ -140,6 +147,7 @@ def audit(data_root, output, partition_root, *, workers=4, limit=None, reuse_com
         return record
 
     print(f"Audit: {len(items):,}/{len(metadata):,} images; {len(known):,} checkpointed; {workers} workers", flush=True)
+    failed_batch = False
     with ThreadPoolExecutor(max_workers=workers) as pool:
         for start in range(0, len(items), 256):
             if (output / "STOP").exists():
@@ -152,16 +160,30 @@ def audit(data_root, output, partition_root, *, workers=4, limit=None, reuse_com
                 write_json(path, value)
             known.update({r["image"]: r for r in records})
             done = min(start+256, len(items))
-            print(f"Audit {done:,}/{len(items):,}; elapsed {time.monotonic()-started:.1f}s", flush=True)
+            errors = sum(row["status"] == "error" for row in records)
+            print(f"Audit {done:,}/{len(items):,}; batch read {len(records)-errors}/{len(records)}, "
+                  f"errors {errors}; elapsed {time.monotonic()-started:.1f}s", flush=True)
+            if errors == len(records):
+                failed_batch = True
+                print("All reads in this batch failed; stopping. Examples: " +
+                      str([{key: row.get(key) for key in ("image", "error")} for row in records[:3]]), flush=True)
+                break
     frame = pd.DataFrame([known[name] for name in sorted(known)])
+    if frame.empty:
+        frame = pd.DataFrame(columns=["image", "status", "noise_sigma"])
     temporary = output / "noise_audit.csv.tmp"
     frame.to_csv(temporary, index=False)
     temporary.replace(output / "noise_audit.csv")
+    error_count = int((frame.status == "error").sum())
     summary = {"signature": signature, "algorithm": AUDIT_VERSION, "metadata_images": len(metadata),
-               "audited_images": len(frame), "complete": len(frame) == len(metadata),
+               "audited_images": len(frame), "complete": len(frame) == len(metadata) and error_count == 0,
+               "readable_images": int(frame.status.isin(["ok", "insufficient_patches"]).sum()),
                "statuses": {str(k): int(v) for k, v in frame.status.value_counts().items()},
                "csv_sha256": file_hash(output / "noise_audit.csv"), "estimate_units": "intensity normalized to [0,1]",
                "interpretation": "Estimated noise proxy; low score does not prove noise-free anatomy"}
     write_json(output / "summary.json", summary)
     print(json.dumps(summary, indent=2), flush=True)
+    if failed_batch:
+        raise OSError("All image reads failed in an audit batch. Check the Drive mount and permissions; "
+                      "failed rows are checkpointed for retry and are not a completed audit.")
     return frame
