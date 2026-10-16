@@ -337,80 +337,63 @@ Median L1 มี AUC สูงสุด แต่ paired ΔAUC เทียบ B
 Baseline มี recall **84%** แต่ specificity **32%**: confusion matrix `[[16,34],[8,42]]`
 ในลำดับ `[[TN,FP],[FN,TP]]` จึงไม่ควรใช้ F1 ที่สูงกว่าบางวิธีเพียงค่าเดียวเพื่อสรุปภาพรวม
 
-### 5.3 ROC-AUC และ Accuracy จาก Confusion matrix ของแต่ละ state
+### 5.3 Confusion Matrix และความต่างของ Accuracy — ดูเป็นกราฟ
 
-**Accuracy ในข้อนี้เป็นค่าของโมเดลเดียวกับแถว ROC-AUC คำนวณจาก Confusion matrix ของ test โดยตรง**
-ไม่ได้เลือก Accuracy สูงสุดข้าม 12 วิธี และไม่ได้ใช้ค่าสูงสุดข้าม epochs
-แถววิธียังคงอิงวิธีที่ ROC-AUC สูงสุดตามตารางเดิม แล้วนำ **Accuracy ของวิธีนั้นจริง ๆ** มาเทียบ Baseline
+**อ่านกราฟแรกเพื่อเทียบ Accuracy และผลต่าง จากนั้นดู Confusion Matrix ที่วาง Baseline กับวิธีทดลองคู่กัน**
+ใช้วิธีเดิมตามแถว ROC-AUC ในแต่ละ state ไม่ได้เปลี่ยนไปเลือก Max Accuracy
+ทุกค่ามาจาก test predictions ของ checkpoint และ validation threshold ที่บันทึกไว้เดิม
 
-สูตรคือ **`Accuracy = (TP + TN) / (TP + TN + FP + FN)`**
-โดยใช้ checkpoint ที่ validation เลือกและ Youden threshold ที่บันทึกไว้ของแต่ละโมเดล
-ไม่เลือก checkpoint/threshold ใหม่จาก test และไม่ใช้คอลัมน์ `accuracy_at_0_5`
+#### Accuracy เทียบ Baseline ครบ 16 states
 
-**(ก) เปรียบเทียบ ROC-AUC และ Accuracy จาก Confusion matrix กับ Baseline**
+กราฟซ้ายแสดง Accuracy ของ Baseline และวิธีทดลอง; กราฟขวาแสดงผลต่างเป็น **จุดเปอร์เซ็นต์ (pp)**
+**สีเขียว = Accuracy เพิ่ม, สีแดง = ลด** เช่น +13 pp หมายถึงทายถูกเพิ่ม 13 ภาพใน test 100 ภาพ
 
-| State | วิธีตามแถว AUC | ROC-AUC | Baseline AUC | ΔAUC | Accuracy จาก CM | Baseline Accuracy จาก CM | ΔAccuracy (จุดเปอร์เซ็นต์) |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| clean | Median L1 (3×3) | 0.6980 | 0.6580 | +0.0400 | 60% | 58% | +2 |
-| gaussian_N1 | DAE→CLAHE L3 | 0.6792 | 0.6400 | +0.0392 | 66% | 53% | +13 |
-| gaussian_N2 | DAE→CLAHE L3 | 0.7156 | 0.6492 | +0.0664 | 66% | 56% | +10 |
-| gaussian_N3 | DAE→CLAHE L3 | 0.7036 | 0.6688 | +0.0348 | 66% | 60% | +6 |
-| poisson_N1 | DAE→CLAHE L3 | 0.6912 | 0.6580 | +0.0332 | 64% | 58% | +6 |
-| poisson_N2 | DAE→CLAHE L1 | 0.6992 | 0.6588 | +0.0404 | 62% | 57% | +5 |
-| poisson_N3 | DAE→CLAHE L3 | 0.6808 | 0.6104 | +0.0704 | 56% | 59% | -3 |
-| poisson_gaussian_N1 | DAE→CLAHE L3 | 0.6876 | 0.6276 | +0.0600 | 65% | 56% | +9 |
-| poisson_gaussian_N2 | DAE→CLAHE L1 | 0.6980 | 0.6388 | +0.0592 | 63% | 59% | +4 |
-| poisson_gaussian_N3 | DAE→CLAHE L3 | 0.6756 | 0.6368 | +0.0388 | 57% | 62% | -5 |
-| salt_pepper_N1 | Median L1 (3×3) | 0.6952 | 0.6268 | +0.0684 | 62% | 60% | +2 |
-| salt_pepper_N2 | Median L1 (3×3) | 0.6904 | 0.5808 | +0.1096 | 62% | 57% | +5 |
-| salt_pepper_N3 | Median L1 (3×3) | 0.7108 | 0.6000 | +0.1108 | 61% | 53% | +8 |
-| speckle_N1 | DAE→CLAHE L2 | 0.6892 | 0.6500 | +0.0392 | 62% | 56% | +6 |
-| speckle_N2 | DAE→CLAHE L1 | 0.6928 | 0.6468 | +0.0460 | 60% | 56% | +4 |
-| speckle_N3 | DAE→CLAHE L2 | 0.6824 | 0.6356 | +0.0468 | 62% | 59% | +3 |
+![Accuracy เทียบ Baseline และผลต่างครบ 16 states](results_summary/figures/accuracy_vs_baseline.png)
 
-แต่ละ state มี test **100 ภาพ (No Finding 50 / Infiltration 50)**
-ดังนั้นทายถูก 60 ภาพคือ Accuracy 60%; 60% เทียบ 58% ต่างกัน **+2 จุดเปอร์เซ็นต์**
-Accuracy เท่ากับ balanced accuracy ในชุดนี้เพราะจำนวนภาพสอง class เท่ากัน
+จุดที่เห็นชัด: Gaussian N1 เพิ่ม **53% → 66% (+13 pp)** แต่ Poisson N3 ลด **59% → 56% (−3 pp)**
+และ Poisson–Gaussian N3 ลด **62% → 57% (−5 pp)** แม้ AUC ของวิธีทดลองสูงกว่าในสอง state หลัง
 
-**(ข) ค่า Confusion matrix ที่ใช้คำนวณตาราง (ก) — วิธีและ state เดียวกัน**
+#### Confusion Matrix: Baseline อยู่ซ้าย วิธีทดลองอยู่ขวา
 
-ลำดับในคอลัมน์ counts คือ **TN / FP / FN / TP**; matrix ต้นฉบับเก็บเป็น `[[TN, FP], [FN, TP]]`
-positive class คือ Infiltration และ negative class คือ No Finding
+แถวคือ **class จริง**, คอลัมน์คือ **class ที่ทำนาย**; No Finding เป็น negative และ Infiltration เป็น positive
+ในช่องแสดง TN/FP/FN/TP กับจำนวนภาพ โดยใช้สเกลสีเดียวกัน **0–50 ภาพ** เพื่อเทียบกันได้
+หัวแต่ละภาพบอก Accuracy และผลต่างจาก Baseline; Accuracy คำนวณจากช่องแนวทแยง `(TN+TP)/100`
 
-| State | วิธี | TN/FP/FN/TP | Accuracy = (TN+TP)/N | Baseline TN/FP/FN/TP | Baseline Accuracy = (TN+TP)/N |
-| --- | --- | --- | --- | --- | --- |
-| clean | Median L1 (3×3) | 29/21/19/31 | (29+31)/100 = 60% | 16/34/8/42 | (16+42)/100 = 58% |
-| gaussian_N1 | DAE→CLAHE L3 | 38/12/22/28 | (38+28)/100 = 66% | 23/27/20/30 | (23+30)/100 = 53% |
-| gaussian_N2 | DAE→CLAHE L3 | 37/13/21/29 | (37+29)/100 = 66% | 24/26/18/32 | (24+32)/100 = 56% |
-| gaussian_N3 | DAE→CLAHE L3 | 39/11/23/27 | (39+27)/100 = 66% | 26/24/16/34 | (26+34)/100 = 60% |
-| poisson_N1 | DAE→CLAHE L3 | 34/16/20/30 | (34+30)/100 = 64% | 24/26/16/34 | (24+34)/100 = 58% |
-| poisson_N2 | DAE→CLAHE L1 | 29/21/17/33 | (29+33)/100 = 62% | 21/29/14/36 | (21+36)/100 = 57% |
-| poisson_N3 | DAE→CLAHE L3 | 40/10/34/16 | (40+16)/100 = 56% | 25/25/16/34 | (25+34)/100 = 59% |
-| poisson_gaussian_N1 | DAE→CLAHE L3 | 37/13/22/28 | (37+28)/100 = 65% | 22/28/16/34 | (22+34)/100 = 56% |
-| poisson_gaussian_N2 | DAE→CLAHE L1 | 33/17/20/30 | (33+30)/100 = 63% | 24/26/15/35 | (24+35)/100 = 59% |
-| poisson_gaussian_N3 | DAE→CLAHE L3 | 42/8/35/15 | (42+15)/100 = 57% | 29/21/17/33 | (29+33)/100 = 62% |
-| salt_pepper_N1 | Median L1 (3×3) | 30/20/18/32 | (30+32)/100 = 62% | 31/19/21/29 | (31+29)/100 = 60% |
-| salt_pepper_N2 | Median L1 (3×3) | 30/20/18/32 | (30+32)/100 = 62% | 24/26/17/33 | (24+33)/100 = 57% |
-| salt_pepper_N3 | Median L1 (3×3) | 30/20/19/31 | (30+31)/100 = 61% | 36/14/33/17 | (36+17)/100 = 53% |
-| speckle_N1 | DAE→CLAHE L2 | 24/26/12/38 | (24+38)/100 = 62% | 21/29/15/35 | (21+35)/100 = 56% |
-| speckle_N2 | DAE→CLAHE L1 | 24/26/14/36 | (24+36)/100 = 60% | 20/30/14/36 | (20+36)/100 = 56% |
-| speckle_N3 | DAE→CLAHE L2 | 32/18/20/30 | (32+30)/100 = 62% | 23/27/14/36 | (23+36)/100 = 59% |
+**ภาพก่อนเติม noise — Baseline 58% เทียบ Median L1 60% (+2 pp)**
 
-**ตัวอย่าง clean:** Median L1 มี TN=29, FP=21, FN=19, TP=31
-จึงได้ Accuracy **(29+31)/100 = 60%** ส่วน Baseline มี TN=16, FP=34, FN=8, TP=42
-จึงได้ **(16+42)/100 = 58%** ตัวเลข 60% เป็นผลของ Median L1 เอง ไม่ใช่ Max Accuracy ของวิธีอื่น
+![Confusion Matrix ของ clean: Baseline เทียบ Median L1](results_summary/figures/confusion_pairs/clean.png)
 
-**ตัวอย่าง Poisson N3:** DAE L3 ได้ AUC สูงกว่า Baseline แต่ Accuracy จาก CM เป็น **56% เทียบ 59%**
-ตารางคงค่าที่ลดลงนี้ไว้ตามผลจริง เพราะ AUC วัดการจัดอันดับ ขณะที่ Accuracy วัดการตัดสิน ณ threshold ที่เลือกไว้
+**Gaussian N1–N3 — Baseline เทียบ DAE→CLAHE L3**
 
-ตรวจซ้ำแล้ว Accuracy ที่คำนวณจาก Confusion matrix ตรงกับ `accuracy` ในผลรันเดิมครบ
-**12 วิธี × 16 states = 192 คู่** ไม่มีการฝึกหรือประเมินโมเดลใหม่
-Accuracy ของทุกวิธีดูได้ใน [Accuracy matrix](results_summary/tables/accuracy_by_state.csv)
-และ [counts พร้อม Accuracy จาก CM ครบ 192 คู่](results_summary/tables/confusion_matrix_accuracy.csv)
-ข้อมูลของตาราง (ก)/(ข) อยู่ใน [state comparison](results_summary/tables/state_comparison_auc_accuracy.csv)
-ส่วนผลดิบอยู่ใน [classification.csv](results_summary/tables/classification.csv)
+![Confusion Matrix Gaussian สามระดับ](results_summary/figures/confusion_pairs/gaussian.png)
 
-![ROC-AUC ทั้ง 12 วิธี × 16 states](results_summary/figures/roc_auc_heatmap.png)
+**Poisson N1–N3 — แต่ละแถวใช้วิธีเดียวกับตาราง ROC-AUC เดิม**
+
+![Confusion Matrix Poisson สามระดับ](results_summary/figures/confusion_pairs/poisson.png)
+
+**Poisson–Gaussian N1–N3**
+
+![Confusion Matrix Poisson–Gaussian สามระดับ](results_summary/figures/confusion_pairs/poisson_gaussian.png)
+
+**Salt-and-pepper N1–N3 — Baseline เทียบ Median L1**
+
+![Confusion Matrix Salt-and-pepper สามระดับ](results_summary/figures/confusion_pairs/salt_pepper.png)
+
+**Speckle N1–N3**
+
+![Confusion Matrix Speckle สามระดับ](results_summary/figures/confusion_pairs/speckle.png)
+
+#### ดูความต่าง Accuracy ของทั้ง 12 วิธี
+
+แต่ละช่องคือ **Accuracy ของวิธีนั้น − Accuracy ของ Baseline ใน state เดียวกัน**
+ไม่ได้เลือกค่าสูงสุดข้ามโมเดล แถว Baseline จึงเท่ากับศูนย์ทุกช่อง
+
+![ความต่าง Accuracy ครบทั้ง 12 วิธีและ 16 states](results_summary/figures/accuracy_delta_all_methods.png)
+
+ดู [แกลเลอรี Confusion Matrix ครบทั้ง 12 วิธีในแต่ละ state](CONFUSION_MATRIX_GALLERY.md) เพื่อเปิดเทียบโมเดลอื่นได้
+ตัวเลขสำหรับตรวจสอบหรือคำนวณต่อเก็บใน [Confusion Matrix CSV](results_summary/tables/confusion_matrix_accuracy.csv),
+[ผลต่างเทียบ Baseline](results_summary/tables/state_comparison_auc_accuracy.csv)
+และ [ผลดิบ](results_summary/tables/classification.csv) ไม่วางตาราง counts ยาวในเนื้อหาหลักแล้ว
 
 ### 5.4 Paired patient-bootstrap
 

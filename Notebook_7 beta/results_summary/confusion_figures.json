@@ -1,0 +1,33 @@
+{
+  "source": "results_summary/tables/classification.csv",
+  "source_sha256": "9de693168e173f9a75dae266490d67bc4b6c623af7a4284420d7c1928e8afb8d",
+  "verified_method_state_pairs": 192,
+  "paired_comparisons": 16,
+  "unchanged_model_thresholds": true,
+  "files": {
+    "results_summary/figures/confusion_pairs/clean.png": "059ef23808bd6c53107ddce93e773c1e68a2070565cba335562b0f0e429f87c3",
+    "results_summary/figures/confusion_pairs/gaussian.png": "4b5d46822b6aa6d391eb64b419dbec0c12af785fb42c337774e5ae9bea39d4dd",
+    "results_summary/figures/confusion_pairs/poisson.png": "5156a08617bcc68f16230ac02c67a709e12589e457729f08a8b495a35a299bc2",
+    "results_summary/figures/confusion_pairs/poisson_gaussian.png": "81762ae7a0d614852ea6da9556ecf0b6a10d3774c662cdf8492a0b061dd71abf",
+    "results_summary/figures/confusion_pairs/salt_pepper.png": "ac7edd3e9ca3fc50d2f4841887e14890d9c98cfde15bd37ec31a47932439aa17",
+    "results_summary/figures/confusion_pairs/speckle.png": "cc94195c023fe3d1f99f4263b0e01254219f0589981089832f443c9360a0beb9",
+    "results_summary/figures/confusion_all_methods/clean.png": "4db5eae6bae4b1eaacd3bda001c0be27372ded2d9d8ef886e77b5ee03471acdd",
+    "results_summary/figures/confusion_all_methods/gaussian_N1.png": "793cf74508894f74fbd29d75a9cb728b046b80783389ac4afb8395ae47240a9a",
+    "results_summary/figures/confusion_all_methods/gaussian_N2.png": "f3888d3cc7e0136377a77f8730c8aa030a6814987d60501b6541930764542b15",
+    "results_summary/figures/confusion_all_methods/gaussian_N3.png": "0fc0e60e1ff4093625337e076153b14ba29e48aeacf286cde143983b12ace1aa",
+    "results_summary/figures/confusion_all_methods/poisson_gaussian_N1.png": "aef87d374b11803f66bec502d4b467d05a37fe532e7d2ebe3fe541d0578e7cd7",
+    "results_summary/figures/confusion_all_methods/poisson_gaussian_N2.png": "58bc58865fddbdf63cb47f887cff6d8feb8dc69f8257664c767317d89ed0183d",
+    "results_summary/figures/confusion_all_methods/poisson_gaussian_N3.png": "1c12f1449eb8ed16141180ac8130fd12ed06e835d2d79549c4bfecba1b69ff8b",
+    "results_summary/figures/confusion_all_methods/poisson_N1.png": "5813ebefc207337f2895c73172877d6f98ebfd560fb7a09b0b24957cd6aeffdc",
+    "results_summary/figures/confusion_all_methods/poisson_N2.png": "5191f44a2dee3e7b1c79f649e9b2795f4bb78a16e121e099edbc1a0c9321a0b6",
+    "results_summary/figures/confusion_all_methods/poisson_N3.png": "af6e631a67d193da8142b0cd6b8dc6cfa074e606d54f2a663a633cfac1ce9b7f",
+    "results_summary/figures/confusion_all_methods/salt_pepper_N1.png": "90abee16322fe23b9467533ade92bca45f296e3f1b2dd9ead025826b3f528017",
+    "results_summary/figures/confusion_all_methods/salt_pepper_N2.png": "03a1e0f1a616c0c33df85450e6f912e24357d665eedf1749c1c355c6b6236dba",
+    "results_summary/figures/confusion_all_methods/salt_pepper_N3.png": "d59669a81d7ee7e39c6571c4f08ccd619ab3029b5a4a8dbd8b9c246f8680fa1f",
+    "results_summary/figures/confusion_all_methods/speckle_N1.png": "46b3c63e7171aa2785f8a5f4979ca21e8bd299a8409e45d82dddea4c91dccaa1",
+    "results_summary/figures/confusion_all_methods/speckle_N2.png": "6ff9d41d809606fdffc2d9060c20f47f1b7e7fe2bbbfca89ea2649d246d3db73",
+    "results_summary/figures/confusion_all_methods/speckle_N3.png": "2b742b5a8d82f73906da05b29f75531eab4295cc3e5a68c67f9ffbfab804a520",
+    "results_summary/figures/accuracy_vs_baseline.png": "02afdb5b73327428efae93f6abe6f935c1417a603a949c6f395ec377387a4e06",
+    "results_summary/figures/accuracy_delta_all_methods.png": "3da488ba4e42fd64deebe3e8d668bb3043fc57fc317d7d2fe4f35c2bb913689a"
+  }
+}
