@@ -1,2 +1,5 @@
 # Preserve release bytes: frozen manifests and source provenance use SHA-256.
 "Notebook_3 release/**" -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Preserve PDF bytes and suppress text diffs for reference papers.
+*.pdf binary
