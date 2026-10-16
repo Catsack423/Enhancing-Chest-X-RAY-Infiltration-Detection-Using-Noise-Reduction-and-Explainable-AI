@@ -1,0 +1,49 @@
+{
+  "schema_version": 7,
+  "audit_signature": "fac3cd185ef533f9d159f5b08bfb6c743bac9f7f6d6419f59062c97058ac946d",
+  "audit_scope": "v3_zip_originals",
+  "audited_images": 70012,
+  "metadata_images": 112120,
+  "source_zip": {
+    "scope": "v3_zip_originals",
+    "images": 70012,
+    "catalog_sha256": "aa807cd922577009cc837e4afa62b104ff0d6ec2054cd3e18d46103f2bebc431",
+    "v3_loader_sha256": "5870c0c32c79d62c2170ee9431cc435f586097540ac2b195ba84532ed60a9265",
+    "archives": {
+      "images_001.zip": "1aa514e7a47d983e565a1114b2a722a84426646fcbf3c4e258521a1fa4eed717",
+      "images_002.zip": "06dae985fc0be3ff8d5c6411c65b5d520bbf83e938ce8965f537ecb0a446f319",
+      "images_003.zip": "8351af3cd83268a74c8643d2a8bbd27c1b4a5ae8bdf3b34d0a201e000d7cc198",
+      "images_004.zip": "41b4c59ff0669a61ac1a6f68a13f48025bad7c7781e7fbb94ad1aeaa10d25bf2",
+      "images_005.zip": "cef5040b69939f4956a90973b950520c768ad9abe98e353e4f76c58cac89b1f3",
+      "images_006.zip": "fb5c413031928151e4b3fd3635d9f38516234fa67c212975ca4a0e6255cf9bec",
+      "images_007.zip": "8446bb771f9b7063ccfd68455eaa08c3e689b3cdfab6eb868fcd59a16335ef3c",
+      "images_008.zip": "094cac536147e41f03d54703079d7798d47c0e05068798032c0b2d67cf1cd3ad",
+      "images_009.zip": "e1dd4e3220c2d414b265b2b4a1b4c7cb2aec4d132e143425c56be11c03e9c343",
+      "images_010.zip": "9270eabb9448d812d2508825a5cd218d02888cda34b1817a130f6cedd5c0b739",
+      "images_011.zip": "3403d76e1026f3e45ca2df9d3aa4ed0be202eebfc38317ca718ee74bad8d39ba",
+      "images_012.zip": "c7120795cb2c39c9703fcfac867028f259ee7f05d6d2ee4f15172bdb87258ad1",
+      "metadata.zip": "7b79b9c8636092d8e6caf405a4ae326b719f8c25b78663c9875a4a3542dc71ca"
+    }
+  },
+  "audit_csv_sha256": "5a979a70afb38643ef1a7ccf48f18725f7a982e307639eec5ca1a592ad3e2658",
+  "selection": "lowest estimated sigma per class/frozen split, tie=image",
+  "counts_per_class": {
+    "train": 160,
+    "validation": 40,
+    "test": 50
+  },
+  "native_images": 621,
+  "manifest_hashes": {
+    "train": "7d479ffada6b838a658132dca30ef2fd0dec1a5adb6795e9faaf1fea78081265",
+    "validation": "7398ab485cb7c5e17762ccfdd05f11963513ddaa7fc933982a212354ee4482f7",
+    "test": "c34baccf079f0d32f9ea9773108436dab971e3cb14308b827edfc75f7debf1be",
+    "xai": "371001a23da53c7e433a5497684464572390e94a51a041db3678164a456caf6c",
+    "background": "c5424dbcdcf43087d76ed9d1fc918e27653a3a2fe0a8ec7e30b702792d760b22"
+  },
+  "partition_hashes": {
+    "test.csv": "1be46e711135443a73d00c62c87f01094345a5e4214a1f421dd781d4fce6c495",
+    "train.csv": "fb3880337611df4eaca54172862babd27275e119e567cc26f032370e9fec41a7",
+    "validation.csv": "ac38bfc8e948e60fad14bbe98949c69595b757431d91e52ceab4660d91a0bfdd",
+    "xai.csv": "64e4b73789903517d34a8ff43e6253b97256876df4bc7d505f96a0995fce6873"
+  }
+}

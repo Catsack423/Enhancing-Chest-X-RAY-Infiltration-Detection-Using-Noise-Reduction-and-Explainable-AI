@@ -1,131 +1,350 @@
-# v7 beta — low-estimated-noise class160 CNN pilot
+# v7 beta — สรุป dataset, noise และผล CNN ที่รันจริง
 
-Run **run_v7_colab_v3_zip.ipynb** (built locally as run_v7_colab.ipynb) in Google Colab with a GPU. The notebook embeds its source code;
-no clone or new full-dataset upload is needed. `v7_source.zip` is a source-only recovery package.
+ตรวจผลวันที่ **16 ตุลาคม 2026** จาก `MyDrive/nih -xray/Notebook_7_beta` บนบัญชี **faceyuslay@gmail.com**
+รอบนี้เป็น **beta pilot, seed 42 เพียงรอบเดียว** ของงาน binary **Infiltration-only vs No Finding**
 
-## Drive paths
+**ผลหลัก:** DAE→CLAHE L2 มี ROC-AUC เฉลี่ยเท่ากันทั้ง 16 สภาวะสูงสุด **0.6711** เทียบ Baseline **0.6367**
+(ต่าง **+0.0344**); เฉพาะภาพก่อนเติม noise วิธี Median L1 สูงสุด **0.6980** เทียบ Baseline **0.6580**
+การจัดอันดับนี้เป็นผลเชิงพรรณนาของชุด test ที่คัด noise ต่ำ ไม่ใช่ข้อยืนยันว่ามีวิธีเดียวดีที่สุดทุกกรณี
 
-- Read-only v3 ZIP input: `MyDrive/nih -xray/data/v3_selected_zip/` (13 ZIPs + dataset_zip_index.json)
-- VM-local originals: `/content/cxr_v7_originals` (70,012 images; a subset of NIH's 112,120)
-- Durable v7 workspace: `/content/drive/MyDrive/nih -xray/Notebook_7_beta`
-- Windows mapping supplied by the user: `G:\My Drive\nih -xray\data\v3_selected_zip`
+## 1. Dataset ของ version นี้มาจากไหน
 
-Open the notebook from Drive, select **Runtime → Change runtime type → GPU**, then **Run all**.
-Authorize the Drive mount using **faceyuslay@gmail.com only** (Windows G:).
-The full scan runs in Colab, not on the local PC.
+1. เริ่มจาก NIH ChestX-ray14 ต้นฉบับ **112,120 ภาพ** และ metadata / official lists เดิม
+2. ใช้ ZIP ที่แพ็คไว้สำหรับ v3 ใน `MyDrive/nih -xray/data/v3_selected_zip/`: **12 image ZIP + metadata.zip** รวม **70,012 ภาพ** ขนาดหลังแตกประมาณ **26.26 GiB**
+3. ภายใน ZIP มีภาพที่เข้าเกณฑ์สอง class **69,908 ภาพ**: No Finding **60,361**, Infiltration-only **9,547**
+4. อีก **104 ภาพ** เป็นภาพที่เพิ่มเพื่อให้ bbox reference ครบ: XAI subset มี **123 ภาพ** โดย **19 ภาพ** อยู่ใน eligible cohort เดิมแล้ว และอีก 104 ภาพเป็น mixed-pathology cases ซึ่งไม่ถูกนำเข้า train/validation/test ของ binary classifier
+5. ใช้ patient partition จาก release เดิม ภายใต้ official `train_val_list.txt` และ `test_list.txt`; **ไม่ได้แบ่ง patient ใหม่** และไม่ได้ใช้โรคอื่นเป็น negative
 
-The notebook mounts Drive at a new empty /content/nih_drive_v7_* directory each time
-the setup cell runs. This avoids Colab's "Mountpoint must not already contain files"
-error without deleting files left in /content/drive. DATA_ROOT and WORK use that mount;
-the underlying MyDrive folders remain the paths above. Choose faceyuslay@gmail.com
-in the authorization flow. If the source remains invisible, rerun setup to reconnect.
-The mounted account cannot be verified from the folder name alone; also check for
-duplicate nih -xray folders if the source remains invisible. Source validation runs
-before creating an output directory. Missing data stops the run without selecting images.
-The ZIP audit uses audit_v3_zip_70012, preserving the earlier full-source audit directories.
-An audit with any image read errors is incomplete and cannot proceed to selection.
+ผู้ใช้อนุมัติให้ใช้ ZIP เดิม **70,012 ภาพ** แทนการ audit NIH ทั้งหมด ผลจึงบันทึก
+`metadata_images=112120`, `requested_images=70012`, `audited_images=70012`, `full_nih_complete=false`
+ค่า `complete=true` ใน audit หมายถึงครบ **ขอบเขต ZIP ที่ร้องขอ** เท่านั้น
 
-The notebook writes these reusable artifacts to the v7 workspace:
+ใช้ `stage_dataset.py` ของ v3 แบบ byte-identical (SHA-256 `5870c0c32c79d62c2170ee9431cc435f586097540ac2b195ba84532ed60a9265`):
+คัดลอก ZIP ทีละส่วนจาก Drive ตรวจ SHA-256 แตกลง `/content/cxr_v7_originals` แล้วลบเฉพาะ ZIP ชั่วคราวบน VM
+การวิเคราะห์และฝึกอ่านภาพจาก Colab VM; checkpoint, manifests, ชุดภาพที่เลือก และผลลัพธ์เก็บกลับ Drive
+notebook มี log ทันทีและ heartbeat ทุก 10 วินาที รวมถึงความคืบหน้าคัดลอก/แตก ZIP
 
-| Artifact | Purpose |
-|---|---|
-| `audit_v3_zip_70012/chunks/` | Atomic 256-image audit checkpoints; safe to resume on another VM |
-| `audit_v3_zip_70012/noise_audit.csv`, `audit_v3_zip_70012/summary.json` | All 70,012 ZIP images; separately records NIH metadata count 112,120 and full_nih_complete=false |
-| `zip_source.json` | ZIP catalog, archive and reused v3 loader hashes |
-| `prepared/manifests/`, `prepared/figures/` | Frozen selections, AP/PA counts, noise distributions and examples |
-| `selected_data/`, `v7_selected_data.zip`, `selected_package.json` | Native selected images, XAI reference, manifests and package hashes |
-| `runs/v7_beta/seed_42/DAE/` | One DAE's best/last checkpoints, epoch history and corruption logs |
-| `runs/v7_beta/seed_42/CNN/<method>/` | Each CNN's best/last checkpoints, true logits, predictions and model specification |
-| `runs/v7_beta/seed_42/reports/` | Classification, 95% patient CIs, paired baseline deltas, PSNR/SSIM and figures |
-| `runs/v7_beta/seed_42/xai_ready/` | Native input geometry, original 123 bbox manifest and train-only SHAP background metadata; images remain in the selected package |
+## 2. วัด noise และเลือกภาพอย่างไร
 
-After a disconnected runtime, Run all again. Completed audit chunks, the selected-image package,
-and completed epochs are reused. The user approved replacing the full-NIH scan with the existing
-v3 ZIP scope of **70,012 originals**. The notebook reuses the byte-identical v3
-`tools/stage_dataset.py` under `v3_zip_reference/`, including its five frozen manifests.
-It copies one ZIP at a time, verifies archive and original-image SHA-256 hashes, extracts to
-the VM and removes only the consumed local ZIP. Unpacked images total about 26.26 GiB;
-the loader checks disk capacity before transfer. No individual PNG is read from Drive.
-The ZIP index must cover every frozen train/validation/test/XAI image; partition hashes must
-match. Source metadata and official lists remain unchanged at the full NIH release size.
-Resume on the same VM verifies and reuses extracted files. After a VM reset, ZIPs must be
-staged again until the selected-image package is complete; later runs reuse that small package.
-`progress.py` prints immediately and emits a heartbeat every 10 seconds even during slow
-Drive operations, with decoded-image and written-checkpoint counts for the current call.
+ใช้ **estimated Gaussian noise จาก db2 wavelet MAD** เป็นคะแนนหลัก:
+`sigma = median(abs(HH - median(HH))) / 0.67448975 / 255`
+บน patch 64×64 ภายในกลาง 80% ของภาพ native โดยตัดขอบ coefficients ของแต่ละ patch ก่อนคำนวณ MAD
+แต่ละ patch ต้องมีอย่างน้อย 90% ของพิกเซลอยู่ในช่วง 5–250 และไม่เป็นสีคงที่
+ต้องเหลือ usable patches อย่างน้อย 8 patch แล้วใช้ median ของ sigma จาก patch ที่ gradient ต่ำสุด 25%
+เก็บ global sigma, contrast, sharpness, patient ID, labels, split, view position และ SHA-256 ประกอบ
 
-## Locked experiment
+ผล audit: **70,012/70,012 ภาพเป็น `ok`**, ไม่มี read error หรือ insufficient-patch case
+จากนั้นเรียง sigma ต่ำไปสูง **แยก class และ frozen partition**; หากเท่ากันเรียง image ID
+ไม่มีการลดเกณฑ์หรือย้าย patient เพื่อเติมจำนวน
 
-- **Train 160+160; validation 40+40; test 50+50**. Infiltration-only vs strictly No Finding.
-- Sample the lowest estimated noise in each class/frozen partition; break ties by image ID.
-  Existing v4.3 patient partitions remain unchanged. No score threshold is relaxed to fill a quota.
-- The score is db2 wavelet MAD, measured on 64x64 patches in the central 80% of native images.
-  At least 90% of patch intensities must be 5–250 and the patch must be nonconstant.
-  Require eight usable patches; take the median sigma from the lowest-gradient 25% of patches.
-  Keep global sigma, contrast, sharpness and source image SHA-256 as additional fields.
-- **12 v4.3 conditions**: Baseline; Median 3/5/7; DWT→CLAHE threshold 0.5/1/2 with db1/depth3/clip2;
-  DAE→CLAHE blend 0.25/0.5/1 with clip2; DWT five-view fusion; DFT three-view fusion.
-  There are no strength-L4 conditions. DWT's four decomposition levels are retained.
-- **16 corruption states**: clean reference plus Gaussian, Poisson, Poisson–Gaussian,
-  salt-and-pepper and speckle at three strengths. Exact parameters are embedded in
-  `v7/noise.py` and recorded in each run's `experiment.json`.
-- Noise RNG depends on seed/image/family/strength/epoch, never the denoising method.
-  Each original train image gets one of the 16 states each epoch; no corrupted copies are
-  counted as additional independent train subjects. Validation/test corruption uses epoch 0.
-- Work at 256x256, then use the inherited full-frame 224x224 CNN resize and ImageNet normalization.
-  No crop is introduced. Frequency views preserve the inherited signed-detail encoding.
-- Seed 42 only. ResNet50 ImageNet V2, frozen early layers and all BN statistics, head warmup
-  epochs 1–3, layer4+head thereafter, at most 20 epochs total and patience 3 after warmup.
-  AdamW and geometric augmentation match v4.3; balanced train uses `pos_weight=1`.
-- A DAE is trained from train only, with pre-corruption reference targets, for 20 epochs.
-  Effective optimizer batch 64 is accumulated from microbatches of 8 to fit smaller GPUs.
-  DAE BatchNorm therefore sees microbatches of 8; this v7 runtime choice is recorded.
-- Select checkpoints by balanced BCE across all 16 validation states. Select one Youden
-  threshold per model on the same validation mixture; keep it fixed across all test states.
-  Report threshold 0.5 as an additional reference. Test never chooses parameters/checkpoints.
+| ชุด | Class | ภาพต้นทางที่เข้าเกณฑ์ | เลือก | Patients ใน class | sigma ต่ำสุด | sigma median | sigma สูงสุด |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| train | No Finding | 40,371 | 160 | 151 | 6.24e-19 | 0.001460 | 0.001642 |
+| train | Infiltration | 5,737 | 160 | 124 | 2.87e-34 | 0.001870 | 0.002167 |
+| validation | No Finding | 10,129 | 40 | 39 | 0.000461 | 0.001459 | 0.001664 |
+| validation | Infiltration | 1,590 | 40 | 34 | 0.000532 | 0.001901 | 0.002200 |
+| test | No Finding | 9,861 | 50 | 34 | 7.17e-34 | 0.001554 | 0.001720 |
+| test | Infiltration | 2,220 | 50 | 30 | 0.000811 | 0.001823 | 0.002083 |
 
-## Interpretation
+sigma ในตารางใช้สเกลความเข้ม `[0,1]`; คะแนนต่ำหมายถึง **low estimated noise reference**
+ไม่ได้รับรองว่าภาพไม่มี noise จริง หรือมีคุณภาพทางการวินิจฉัยดีกว่าภาพอื่น
 
-Low estimated noise does not prove absence of noise. Anatomy, blur and processing can affect
-the score. The cohort is deliberately selected and does not estimate full-NIH population
-performance. Salt-and-pepper/speckle are extra robustness tests, not claims about detector noise.
-L1/N1 across different families do not imply equal physical noise power. Record measured
-noise mean/std/RMSE and clipping after uint8 quantization for the actual corruptions.
+| ชุด | No Finding | Infiltration-only | รวมภาพ | Unique patients |
+| --- | --- | --- | --- | --- |
+| Train | 160 | 160 | 320 | 264 |
+| Validation | 40 | 40 | 80 | 69 |
+| Test | 50 | 50 | 100 | 56 |
+| รวม classification | 250 | 250 | 500 | 389 |
 
-PSNR/SSIM compare a processed image with the same image before synthetic corruption. This is a
-reference **proxy**, not a clean detector truth. Infinite PSNR denotes exact identity. Fusion
-representations have intentionally unavailable PSNR/SSIM. Main classification metrics and
-paired patient-bootstrap 95% CIs are reported separately for each state, with 2,000 draws.
+ตรวจแล้วไม่มี patient ซ้ำข้าม train/validation/test ผู้ป่วยหนึ่งคนอาจมีหลายภาพและมี labels ต่างกันภายใน partition เดียว
+จึงบวกจำนวน patients ของสอง class ตรง ๆ ไม่ได้ และใช้ patient-bootstrap แทน image-bootstrap ในการประเมิน
+ชุดภาพ native ที่เก็บจริงมี **621 ภาพ**: classification 500 ภาพ รวม bbox 123 ภาพ หักภาพที่ซ้ำกัน 2 ภาพ
+background สำหรับ SHAP เป็น **16+16 ภาพจาก train เดิม** ไม่เพิ่มขนาด train
 
-Noise formulas follow [scikit-image](https://scikit-image.org/docs/stable/api/skimage.util.html#skimage.util.random_noise)
-and the [Poisson–Gaussian model of Foi et al.](https://doi.org/10.1109/TIP.2008.2001399).
-The stated strengths are v7's experimental settings, not reproduced parameter values from those papers.
+### ผลของการคัดเลือกต่อ AP/PA
 
-## Future XAI interface
+| ชุด | Class | AP ใน eligible source | AP/PA หลังเลือก | AP หลังเลือก |
+| --- | --- | --- | --- | --- |
+| train | No Finding | 31.5% | 87/73 | 54.4% |
+| train | Infiltration | 34.9% | 128/32 | 80.0% |
+| validation | No Finding | 32.5% | 25/15 | 62.5% |
+| validation | Infiltration | 37.9% | 33/7 | 82.5% |
+| test | No Finding | 51.3% | 34/16 | 68.0% |
+| test | Infiltration | 75.3% | 46/4 | 92.0% |
 
-`v7.runner.load_classifier(experiment, condition_id, device)` restores the validation-selected
-model. First open a saved run with `xai_interface.open_experiment(root, data_dir, output)`;
-this is read-only and checks the recorded training sources and core versions, so adding a
-new explainer script or installing SHAP does not require retraining the CNN.
-`v7.dataset.Preprocessor` produces `(V,3,H,W)` from image ID, corruption ID and epoch.
-The CNN accepts `(N,V,3,H,W)`, returns `(N,1)` Infiltration logits and exposes `target_layer`
-(`backbone.layer4`). Its forward never detaches inputs. Use the same preprocessing, view order,
-checkpoint and full-frame coordinate mapping for CNN and XAI.
+การคัด sigma ต่ำทำให้ AP เพิ่มขึ้นทุก class/partition; test Infiltration มี AP **46/50 ภาพ (92%)**
+ขณะที่ test No Finding มี AP **34/50 ภาพ (68%)** จึงมีโอกาสที่ acquisition/view characteristics เกี่ยวข้องกับผล
+ตารางนี้เป็นหลักฐานการเปลี่ยนองค์ประกอบข้อมูล ยังไม่ได้พิสูจน์ว่าโมเดลอาศัย view position เป็นตัวตัดสิน
 
-The selected-image package retains the native 123 bbox images (including mixed cases),
-outside train/validation, and a fixed 16+16 background from the selected train images. These
-are not extra train images. This version does not calculate Grad-CAM/SHAP or localization metrics.
+### จุดที่ต้องตรวจภาพประกอบ
 
-## Local validation / rebuilding
+พบ sigma ใกล้ศูนย์ (`<1e-8`) **3 ภาพ** และทั้งสามถูกเลือกตามกฎเดิม:
 
-```powershell
-../.gpu/Scripts/python.exe -m unittest discover -s tests -v
-../.gpu/Scripts/python.exe run.py smoke --device cuda
-../.gpu/Scripts/python.exe build_notebook.py
-```
+| Image ID | ชุด | Class | estimated sigma |
+| --- | --- | --- | --- |
+| 00001136_001.png | train | No Finding | 6.235e-19 |
+| 00018336_000.png | train | Infiltration | 2.867e-34 |
+| 00011557_000.png | test | No Finding | 7.166e-34 |
 
-The smoke run uses synthetic data, random CNN initialization and reduced 64px tensors.
-It exercises all methods, state evaluation, the warmup transition, checkpoint reload, input
-gradients and byte-stable completed resume. These are not research results or a full-size VRAM benchmark.
-TF32 is disabled and recorded: its batch-dependent rounding otherwise changes single-image XAI predictions.
-The full experiment intentionally runs on Colab. Resume refuses changed code, versions,
-config, manifests or image hashes; keep the old workspace and select a new `WORK` for a new protocol.
+ตรวจภาพประกอบแล้วพบพื้นที่เรียบ/ขอบภาพในบางตัวอย่าง เช่น `00018336_000.png` มีแถบสีเทาขนาดใหญ่ด้านบน/ล่าง
+และ `00011557_000.png` มีพื้นที่ความเข้มเรียบมาก ค่าจาก MAD จึงอาจต่ำมากจากลักษณะภาพหรือการประมวลผลเดิม
+ไม่ควรเรียกภาพเหล่านี้ว่า noise-free ไม่มีการตัดภาพเหล่านี้ออกย้อนหลังหรือเปลี่ยนชุด test ในรายงานนี้
+
+![ตัวอย่าง quantiles ของ estimated noise](results_summary/figures/noise_quantiles.png)
+
+## 3. เติม noise ที่ควบคุมได้
+
+ย่อภาพอ้างอิงเป็น **256×256**, แปลงเป็น `[0,1]`, เติม noise แล้ว clip และ quantize เป็น uint8 ก่อน preprocessing
+
+| ชนิด | N1 | N2 | N3 |
+| --- | --- | --- | --- |
+| Gaussian σ | 0.02 | 0.05 | 0.10 |
+| Poisson peak count | 500 | 100 | 30 |
+| Poisson–Gaussian (peak, σ) | 500, 0.01 | 100, 0.03 | 30, 0.05 |
+| Salt-and-pepper amount | 0.005 | 0.02 | 0.05 |
+| Speckle σ | 0.05 | 0.10 | 0.20 |
+
+Gaussian เป็น additive; Poisson ใช้ `Poisson(peak×image)/peak`; แบบผสมเติม Gaussian ต่อจาก Poisson
+salt-and-pepper สุ่มดำ/ขาวด้วยความน่าจะเป็นเท่ากัน; speckle ใช้ `image×(1+noise)`
+รวม clean reference อีกหนึ่งสภาวะเป็น **16 states** โดยคำว่า clean ในชื่อ state หมายถึง **ก่อนเติม synthetic noise**
+
+Train สุ่มหนึ่ง state ต่อภาพต่อ epoch รวม clean ด้วย จึงยังมีภาพต้นทาง **320 ภาพต่อ epoch**
+RNG ขึ้นกับ seed/image ID/state/epoch และไม่ขึ้นกับ method; validation/test ใช้ corruption คงที่
+ตรวจจาก predictions แล้วทุกโมเดลมี measured corruption statistics ตรงกันสำหรับ image/state เดียวกัน
+Validation มี **80×16=1,280 predictions ต่อโมเดล**; test มี **100×16=1,600 predictions ต่อโมเดล**
+รวม test predictions ของ 12 CNN เท่ากับ **19,200 แถว** ซึ่งยังมาจากเพียง **100 ภาพ/56 patients**
+
+ค่าหลัง clip/quantization ไม่จำเป็นต้องเท่าพารามิเตอร์ที่ตั้ง เช่น Gaussian N3 มี mean measured std **0.09337**
+และ clipping fraction **9.91%**; Poisson–Gaussian N3 มี clipping **11.49%**
+ค่ารายภาพเก็บใน predictions และตาราง [noise ที่เกิดขึ้นจริง](results_summary/tables/measured_test_noise.csv)
+การจำลองนี้ใช้วัด robustness ไม่ได้อ้างว่าเป็น noise ทางกายภาพของ NIH PNG จริง
+
+## 4. วิธี preprocessing และโมเดลที่ใช้
+
+| กลุ่ม | จำนวน CNN | สูตร |
+| --- | --- | --- |
+| Baseline | 1 | ภาพหลัง corruption ก่อน denoise |
+| Median L1/L2/L3 | 3 | kernel 3/5/7 |
+| DWT→CLAHE L1/L2/L3 | 3 | db1, depth 3, threshold multiplier 0.5/1/2, CLAHE clip 2 |
+| DAE→CLAHE L1/L2/L3 | 3 | DAE ร่วมหนึ่งตัว, blend α 0.25/0.5/1, CLAHE clip 2 |
+| DWT fusion | 1 | 5 views; ภาพฐานและ decomposition 4 ระดับ |
+| DFT fusion | 1 | 3 views: low/mid/high |
+
+รวม **12 CNN + 1 DAE** ไม่มี strength L4
+ชื่อเดิม `dwt_L1_L4_fusion` หมายถึง decomposition ระดับ 1–4 ซึ่งยังเก็บไว้ ไม่ใช่ strength L4
+CNN ใช้ ResNet50 ImageNet V2, input 224×224 และ ImageNet normalization
+freeze early layers/BatchNorm; warmup head 3 epochs แล้วเปิด layer4; AdamW, pos_weight=1
+CNN batch 4 × accumulation 4 = effective batch 16, สูงสุด 20 epochs, early stopping patience 3
+augmentation ตาม release: rotation ±7°, translation 5%, scale 0.95–1.05, reflection padding
+ใช้ AMP ตอน train; ปิด TF32 และประเมินแบบ float32 ตามที่บันทึกไว้
+
+DAE ฝึกจาก train เท่านั้น โดยภาพเติม noise เป็น input และภาพก่อนเติมเป็น target
+base channels 32, residual DAE, Adam lr 0.001, loss `MSE + 0.2×L1`
+effective batch 64 จาก microbatch 8, ครบ **20 epochs**; checkpoint ที่ validation loss ต่ำสุดคือ
+**epoch 19**, loss **0.002850**
+
+เลือก CNN checkpoint ด้วย validation BCE ที่เฉลี่ยเท่ากันทั้ง 16 states
+เลือก Youden threshold **หนึ่งค่าต่อโมเดลจาก validation รวม** แล้วตรึงใช้กับทุก test state; เก็บผล threshold 0.5 ประกอบ
+ไม่ใช้ test เลือก epoch หรือ threshold ตารางอันดับด้านล่างเป็นการสรุปผลหลังประเมินแล้ว
+
+| วิธี | epochs ที่รัน | best epoch | best validation BCE | Youden threshold | views |
+| --- | --- | --- | --- | --- | --- |
+| Baseline | 19 | 16 | 0.56873 | 0.497592 | 1 |
+| Median L1 (3×3) | 17 | 14 | 0.57271 | 0.605735 | 1 |
+| Median L2 (5×5) | 17 | 14 | 0.58195 | 0.533044 | 1 |
+| Median L3 (7×7) | 17 | 14 | 0.59702 | 0.560574 | 1 |
+| DWT→CLAHE L1 | 19 | 16 | 0.60895 | 0.531434 | 1 |
+| DWT→CLAHE L2 | 19 | 16 | 0.62163 | 0.563466 | 1 |
+| DWT→CLAHE L3 | 20 | 18 | 0.63056 | 0.511988 | 1 |
+| DAE→CLAHE L1 | 19 | 16 | 0.59101 | 0.616319 | 1 |
+| DAE→CLAHE L2 | 19 | 16 | 0.58392 | 0.612748 | 1 |
+| DAE→CLAHE L3 | 19 | 16 | 0.58654 | 0.714872 | 1 |
+| DWT fusion (5 views) | 17 | 14 | 0.65003 | 0.560173 | 5 |
+| DFT fusion (3 views) | 18 | 15 | 0.56702 | 0.554546 | 3 |
+
+เวลาที่บันทึกใน training histories รวม CNN ประมาณ **77.4 นาที**
+และ DAE **8.8 นาที** ตัวเลขนี้รวม validation ต่อ epoch แต่ไม่รวมโหลด ZIP, audit,
+prediction inference หลังฝึก และ bootstrap/report generation
+โมเดลส่วนใหญ่มี train loss ลดต่อหลัง validation เริ่มแกว่ง จึงต้องใช้ best checkpoint ที่บันทึกไว้
+
+![Learning curves ของรอบจริง](results_summary/figures/learning_curves.png)
+
+## 5. ผล classification
+
+Test แต่ละ state มี No Finding 50 / Infiltration 50 ภาพ จึงทำให้ accuracy เท่ากับ balanced accuracy ในแต่ละ state
+ROC-AUC วัดการจัดอันดับ; `pr_auc` ในโค้ดคำนวณด้วย **average precision (AP)**
+precision/recall/specificity/F1 ขึ้นกับ validation threshold ของแต่ละโมเดล
+
+### 5.1 ค่าเฉลี่ยเท่ากันทั้ง 16 states
+
+| วิธี | Mean ROC-AUC | ΔAUC vs Baseline | Mean AP | Mean balanced acc. | Mean F1 |
+| --- | --- | --- | --- | --- | --- |
+| DAE→CLAHE L2 | 0.6711 | +0.0344 | 0.6920 | 62.1% | 0.6247 |
+| DAE→CLAHE L3 | 0.6705 | +0.0338 | 0.6695 | 60.8% | 0.5504 |
+| DAE→CLAHE L1 | 0.6596 | +0.0229 | 0.6717 | 60.7% | 0.5961 |
+| DFT fusion (3 views) | 0.6401 | +0.0034 | 0.6726 | 57.4% | 0.5786 |
+| Baseline | 0.6367 | +0.0000 | 0.6698 | 57.4% | 0.6049 |
+| Median L1 (3×3) | 0.6344 | -0.0022 | 0.6851 | 60.1% | 0.5668 |
+| DWT→CLAHE L1 | 0.6080 | -0.0287 | 0.6195 | 58.9% | 0.5900 |
+| Median L3 (7×7) | 0.6074 | -0.0293 | 0.6580 | 57.2% | 0.5532 |
+| Median L2 (5×5) | 0.6039 | -0.0327 | 0.6578 | 54.9% | 0.5669 |
+| DWT fusion (5 views) | 0.6035 | -0.0331 | 0.6137 | 55.6% | 0.6035 |
+| DWT→CLAHE L2 | 0.5831 | -0.0536 | 0.6036 | 53.6% | 0.5392 |
+| DWT→CLAHE L3 | 0.5671 | -0.0695 | 0.5783 | 53.8% | 0.5012 |
+
+เป็นค่าเฉลี่ยของ metric ราย state ที่ให้น้ำหนักเท่ากัน ไม่ใช่ pooled AUC ของ 1,600 แถว
+และไม่ได้ถือว่า 16 variants ของภาพเดียวกันเป็น independent test samples
+ยังไม่มี patient CI สำหรับค่า macro นี้ในรายงานรันเดิม จึงไม่สรุปว่าค่าเฉลี่ย +0.0344 มีนัยสำคัญ
+DAE L2 ให้ค่าเฉลี่ย ROC-AUC/AP/balanced accuracy/F1 สูงสุดในรอบนี้ ส่วน L3 มี specificity เฉลี่ยสูงกว่าแต่ recall ต่ำกว่า
+
+### 5.2 ภาพก่อนเติม synthetic noise (`clean`)
+
+| วิธี | ROC-AUC | 95% patient CI ของ AUC | AP | Balanced acc. | Recall | Specificity | F1 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Median L1 (3×3) | 0.6980 | 0.5747–0.8331 | 0.7353 | 60.0% | 62.0% | 58.0% | 0.6078 |
+| Median L2 (5×5) | 0.6716 | 0.5362–0.8163 | 0.7211 | 61.0% | 68.0% | 54.0% | 0.6355 |
+| DAE→CLAHE L2 | 0.6652 | 0.5469–0.7879 | 0.6883 | 59.0% | 64.0% | 54.0% | 0.6095 |
+| DAE→CLAHE L3 | 0.6632 | 0.5449–0.7788 | 0.6716 | 62.0% | 54.0% | 70.0% | 0.5870 |
+| DAE→CLAHE L1 | 0.6604 | 0.5457–0.7781 | 0.6829 | 64.0% | 68.0% | 60.0% | 0.6538 |
+| Baseline | 0.6580 | 0.5187–0.7942 | 0.6895 | 58.0% | 84.0% | 32.0% | 0.6667 |
+| DWT→CLAHE L1 | 0.6432 | 0.5143–0.7673 | 0.6739 | 63.0% | 74.0% | 52.0% | 0.6667 |
+| Median L3 (7×7) | 0.6380 | 0.5076–0.7863 | 0.6944 | 59.0% | 52.0% | 66.0% | 0.5591 |
+| DWT→CLAHE L2 | 0.6264 | 0.5064–0.7427 | 0.6430 | 55.0% | 58.0% | 52.0% | 0.5631 |
+| DFT fusion (3 views) | 0.6236 | 0.4674–0.8227 | 0.6895 | 54.0% | 56.0% | 52.0% | 0.5490 |
+| DWT→CLAHE L3 | 0.6088 | 0.4872–0.7334 | 0.6247 | 55.0% | 70.0% | 40.0% | 0.6087 |
+| DWT fusion (5 views) | 0.5960 | 0.4518–0.7315 | 0.5906 | 59.0% | 44.0% | 74.0% | 0.5176 |
+
+Median L1 มี AUC สูงสุด แต่ paired ΔAUC เทียบ Baseline บน clean เท่ากับ **+0.0400**
+พร้อม 95% CI **[-0.0039, +0.0946]** ซึ่งคร่อมศูนย์
+Baseline มี recall **84%** แต่ specificity **32%**: confusion matrix `[[16,34],[8,42]]`
+ในลำดับ `[[TN,FP],[FN,TP]]` จึงไม่ควรใช้ F1 ที่สูงกว่าบางวิธีเพียงค่าเดียวเพื่อสรุปภาพรวม
+
+### 5.3 วิธีที่ ROC-AUC สูงสุดในแต่ละ state
+
+| State | วิธีที่ AUC สูงสุด | ROC-AUC | Baseline AUC | ΔAUC |
+| --- | --- | --- | --- | --- |
+| clean | Median L1 (3×3) | 0.6980 | 0.6580 | +0.0400 |
+| gaussian_N1 | DAE→CLAHE L3 | 0.6792 | 0.6400 | +0.0392 |
+| gaussian_N2 | DAE→CLAHE L3 | 0.7156 | 0.6492 | +0.0664 |
+| gaussian_N3 | DAE→CLAHE L3 | 0.7036 | 0.6688 | +0.0348 |
+| poisson_N1 | DAE→CLAHE L3 | 0.6912 | 0.6580 | +0.0332 |
+| poisson_N2 | DAE→CLAHE L1 | 0.6992 | 0.6588 | +0.0404 |
+| poisson_N3 | DAE→CLAHE L3 | 0.6808 | 0.6104 | +0.0704 |
+| poisson_gaussian_N1 | DAE→CLAHE L3 | 0.6876 | 0.6276 | +0.0600 |
+| poisson_gaussian_N2 | DAE→CLAHE L1 | 0.6980 | 0.6388 | +0.0592 |
+| poisson_gaussian_N3 | DAE→CLAHE L3 | 0.6756 | 0.6368 | +0.0388 |
+| salt_pepper_N1 | Median L1 (3×3) | 0.6952 | 0.6268 | +0.0684 |
+| salt_pepper_N2 | Median L1 (3×3) | 0.6904 | 0.5808 | +0.1096 |
+| salt_pepper_N3 | Median L1 (3×3) | 0.7108 | 0.6000 | +0.1108 |
+| speckle_N1 | DAE→CLAHE L2 | 0.6892 | 0.6500 | +0.0392 |
+| speckle_N2 | DAE→CLAHE L1 | 0.6928 | 0.6468 | +0.0460 |
+| speckle_N3 | DAE→CLAHE L2 | 0.6824 | 0.6356 | +0.0468 |
+
+Median L1 เด่นกับ salt-and-pepper ทั้งสามระดับ; DAE L3 เด่นกับ Gaussian และบาง Poisson states
+DAE L2 เด่นกับ speckle N1/N3 และมีค่าเฉลี่ยรวมสูงสุด จึงยังไม่มีวิธีที่ชนะทุก noise family
+ตารางเต็มทุกคู่ method/state อยู่ใน [classification.csv](results_summary/tables/classification.csv)
+และ [ROC-AUC matrix](results_summary/tables/roc_auc_by_state.csv)
+
+![ROC-AUC ทั้ง 12 วิธี × 16 states](results_summary/figures/roc_auc_heatmap.png)
+
+### 5.4 Paired patient-bootstrap
+
+รายงานเดิมสุ่มระดับ patient **2,000 ครั้ง** ให้ prediction ของ patient เดียวกันอยู่ร่วมกัน และเทียบแต่ละวิธีกับ
+Baseline บน image IDs และ corruption state เดียวกัน โดยแต่ละโมเดลใช้ validation threshold ของตัวเอง
+มี ROC-AUC comparisons **11×16=176 คู่**; ในจำนวนนี้ CI ของ ΔAUC อยู่เหนือศูนย์ 6 คู่ และต่ำกว่าศูนย์ 9 คู่
+(ใช้ tolerance 1e-12 รอบศูนย์; อีกหนึ่งคู่มีขอบบนใกล้ศูนย์ในระดับ floating-point จึงไม่นับว่าต่ำกว่าศูนย์)
+
+คู่ที่ ΔAUC มี CI อยู่เหนือศูนย์:
+
+| วิธี | State | ΔAUC | 95% paired CI |
+| --- | --- | --- | --- |
+| Median L1 (3×3) | salt_pepper_N2 | +0.1096 | +0.0048 ถึง +0.2273 |
+| Median L1 (3×3) | salt_pepper_N3 | +0.1108 | +0.0227 ถึง +0.2100 |
+| DAE→CLAHE L2 | gaussian_N2 | +0.0560 | +0.0041 ถึง +0.1035 |
+| DAE→CLAHE L2 | salt_pepper_N3 | +0.0764 | +0.0077 ถึง +0.1494 |
+| DAE→CLAHE L3 | gaussian_N2 | +0.0664 | +0.0074 ถึง +0.1338 |
+| DAE→CLAHE L3 | poisson_N3 | +0.0704 | +0.0082 ถึง +0.1247 |
+
+CI เหล่านี้ **ยังไม่ได้ปรับ multiple comparisons** จึงเป็นหลักฐาน exploratory
+ช่วง CI กว้างตามขนาด test 56 patients และ bootstrap นี้ไม่ครอบคลุมความแปรปรวนจากการฝึกด้วย seed อื่น
+ตารางทุก metric รวมทั้งผลลบอยู่ใน [paired deltas](results_summary/tables/paired_classification_deltas.csv)
+
+## 6. คุณภาพภาพกับ classification ให้ข้อสรุปเหมือนกันหรือไม่
+
+PSNR/SSIM เทียบกับภาพก่อนเติม synthetic noise ของภาพเดียวกัน เป็น **reference proxy**
+ผลนี้รวมการเปลี่ยน contrast จาก CLAHE ด้วย จึงไม่ใช่คะแนน denoising เพียงอย่างเดียวหรือคะแนนคุณภาพทางคลินิก
+DWT/DFT fusion เป็น representation หลาย view จึงระบุ `representation_only` และไม่มี PSNR/SSIM
+
+ตัวอย่าง **Gaussian N3**:
+
+| วิธี | Mean PSNR (dB) | Mean SSIM | Test ROC-AUC |
+| --- | --- | --- | --- |
+| Baseline | 20.56 | 0.2161 | 0.6688 |
+| Median L1 (3×3) | 27.32 | 0.5289 | 0.5884 |
+| Median L2 (5×5) | 29.49 | 0.7083 | 0.5480 |
+| Median L3 (7×7) | 29.79 | 0.7775 | 0.5624 |
+| DWT→CLAHE L1 | 23.00 | 0.5202 | 0.6120 |
+| DWT→CLAHE L2 | 24.31 | 0.5905 | 0.5296 |
+| DWT→CLAHE L3 | 23.46 | 0.5629 | 0.5232 |
+| DAE→CLAHE L1 | 14.89 | 0.1452 | 0.6788 |
+| DAE→CLAHE L2 | 16.54 | 0.1972 | 0.6780 |
+| DAE→CLAHE L3 | 20.64 | 0.5501 | 0.7036 |
+
+Median L3 เพิ่ม PSNR จาก Baseline **20.56 → 29.79 dB** และ SSIM **0.2161 → 0.7775**
+แต่ ROC-AUC ลดจาก **0.6688 → 0.5624** จึงเห็นว่าความใกล้เคียงภาพอ้างอิงสูงขึ้นไม่ได้รับรอง classification ที่ดีขึ้น
+สอดคล้องกับความเป็นไปได้เรื่อง over-smoothing แต่ผลนี้ยังแยกสาเหตุจากการฝึก/การเปลี่ยน representation ไม่ได้
+ใน salt-and-pepper N3 Median L1 ได้ **37.70 dB / SSIM 0.9786 / AUC 0.7108**
+ส่วน clean Baseline ได้ PSNR=∞ และ SSIM=1 เพราะเป็นภาพอ้างอิงเดียวกัน ไม่ใช่หลักฐานคุณภาพเหนือวิธีอื่น
+
+![เปรียบเทียบ PSNR กับ ROC-AUC ใน Gaussian N3](results_summary/figures/psnr_vs_auc_gaussian_N3.png)
+
+## 7. ความครบถ้วนของผลและสิ่งที่เตรียมให้ XAI
+
+พบ completion receipts ของ DAE, CNN ทั้ง 12 ตัว, evaluation ทั้ง 12 ตัว และ report
+รายงานมี **192 classification rows**, **1,536 metric-CI rows**, **1,408 paired-delta rows**
+ตรวจ hash ของตาราง/manifest/predictions ที่อ่าน, source hashes, patient isolation, strict labels,
+อันดับการคัด noise, validation thresholds และคำนวณ test metrics ซ้ำจาก predictions แล้วตรงกับรายงาน
+รายละเอียดอยู่ใน [verification.json](results_summary/verification.json)
+การตรวจครั้งนี้อ่านผลและ metadata; ไม่ได้ reload หรืออ่าน bytes ของไฟล์ weights ขนาดใหญ่ซ้ำ
+
+เก็บ `best.pt`, `last.pt`, `model_spec.json`, true logits/probabilities และ predictions แยกแต่ละ state
+XAI ใช้ loader/preprocessing ร่วม: input `(N,V,3,H,W)`, output Infiltration logit `(N,1)`,
+target layer `backbone.layer4`, พร้อม view order/normalization/native geometry และ input gradients
+มี bbox **123 ภาพ / 115 patients**: pure 19, mixed_high_risk 64, mixed_low_risk 40
+และ background **32 ภาพ / 30 patients** จาก train; ยังไม่มี Grad-CAM/SHAP heatmaps หรือ IoU/Pointing Game results
+
+## 8. ข้อจำกัดและงานต่อที่ผลรอบนี้สนับสนุน
+
+- เป็น cohort ที่เลือก estimated noise ต่ำ จึงใช้แทนการกระจาย NIH ทั้งหมดไม่ได้ และ audit ครบเฉพาะ ZIP 70,012 ภาพ
+- การคัด noise เปลี่ยนสัดส่วน AP/PA และมี 3 ภาพ sigma ใกล้ศูนย์ ควรทบทวน ROI/ภาพตัวอย่างก่อนออกแบบการทดลองรุ่นถัดไป
+- test 100 ภาพมาจาก 56 patients, ฝึกหนึ่ง seed; ไม่ควรตีความความต่างระดับไม่กี่จุดเป็นข้อสรุปทั่วไป
+- เปรียบเทียบหลาย methods/states โดยไม่ปรับ multiplicity; การจัดอันดับผู้ชนะบน test เป็น post-hoc description
+- ยังไม่ได้ทดสอบข้อมูลภายนอก และภาพอ้างอิงไม่ได้เป็น detector noise-free ground truth
+- หากทำรอบยืนยัน ควรกำหนดวิธี/metric หลักไว้ก่อนรัน เพิ่ม training seeds และวิเคราะห์แยก AP/PA โดยคง patient isolation
+- ขั้น XAI ถัดไปใช้ checkpoint ที่เลือกด้วย validation เดิมและ bbox ที่เก็บไว้ได้ โดยรายงาน localization แยก pure/mixed cases
+
+## 9. ไฟล์อ้างอิงและการใช้ต่อ
+
+| ตำแหน่งใน `Notebook_7_beta/` | เนื้อหา |
+| --- | --- |
+| `audit_v3_zip_70012/noise_audit.csv` | คะแนน noise และ provenance รายภาพ 70,012 ภาพ |
+| `prepared/manifests/` | train/validation/test/xai/background ที่ใช้จริง |
+| `selected_data/`, `v7_selected_data.zip` | native images และ manifests สำหรับใช้ซ้ำ |
+| `runs/v7_beta/seed_42/DAE/` | DAE checkpoint/history |
+| `runs/v7_beta/seed_42/CNN/<method>/` | CNN checkpoints, histories, specs, predictions |
+| `runs/v7_beta/seed_42/reports/` | รายงานต้นฉบับและ completion receipt ที่ไม่ถูกแก้ไข |
+| `results_summary/` | สำเนาตารางที่ใช้อ่านผล, ตารางสรุปเพิ่ม, figures และหลักฐานการตรวจ |
+| `results_summary/source_snapshot.json` | SHA-256 ของ 93 result/manifest/source-receipt files ที่อ่านจาก Drive |
+| [RUN_GUIDE.md](RUN_GUIDE.md) | คู่มือรันเดิม เก็บแยกจากสรุปผลนี้ |
+
+Run signature: `7fb78156f3df5ad49845b9258552b28c7af28e2292ad68968dd7fac56b09e2bb`
+
+Audit CSV SHA-256: `5a979a70afb38643ef1a7ccf48f18725f7a982e307639eec5ca1a592ad3e2658`
+
+Environment ที่บันทึกในรอบจริง: PyTorch **2.11.0+cu130**, torchvision **0.26.0+cu130**,
+NumPy **2.1.3**, pandas **2.2.3**, PyWavelets **1.10.0**,
+scikit-learn **1.6.1**, SciPy **1.16.3**
+ไม่พบชื่อ GPU ใน saved experiment metadata จึงไม่ระบุ GPU ของรอบนี้จากการคาดเดา
+
+ตัวเลขใน README มาจาก saved artifacts ของรอบนี้ทั้งหมด ไม่มีการฝึกใหม่ เปลี่ยน checkpoint/threshold
+หรือแก้ signed report artifacts ระหว่างจัดทำสรุป

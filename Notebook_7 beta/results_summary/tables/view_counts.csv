@@ -1,0 +1,13 @@
+split,label,view_position,n
+test,0,AP,34
+test,0,PA,16
+test,1,AP,46
+test,1,PA,4
+train,0,AP,87
+train,0,PA,73
+train,1,AP,128
+train,1,PA,32
+validation,0,AP,25
+validation,0,PA,15
+validation,1,AP,33
+validation,1,PA,7

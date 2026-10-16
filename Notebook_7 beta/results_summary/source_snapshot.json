@@ -1,0 +1,472 @@
+{
+  "source": "G:\\My Drive\\nih -xray\\Notebook_7_beta",
+  "run_signature": "7fb78156f3df5ad49845b9258552b28c7af28e2292ad68968dd7fac56b09e2bb",
+  "files": [
+    {
+      "path": "runs/v7_beta/seed_42/experiment.json",
+      "bytes": 11533,
+      "sha256": "f9cb8f420b897d0794ff3b8b4a6a9de27e6772ffcce1289ad97cdaae4bb8b7e5"
+    },
+    {
+      "path": "audit_v3_zip_70012/summary.json",
+      "bytes": 586,
+      "sha256": "45ce65d921705dc5a7a840db676a5075e3857e4620ce5e641a3c379c5b136dfe"
+    },
+    {
+      "path": "audit_v3_zip_70012/noise_audit.csv",
+      "bytes": 19860117,
+      "sha256": "5a979a70afb38643ef1a7ccf48f18725f7a982e307639eec5ca1a592ad3e2658"
+    },
+    {
+      "path": "zip_source.json",
+      "bytes": 1418,
+      "sha256": "f627d3398234ae5d4bfbe7dd966a46bf4ec7eda922aaba5a8296332afc73e61f"
+    },
+    {
+      "path": "selected_package.json",
+      "bytes": 239,
+      "sha256": "6becb2dfdbfe6ee6a58bf86d671958e115e9229f6c4a6d599860801004ceddf2"
+    },
+    {
+      "path": "prepared/dataset.json",
+      "bytes": 2765,
+      "sha256": "2d7678f8dca50cec0adf22ceccb5419fff4e8e9d0f97100bfe24d425f52d02fa"
+    },
+    {
+      "path": "prepared/view_counts.csv",
+      "bytes": 211,
+      "sha256": "97ab2631294a0c7ca3189b43436bf6bb7916ed44820321e18a13855614b87e85"
+    },
+    {
+      "path": "prepared/source_view_counts.csv",
+      "bytes": 364,
+      "sha256": "f90a2ecdefdc9c8f951ada44db3ae555029c2aa30fc6098dbd3e680bc27d26c5"
+    },
+    {
+      "path": "prepared/manifests/train.csv",
+      "bytes": 79728,
+      "sha256": "7d479ffada6b838a658132dca30ef2fd0dec1a5adb6795e9faaf1fea78081265"
+    },
+    {
+      "path": "prepared/manifests/validation.csv",
+      "bytes": 20049,
+      "sha256": "7398ab485cb7c5e17762ccfdd05f11963513ddaa7fc933982a212354ee4482f7"
+    },
+    {
+      "path": "prepared/manifests/test.csv",
+      "bytes": 25039,
+      "sha256": "c34baccf079f0d32f9ea9773108436dab971e3cb14308b827edfc75f7debf1be"
+    },
+    {
+      "path": "prepared/manifests/xai.csv",
+      "bytes": 32936,
+      "sha256": "371001a23da53c7e433a5497684464572390e94a51a041db3678164a456caf6c"
+    },
+    {
+      "path": "prepared/manifests/background.csv",
+      "bytes": 8101,
+      "sha256": "c5424dbcdcf43087d76ed9d1fc918e27653a3a2fe0a8ec7e30b702792d760b22"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/reports/classification.csv",
+      "bytes": 59807,
+      "sha256": "9de693168e173f9a75dae266490d67bc4b6c623af7a4284420d7c1928e8afb8d"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/reports/classification_cis.csv",
+      "bytes": 210078,
+      "sha256": "8ac91675c683073b6712b592f7e5d583406c0dd366a30ac3ee961a4b67c253d2"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/reports/paired_classification_deltas.csv",
+      "bytes": 209532,
+      "sha256": "8b3d19baa60a2dea97d6a2b707a25ac9e694608085732680770247c75152f702"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/reports/image_quality.csv",
+      "bytes": 18669,
+      "sha256": "2daa5a41ff6e73928bab987100e311c1ae677ff7bdef37dfe132b802e33af887"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/reports/README.md",
+      "bytes": 837,
+      "sha256": "2e5dd5c003ab62d44e24f5acdafd003fff6bec68c51dc9358c805862a0a907ce"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/reports/report_complete.json",
+      "bytes": 3314,
+      "sha256": "33a2f82bbbbf376fd512c7cd7257765610282f375d08766e1a414f7d7212c2e9"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/DAE/history.csv",
+      "bytes": 1470,
+      "sha256": "42243e6c3130a4a631e398bd3a1741c4937b857a954d342f87a69daa4d3025b6"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/DAE/training_complete.json",
+      "bytes": 379,
+      "sha256": "92b5c141e9c846aff8fdd28b4b0f844f669831f339e70efe16313924406bb501"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/baseline/history.csv",
+      "bytes": 1924,
+      "sha256": "b085c7833e71a94643f1492617ec0279a458dd96ee44bf6fe258b6a9b60e2d5a"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/baseline/model_spec.json",
+      "bytes": 934,
+      "sha256": "174e76e6a21dea30ec486497749ea6de7a74b7d546acc9d8936640b4ea2e0c13"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/baseline/training_complete.json",
+      "bytes": 385,
+      "sha256": "1108b91ae7749df4d00d283262f157ae3539650b8b19249f5b823e44b9d1995b"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/baseline/evaluation_complete.json",
+      "bytes": 504,
+      "sha256": "dd29336f052dfb7573065fb146c5d02590fcda946f09ac25027b25f8b1171721"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/baseline/validation_predictions.csv",
+      "bytes": 481412,
+      "sha256": "ce2e56237afbf9cff624095be0db0da49e353063f754c429b872f99776501625"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/baseline/test_predictions.csv",
+      "bytes": 601852,
+      "sha256": "a6a55d4afe0c15d88396ce8f007e6e4fcf23cce03020cc08fed207a1ae9f625c"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/median_L1/history.csv",
+      "bytes": 1732,
+      "sha256": "ed8aa8b5569ce87cde9051954133adf8977ebca26c6aacbb357fe2b8b0af2f8e"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/median_L1/model_spec.json",
+      "bytes": 950,
+      "sha256": "5677bbb82afa1ba167abe7d395aa376b90d909a0da85179aab736170e6987f55"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/median_L1/training_complete.json",
+      "bytes": 386,
+      "sha256": "ff9aae545368820fed21ec081d6b995930ed173bfe467e1608eea9a31b849c1c"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/median_L1/evaluation_complete.json",
+      "bytes": 505,
+      "sha256": "e2686e319ed7792a57280d1a286c9e9ff2ef09aaf082ecaca079da0f921e855d"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/median_L1/validation_predictions.csv",
+      "bytes": 481292,
+      "sha256": "49a7d0ce6a67dbd55a64c59c36540036644319454f7704f65641f675c19a1cd5"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/median_L1/test_predictions.csv",
+      "bytes": 601825,
+      "sha256": "de06cace1a8d6bb6a8278a1d3f7b2cdc91213fd038f788bb025f5d0f305b75b8"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/median_L2/history.csv",
+      "bytes": 1737,
+      "sha256": "d5bb19c4a64fdf8843e174633bbf6075737153c132e104c94a06a17f152db5da"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/median_L2/model_spec.json",
+      "bytes": 950,
+      "sha256": "0d99a57cb311520d981120337fa405bf2241fa81eac9a67cbe63d1eb18edbd7d"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/median_L2/training_complete.json",
+      "bytes": 386,
+      "sha256": "06e33bab1acbd44d6f8d07cbf25acd8c25e7e1065255587b6df8be3bf2098b8f"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/median_L2/evaluation_complete.json",
+      "bytes": 505,
+      "sha256": "61c4faf638517dadee888d632d50a65e8d11fd3f162284d64c6bbedd2081f3dd"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/median_L2/validation_predictions.csv",
+      "bytes": 481338,
+      "sha256": "c57ae86b12bd193e90bb0b9bc3fbe50734052c2d429dcdf92a37de9ade2702fa"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/median_L2/test_predictions.csv",
+      "bytes": 601848,
+      "sha256": "62153256285f58e6dc39f1eebd9021885a7110bcbad4b519a230bd0462ce8ecb"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/median_L3/history.csv",
+      "bytes": 1732,
+      "sha256": "f9162881eb313865354f9b31ba39eb71008d97236820e312ca768d90a30a1544"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/median_L3/model_spec.json",
+      "bytes": 950,
+      "sha256": "744a972c6e61789120ea4c6e856092f0884bb22c5d618efb689ffbafa9925efe"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/median_L3/training_complete.json",
+      "bytes": 386,
+      "sha256": "eb91b1fdb5e0b0706976c254ed52548cbd5a76d15a699ec6b846f8ccb659f75d"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/median_L3/evaluation_complete.json",
+      "bytes": 505,
+      "sha256": "94e6a6695f03672b7c22673640b88e499d024e0fe78a64d0e7e7f13afbbe715a"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/median_L3/validation_predictions.csv",
+      "bytes": 481435,
+      "sha256": "3e44785343551a7e2814ce12e3d11daeacd1e8ce59ea4942308ac0fca5309c95"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/median_L3/test_predictions.csv",
+      "bytes": 601936,
+      "sha256": "5168e318f026cd328e2543eea9945643182c7440fc20223f842a9b90a5319de4"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/clahe_dwt_strength_L1/history.csv",
+      "bytes": 1922,
+      "sha256": "92ef7aebacb52a3355c565db8e42a150469608c0010859134d1663eda2497de7"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/clahe_dwt_strength_L1/model_spec.json",
+      "bytes": 1145,
+      "sha256": "e6ca25cb10616d48fb9c83bc7fcae2fbabdb5985deb5b19a76cbc76b7a778605"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/clahe_dwt_strength_L1/training_complete.json",
+      "bytes": 398,
+      "sha256": "37008ed3c7a73b708009d9e1276775dceebc52bb9572002dd0c92c1de28faff3"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/clahe_dwt_strength_L1/evaluation_complete.json",
+      "bytes": 517,
+      "sha256": "4dba9e8ec3cf3b380bd15584f11ad274cbf7a99fbf40d6e18c90bada491e051c"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/clahe_dwt_strength_L1/validation_predictions.csv",
+      "bytes": 481578,
+      "sha256": "6649ebc759dd1cb1b7028e440965349fef010d608f60404416a2edfe573c5d34"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/clahe_dwt_strength_L1/test_predictions.csv",
+      "bytes": 601988,
+      "sha256": "1895e6af98e3fc06583fb40f1ee72605712c1e3451e75e030ef634da31e47ee3"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/clahe_dwt_strength_L2/history.csv",
+      "bytes": 1923,
+      "sha256": "6f13692b2a9819b93782ce29cdac20cff45fbbba3a335b9884f96a8985f2e357"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/clahe_dwt_strength_L2/model_spec.json",
+      "bytes": 1145,
+      "sha256": "f1994956ceac5597efba48a27853ca32a93baee6b6a442c67b182a4caff6b844"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/clahe_dwt_strength_L2/training_complete.json",
+      "bytes": 398,
+      "sha256": "6ce4adf25e25e546723e8f6ac3b34a1e79a0c982bde7383b2e70488f4f88c01d"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/clahe_dwt_strength_L2/evaluation_complete.json",
+      "bytes": 517,
+      "sha256": "714e5f6d9042db67bd4392303b42bf36ec12d54a833da7e59a9e1b887581d26f"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/clahe_dwt_strength_L2/validation_predictions.csv",
+      "bytes": 481345,
+      "sha256": "99c4360c6f35672ac4f41c7db1941358bb1c6d55832cf7cbe11eccb8b5b8c41a"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/clahe_dwt_strength_L2/test_predictions.csv",
+      "bytes": 601811,
+      "sha256": "0e138da3e9ffbc79ccc3297ae6bdc8092538d5bcbc8e2619c733434aa5f57a27"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/clahe_dwt_strength_L3/history.csv",
+      "bytes": 2022,
+      "sha256": "e49d0bebb29ab03279316cbfbfaf1d3fcdf0122add7cfb07743fd09c649cfdd5"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/clahe_dwt_strength_L3/model_spec.json",
+      "bytes": 1145,
+      "sha256": "43260702c3bd1b206bf484c366bafa1a573f0ddc23d81ed174fb638e334796b5"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/clahe_dwt_strength_L3/training_complete.json",
+      "bytes": 398,
+      "sha256": "b02f3d86e6dd0d1ee8a60a70a8ef28fcdfa52b276dd33dfe9d51c1417bebdb9e"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/clahe_dwt_strength_L3/evaluation_complete.json",
+      "bytes": 517,
+      "sha256": "a5d3be770e985e02bb7f850b41d002a9776758f69785c405130b5e964dac93b7"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/clahe_dwt_strength_L3/validation_predictions.csv",
+      "bytes": 481679,
+      "sha256": "52902ead1a30e6235a65fa174fa4320c81a04ab3945802658fc0e6404aac21db"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/clahe_dwt_strength_L3/test_predictions.csv",
+      "bytes": 602228,
+      "sha256": "9411d321ce2e2a628c685518747056cc7cfcc0c226322773b119c3cb7ec9fcd8"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dae_clahe_strength_L1/history.csv",
+      "bytes": 1922,
+      "sha256": "3dd6bb40e2cd2cf5a3b4785e319403ec45e7a596f71a305b9c94f6584cdcd91e"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dae_clahe_strength_L1/model_spec.json",
+      "bytes": 990,
+      "sha256": "cc4c5bc6a45200b25e344ea0a51d0002542a4e6fdc898cf0435abd593fd03b74"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dae_clahe_strength_L1/training_complete.json",
+      "bytes": 398,
+      "sha256": "92dcadcf07dabf204dfdfc1f30824e57199c3fc1b0796290a492a353049f85b7"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dae_clahe_strength_L1/evaluation_complete.json",
+      "bytes": 517,
+      "sha256": "f0202d72a9e679e765c39d9ce833c41ac552832b3c256dd539afca69427e9c34"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dae_clahe_strength_L1/validation_predictions.csv",
+      "bytes": 481383,
+      "sha256": "635784fd2d451484dca1e28f0624e93d02af3832372a512f7486d9e65866d6d8"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dae_clahe_strength_L1/test_predictions.csv",
+      "bytes": 601563,
+      "sha256": "82c59ffc4134c0da7d4682b3593007c5eef9f2cae279e3268015b0f6faeaf984"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dae_clahe_strength_L2/history.csv",
+      "bytes": 1927,
+      "sha256": "03bea0beed8298875201214c4d4db4aeb4dc3c52f686ee69e3bc0b310c6f20a5"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dae_clahe_strength_L2/model_spec.json",
+      "bytes": 989,
+      "sha256": "7dc896bd4167a85b4ad22ae50ffba18bfc21487d8feeb46e95c47330e2c08d90"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dae_clahe_strength_L2/training_complete.json",
+      "bytes": 398,
+      "sha256": "7e11ca4d90fbb1a1e68c2e9d79d1a1d8d2994dfe69a84a9e212cf0a57fcabc1c"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dae_clahe_strength_L2/evaluation_complete.json",
+      "bytes": 517,
+      "sha256": "9114269a4cae8913b28f3e40603cf62c8e63901c4c505ad328ccf135739968fa"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dae_clahe_strength_L2/validation_predictions.csv",
+      "bytes": 481239,
+      "sha256": "4654391a579a840948a8e7dd2b0f7cd126c8f54ce8b5685e6c5f231a2f6dc562"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dae_clahe_strength_L2/test_predictions.csv",
+      "bytes": 601514,
+      "sha256": "cd4ded62f74fcd5de91e4e325154144ad473965d352ac2b4a6087b99ade7f696"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dae_clahe_strength_L3/history.csv",
+      "bytes": 1925,
+      "sha256": "3aec3cca6e94efc8dd95c601b06085a353374d8f8607983b67e8933aac7b5625"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dae_clahe_strength_L3/model_spec.json",
+      "bytes": 989,
+      "sha256": "06ccde1a11e2fca6f3176189e123f64c42b5b459d5ea1397f28dfd85e97cfc14"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dae_clahe_strength_L3/training_complete.json",
+      "bytes": 398,
+      "sha256": "eefdb3aac2f4bd79e141ace11c2449a48f3097e039ecf29a46eee4b8a256ff08"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dae_clahe_strength_L3/evaluation_complete.json",
+      "bytes": 517,
+      "sha256": "2eaedec35ddd99de19b7cbd5d6ee5a85a83772382cc77ea94a79c22e9f2bc8c3"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dae_clahe_strength_L3/validation_predictions.csv",
+      "bytes": 481068,
+      "sha256": "5389faf6a20282afc83bec561026abd5b24bffb6634df5da74cb0a0327293751"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dae_clahe_strength_L3/test_predictions.csv",
+      "bytes": 601351,
+      "sha256": "530ffd7a863beb8b52a662c93450283a17804506728f00065c6500edcd34581e"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dwt_L1_L4_fusion/history.csv",
+      "bytes": 1712,
+      "sha256": "bb17ff8d1a8e000db2838653628874ed7e1b3e9ac4abd58b78f9844a209f90c9"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dwt_L1_L4_fusion/model_spec.json",
+      "bytes": 1070,
+      "sha256": "85bd476baa523d89b137a31b7b357b163b110c08e6bc63c3ab1d4a21138e9444"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dwt_L1_L4_fusion/training_complete.json",
+      "bytes": 393,
+      "sha256": "90bc083fe86c7822e879c58dda539adf52492e2fb33fc9d4b145de162d007e85"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dwt_L1_L4_fusion/evaluation_complete.json",
+      "bytes": 512,
+      "sha256": "f4a643ff67fcaa226aca53f0c09d105b8f7bed8ffe1409c2b2bf08d8e24c50fe"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dwt_L1_L4_fusion/validation_predictions.csv",
+      "bytes": 481399,
+      "sha256": "43d40a57b3d5243534ada07fc8973e9127355b6dda90edc46361285185b27c1c"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dwt_L1_L4_fusion/test_predictions.csv",
+      "bytes": 601564,
+      "sha256": "27629b4fdb66f6c5f0d4bffd2641b9851031e8018a6bd90d6beed55856f1a787"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dft_low_mid_high_fusion/history.csv",
+      "bytes": 1812,
+      "sha256": "89f34a29a14bb9bce271f151a5c7f34c7cd88352649bcc06a12ec239a9347976"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dft_low_mid_high_fusion/model_spec.json",
+      "bytes": 1086,
+      "sha256": "9ea6ee79e12045e8cd739f9e2e0dffea362c943a7a64bf1ab7d241a7be2b0c2f"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dft_low_mid_high_fusion/training_complete.json",
+      "bytes": 400,
+      "sha256": "7f657ff3a2ad25d50a606fa1863f949dc16f975ec7c6b18b7e738ff7cb2885b9"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dft_low_mid_high_fusion/evaluation_complete.json",
+      "bytes": 519,
+      "sha256": "db200c353277d273e5c682f8213fc1079a6bd6e1d52f4d60162886198aa24619"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dft_low_mid_high_fusion/validation_predictions.csv",
+      "bytes": 481130,
+      "sha256": "06b3adfafa3ea82272cc998b590b4ea6802236ce96d65a61495d15d5bd875408"
+    },
+    {
+      "path": "runs/v7_beta/seed_42/CNN/dft_low_mid_high_fusion/test_predictions.csv",
+      "bytes": 601709,
+      "sha256": "4d0931d5c05e1da9f02c0916fe84688aa171183bf5bb1d6d01828490673db6e4"
+    }
+  ],
+  "scope": "Read-only snapshot of result tables, manifests, predictions and receipts; no checkpoint weights read"
+}

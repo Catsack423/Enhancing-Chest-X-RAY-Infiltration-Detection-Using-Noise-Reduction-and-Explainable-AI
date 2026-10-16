@@ -1,0 +1,2052 @@
+{
+  "signature": "7fb78156f3df5ad49845b9258552b28c7af28e2292ad68968dd7fac56b09e2bb",
+  "checks": [
+    {
+      "check": "audit CSV hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "audit requested scope",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "all scores assessable",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "source v7/__init__.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "source v7/audit.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "source v7/colab.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "source v7/dataset.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "source v7/noise.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "source v7/prepare.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "source v7/release/__init__.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "source v7/release/dae_model.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "source v7/release/denoising.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "source v7/release/evaluation.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "source v7/release/experiment.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "source v7/release/frequency.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "source v7/release/models.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "source v7/release/training.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "source v7/report.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "source v7/runner.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "source v7/smoke.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "source run.py",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "manifest hash train",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "manifest hash validation",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "manifest hash test",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "manifest hash xai",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "manifest hash background",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "class counts train",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "strict labels train",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "lowest-noise ordering train",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "patient isolation train/validation",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "patient isolation train/test",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "class counts validation",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "strict labels validation",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "lowest-noise ordering validation",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "patient isolation validation/test",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "class counts test",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "strict labels test",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "lowest-noise ordering test",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "XAI/train isolation",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "background train only",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "192 test condition rows",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "CI replicate budget",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/training_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/history.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/evaluation_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/model_spec.json hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/validation_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/test_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline test grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline validation grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline Youden threshold",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/clean saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/poisson_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/poisson_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/poisson_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/poisson_gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/poisson_gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/poisson_gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/salt_pepper_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/salt_pepper_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/salt_pepper_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/speckle_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/speckle_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline/speckle_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/training_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/history.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/evaluation_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/model_spec.json hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/validation_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/test_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1 test grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1 validation grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1 Youden threshold",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/clean saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/poisson_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/poisson_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/poisson_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/poisson_gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/poisson_gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/poisson_gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/salt_pepper_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/salt_pepper_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/salt_pepper_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/speckle_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/speckle_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1/speckle_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/training_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/history.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/evaluation_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/model_spec.json hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/validation_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/test_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2 test grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2 validation grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2 Youden threshold",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/clean saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/poisson_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/poisson_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/poisson_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/poisson_gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/poisson_gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/poisson_gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/salt_pepper_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/salt_pepper_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/salt_pepper_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/speckle_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/speckle_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2/speckle_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/training_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/history.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/evaluation_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/model_spec.json hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/validation_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/test_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3 test grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3 validation grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3 Youden threshold",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/clean saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/poisson_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/poisson_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/poisson_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/poisson_gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/poisson_gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/poisson_gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/salt_pepper_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/salt_pepper_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/salt_pepper_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/speckle_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/speckle_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3/speckle_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/training_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/history.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/evaluation_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/model_spec.json hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/validation_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/test_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1 test grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1 validation grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1 Youden threshold",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/clean saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/poisson_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/poisson_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/poisson_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/poisson_gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/poisson_gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/poisson_gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/salt_pepper_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/salt_pepper_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/salt_pepper_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/speckle_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/speckle_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1/speckle_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/training_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/history.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/evaluation_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/model_spec.json hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/validation_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/test_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2 test grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2 validation grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2 Youden threshold",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/clean saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/poisson_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/poisson_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/poisson_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/poisson_gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/poisson_gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/poisson_gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/salt_pepper_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/salt_pepper_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/salt_pepper_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/speckle_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/speckle_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2/speckle_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/training_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/history.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/evaluation_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/model_spec.json hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/validation_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/test_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3 test grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3 validation grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3 Youden threshold",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/clean saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/poisson_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/poisson_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/poisson_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/poisson_gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/poisson_gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/poisson_gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/salt_pepper_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/salt_pepper_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/salt_pepper_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/speckle_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/speckle_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3/speckle_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/training_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/history.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/evaluation_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/model_spec.json hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/validation_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/test_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1 test grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1 validation grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1 Youden threshold",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/clean saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/poisson_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/poisson_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/poisson_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/poisson_gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/poisson_gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/poisson_gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/salt_pepper_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/salt_pepper_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/salt_pepper_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/speckle_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/speckle_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1/speckle_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/training_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/history.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/evaluation_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/model_spec.json hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/validation_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/test_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2 test grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2 validation grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2 Youden threshold",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/clean saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/poisson_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/poisson_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/poisson_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/poisson_gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/poisson_gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/poisson_gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/salt_pepper_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/salt_pepper_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/salt_pepper_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/speckle_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/speckle_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2/speckle_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/training_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/history.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/evaluation_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/model_spec.json hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/validation_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/test_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3 test grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3 validation grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3 Youden threshold",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/clean saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/poisson_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/poisson_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/poisson_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/poisson_gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/poisson_gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/poisson_gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/salt_pepper_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/salt_pepper_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/salt_pepper_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/speckle_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/speckle_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3/speckle_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/training_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/history.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/evaluation_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/model_spec.json hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/validation_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/test_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion test grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion validation grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion Youden threshold",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/clean saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/poisson_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/poisson_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/poisson_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/poisson_gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/poisson_gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/poisson_gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/salt_pepper_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/salt_pepper_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/salt_pepper_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/speckle_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/speckle_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion/speckle_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/training_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/history.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/evaluation_complete.json signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/model_spec.json hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/validation_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/test_predictions.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion test grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion validation grid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion Youden threshold",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/clean saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/poisson_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/poisson_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/poisson_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/poisson_gaussian_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/poisson_gaussian_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/poisson_gaussian_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/salt_pepper_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/salt_pepper_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/salt_pepper_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/speckle_N1 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/speckle_N2 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion/speckle_N3 saved metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "baseline paired corruption equality",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L1 paired corruption equality",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L2 paired corruption equality",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "median_L3 paired corruption equality",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L1 paired corruption equality",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L2 paired corruption equality",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "clahe_dwt_strength_L3 paired corruption equality",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L1 paired corruption equality",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L2 paired corruption equality",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dae_clahe_strength_L3 paired corruption equality",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dwt_L1_L4_fusion paired corruption equality",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "dft_low_mid_high_fusion paired corruption equality",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "reports complete signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "reports/classification.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "reports/classification_cis.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "reports/paired_classification_deltas.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "reports/image_quality.csv hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "reports/README.md hash",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "DAE complete signature",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "DAE/history.csv hash",
+      "passed": true,
+      "detail": null
+    }
+  ],
+  "patient_counts": {
+    "train": 264,
+    "validation": 69,
+    "test": 56,
+    "xai": 115,
+    "background": 30
+  },
+  "noise_quantiles": {
+    "0.0": 2.8665856091005286e-34,
+    "0.01": 0.0018038696249093,
+    "0.25": 0.0027966501615635,
+    "0.5": 0.00357210003203,
+    "0.75": 0.0047335271580017,
+    "0.99": 0.005694112324492802,
+    "1.0": 0.0155732851259956
+  },
+  "zip_labels": {
+    "No Finding": 60361,
+    "Infiltration": 9547,
+    "Effusion|Infiltration": 15,
+    "Atelectasis|Infiltration": 11,
+    "Atelectasis|Effusion|Infiltration": 10,
+    "Infiltration|Pneumonia": 8,
+    "Cardiomegaly|Infiltration": 3,
+    "Cardiomegaly|Effusion|Infiltration": 3,
+    "Consolidation|Infiltration": 3,
+    "Infiltration|Nodule": 3,
+    "Emphysema|Infiltration": 2,
+    "Infiltration|Mass": 2,
+    "Atelectasis|Consolidation|Effusion|Infiltration": 2,
+    "Pneumothorax|Infiltration": 2,
+    "Consolidation|Infiltration|Pneumonia": 2,
+    "Effusion|Infiltration|Nodule|Pneumothorax": 2,
+    "Edema|Effusion|Infiltration": 2,
+    "Effusion|Infiltration|Pneumothorax": 2,
+    "Edema|Infiltration|Pneumonia": 2,
+    "Cardiomegaly|Edema|Infiltration": 1,
+    "Cardiomegaly|Consolidation|Infiltration": 1,
+    "Atelectasis|Infiltration|Nodule": 1,
+    "Atelectasis|Effusion|Infiltration|Mass": 1,
+    "Atelectasis|Emphysema|Infiltration|Pneumothorax": 1,
+    "Infiltration|Mass|Nodule|Pleural_Thickening|Effusion|Pneumonia": 1,
+    "Atelectasis|Effusion|Infiltration|Pneumothorax": 1,
+    "Edema|Pneumonia|Infiltration": 1,
+    "Atelectasis|Infiltration|Mass|Pleural_Thickening": 1,
+    "Effusion|Infiltration|Nodule|Mass|Pneumothorax": 1,
+    "Effusion|Infiltration|Mass|Pleural_Thickening": 1,
+    "Edema|Infiltration": 1,
+    "Fibrosis|Infiltration": 1,
+    "Atelectasis|Cardiomegaly|Infiltration": 1,
+    "Infiltration|Effusion": 1,
+    "Edema|Infiltration|Nodule": 1,
+    "Infiltration|Pleural_Thickening|Pneumonia": 1,
+    "Mass|Infiltration|Pneumonia": 1,
+    "Infiltration|Pneumothorax": 1,
+    "Cardiomegaly|Effusion|Nodule|Infiltration": 1,
+    "Consolidation|Effusion|Infiltration|Mass": 1,
+    "Effusion|Infiltration|Atelectasis": 1,
+    "Consolidation|Pleural_Thickening|Infiltration": 1,
+    "Infiltration|Mass|Pleural_Thickening|Pneumonia": 1,
+    "Effusion|Infiltration|Mass": 1,
+    "Infiltration|Mass|Nodule": 1,
+    "Effusion|Infiltration|Nodule": 1,
+    "Effusion|Infiltration|Nodule|Pneumonia": 1,
+    "Cardiomegaly|Consolidation|Effusion|Infiltration": 1,
+    "Infiltration|Pleural_Thickening": 1
+  },
+  "source_views": "{('Atelectasis|Cardiomegaly|Infiltration', 'PA'): 1, ('Atelectasis|Consolidation|Effusion|Infiltration', 'AP'): 2, ('Atelectasis|Effusion|Infiltration', 'AP'): 6, ('Atelectasis|Effusion|Infiltration', 'PA'): 4, ('Atelectasis|Effusion|Infiltration|Mass', 'AP'): 1, ('Atelectasis|Effusion|Infiltration|Pneumothorax', 'PA'): 1, ('Atelectasis|Emphysema|Infiltration|Pneumothorax', 'PA'): 1, ('Atelectasis|Infiltration', 'AP'): 8, ('Atelectasis|Infiltration', 'PA'): 3, ('Atelectasis|Infiltration|Mass|Pleural_Thickening', 'AP'): 1, ('Atelectasis|Infiltration|Nodule', 'AP'): 1, ('Cardiomegaly|Consolidation|Effusion|Infiltration', 'PA'): 1, ('Cardiomegaly|Consolidation|Infiltration', 'PA'): 1, ('Cardiomegaly|Edema|Infiltration', 'AP'): 1, ('Cardiomegaly|Effusion|Infiltration', 'AP'): 3, ('Cardiomegaly|Effusion|Nodule|Infiltration', 'AP'): 1, ('Cardiomegaly|Infiltration', 'AP'): 2, ('Cardiomegaly|Infiltration', 'PA'): 1, ('Consolidation|Effusion|Infiltration|Mass', 'PA'): 1, ('Consolidation|Infiltration', 'AP'): 3, ('Consolidation|Infiltration|Pneumonia', 'AP'): 2, ('Consolidation|Pleural_Thickening|Infiltration', 'PA'): 1, ('Edema|Effusion|Infiltration', 'AP'): 2, ('Edema|Infiltration', 'AP'): 1, ('Edema|Infiltration|Nodule', 'AP'): 1, ('Edema|Infiltration|Pneumonia', 'AP'): 2, ('Edema|Pneumonia|Infiltration', 'AP'): 1, ('Effusion|Infiltration', 'AP'): 9, ('Effusion|Infiltration', 'PA'): 6, ('Effusion|Infiltration|Atelectasis', 'AP'): 1, ('Effusion|Infiltration|Mass', 'AP'): 1, ('Effusion|Infiltration|Mass|Pleural_Thickening', 'PA'): 1, ('Effusion|Infiltration|Nodule', 'AP'): 1, ('Effusion|Infiltration|Nodule|Mass|Pneumothorax', 'PA'): 1, ('Effusion|Infiltration|Nodule|Pneumonia', 'AP'): 1, ('Effusion|Infiltration|Nodule|Pneumothorax', 'AP'): 1, ('Effusion|Infiltration|Nodule|Pneumothorax', 'PA'): 1, ('Effusion|Infiltration|Pneumothorax', 'AP'): 1, ('Effusion|Infiltration|Pneumothorax', 'PA'): 1, ('Emphysema|Infiltration', 'AP'): 1, ('Emphysema|Infiltration', 'PA'): 1, ('Fibrosis|Infiltration', 'PA'): 1, ('Infiltration', 'AP'): 4277, ('Infiltration', 'PA'): 5270, ('Infiltration|Effusion', 'AP'): 1, ('Infiltration|Mass', 'PA'): 2, ('Infiltration|Mass|Nodule', 'PA'): 1, ('Infiltration|Mass|Nodule|Pleural_Thickening|Effusion|Pneumonia', 'PA'): 1, ('Infiltration|Mass|Pleural_Thickening|Pneumonia', 'AP'): 1, ('Infiltration|Nodule', 'AP'): 3, ('Infiltration|Pleural_Thickening', 'AP'): 1, ('Infiltration|Pleural_Thickening|Pneumonia', 'AP'): 1, ('Infiltration|Pneumonia', 'AP'): 4, ('Infiltration|Pneumonia', 'PA'): 4, ('Infiltration|Pneumothorax', 'AP'): 1, ('Mass|Infiltration|Pneumonia', 'PA'): 1, ('No Finding', 'AP'): 21059, ('No Finding', 'PA'): 39302, ('Pneumothorax|Infiltration', 'AP'): 2}",
+  "selected_views": "{('test', 'Infiltration', 'AP'): 46, ('test', 'Infiltration', 'PA'): 4, ('test', 'No Finding', 'AP'): 34, ('test', 'No Finding', 'PA'): 16, ('train', 'Infiltration', 'AP'): 128, ('train', 'Infiltration', 'PA'): 32, ('train', 'No Finding', 'AP'): 87, ('train', 'No Finding', 'PA'): 73, ('validation', 'Infiltration', 'AP'): 33, ('validation', 'Infiltration', 'PA'): 7, ('validation', 'No Finding', 'AP'): 25, ('validation', 'No Finding', 'PA'): 15}",
+  "xai_risk_counts": {
+    "mixed_high_risk": 64,
+    "mixed_low_risk": 40,
+    "pure": 19
+  },
+  "dae_history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.0126320705865509,
+      "validation_loss": 0.0188825963239651,
+      "train_images": 320,
+      "optimizer_steps": 4,
+      "seconds": 36.5225706909996
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.0075514330761507,
+      "validation_loss": 0.0068761400252697,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 24.73572377200071
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.0056530515081249,
+      "validation_loss": 0.004677721443295,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 24.857223625000188
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.0048481434758286,
+      "validation_loss": 0.0044375346726155,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 25.497378955000386
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.0046422621642705,
+      "validation_loss": 0.0040919752344052,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 26.350025906000155
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.0042448544176295,
+      "validation_loss": 0.0037053076757729,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 26.26438077400053
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.0040555267420131,
+      "validation_loss": 0.0036033338416018,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 25.94447700799992
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.0036859910876955,
+      "validation_loss": 0.0034034475414955,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 26.111726362999438
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.0037297150644008,
+      "validation_loss": 0.003287308653671,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 26.165193353000177
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.0033769018424209,
+      "validation_loss": 0.0031863352218351,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 26.075612243999785
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.0033595703775063,
+      "validation_loss": 0.0031221368619299,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 26.14792973699969
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.0034807215211912,
+      "validation_loss": 0.0032253325698547,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 26.043812500999596
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.0034049012232571,
+      "validation_loss": 0.0031490269211644,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 25.903831094999987
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.0036523331596981,
+      "validation_loss": 0.0033023321426298,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 25.97338008099996
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.0033148986811283,
+      "validation_loss": 0.0031007017336378,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 25.94224243700046
+    },
+    {
+      "epoch": 16,
+      "train_loss": 0.003270051581785,
+      "validation_loss": 0.0029313308674318,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 26.083061984999404
+    },
+    {
+      "epoch": 17,
+      "train_loss": 0.0030797011510003,
+      "validation_loss": 0.0029266639518027,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 26.00400129599984
+    },
+    {
+      "epoch": 18,
+      "train_loss": 0.0031276260444428,
+      "validation_loss": 0.0029094548288412,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 26.04757413000061
+    },
+    {
+      "epoch": 19,
+      "train_loss": 0.0033292552339844,
+      "validation_loss": 0.0028497612423961,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 26.11726557099973
+    },
+    {
+      "epoch": 20,
+      "train_loss": 0.003299969487125,
+      "validation_loss": 0.0029182180813222,
+      "train_images": 320,
+      "optimizer_steps": 5,
+      "seconds": 26.106911716000468
+    }
+  ],
+  "checkpoint_weight_bytes_verified": false
+}

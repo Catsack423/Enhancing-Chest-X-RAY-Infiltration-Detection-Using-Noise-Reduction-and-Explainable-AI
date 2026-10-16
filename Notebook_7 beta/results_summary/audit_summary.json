@@ -1,0 +1,17 @@
+{
+  "signature": "fac3cd185ef533f9d159f5b08bfb6c743bac9f7f6d6419f59062c97058ac946d",
+  "algorithm": "db2-patch64-central80-v1",
+  "metadata_images": 112120,
+  "requested_images": 70012,
+  "scope": "v3_zip_originals",
+  "audited_images": 70012,
+  "complete": true,
+  "full_nih_complete": false,
+  "readable_images": 70012,
+  "statuses": {
+    "ok": 70012
+  },
+  "csv_sha256": "5a979a70afb38643ef1a7ccf48f18725f7a982e307639eec5ca1a592ad3e2658",
+  "estimate_units": "intensity normalized to [0,1]",
+  "interpretation": "Estimated noise proxy; low score does not prove noise-free anatomy"
+}

@@ -1,0 +1,13 @@
+split,finding_labels,view_position,n
+test,Infiltration,AP,1672
+test,Infiltration,PA,548
+test,No Finding,AP,5056
+test,No Finding,PA,4805
+train,Infiltration,AP,2002
+train,Infiltration,PA,3735
+train,No Finding,AP,12711
+train,No Finding,PA,27660
+validation,Infiltration,AP,603
+validation,Infiltration,PA,987
+validation,No Finding,AP,3292
+validation,No Finding,PA,6837
