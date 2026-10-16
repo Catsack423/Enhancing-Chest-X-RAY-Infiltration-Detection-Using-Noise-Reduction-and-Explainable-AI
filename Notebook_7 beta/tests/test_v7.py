@@ -20,7 +20,7 @@ from v7.report import image_quality
 from v7.dataset import InputData, Preprocessor
 from v7.runner import Run
 from v7.smoke import fixture
-from v7.colab import selected_bundle, stage_selected, safe_extract, ensure_source
+from v7.colab import selected_bundle, stage_selected, safe_extract, ensure_source, mount_on_fresh_path
 from v7.release.experiment import file_hash
 from xai_interface import open_experiment
 
@@ -74,6 +74,22 @@ class NoiseTests(unittest.TestCase):
 
 
 class ProtocolTests(unittest.TestCase):
+    def test_mount_avoids_populated_old_mountpoint(self):
+        with TemporaryDirectory() as temporary:
+            content = Path(temporary)
+            stale = content / "drive/MyDrive/nih -xray/Notebook_7_beta"
+            stale.mkdir(parents=True)
+            (stale / "keep.txt").write_text("preserve")
+            def mount(destination):
+                path = Path(destination)
+                if list(path.iterdir()):
+                    raise ValueError("Mountpoint must not already contain files")
+                (path / "MyDrive/nih -xray/data/3").mkdir(parents=True)
+            mounted = mount_on_fresh_path(mount, content)
+            self.assertTrue((mounted / "MyDrive/nih -xray/data/3").is_dir())
+            self.assertEqual((stale / "keep.txt").read_text(), "preserve")
+            self.assertNotEqual(mounted, content / "drive")
+
     def test_mounted_drive_without_source_and_remount_recovery(self):
         with TemporaryDirectory() as temporary:
             drive = Path(temporary) / "MyDrive/nih -xray"

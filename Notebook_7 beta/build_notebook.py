@@ -50,8 +50,6 @@ from pathlib import Path
 import base64, hashlib, subprocess, sys, zipfile, io
 import importlib.util
 from google.colab import drive
-print("Authorize Google Drive using faceyuslay@gmail.com only. A browser account and a mounted Drive account can differ.")
-drive.mount("/content/drive")
 dependencies = {{"numpy": "numpy", "pandas": "pandas", "PIL": "Pillow", "cv2": "opencv-python-headless", "pywt": "PyWavelets", "scipy": "scipy", "sklearn": "scikit-learn", "matplotlib": "matplotlib", "nbformat": "nbformat"}}
 missing = [package for module, package in dependencies.items() if importlib.util.find_spec(module) is None]
 if missing:
@@ -72,14 +70,16 @@ loaded = sys.modules.get("v7")
 if loaded is not None and not Path(loaded.__file__).resolve().is_relative_to(ROOT.resolve()):
     raise RuntimeError("Notebook source changed; restart the Colab session before loading this version")
 sys.path.insert(0, str(ROOT))
+from v7.colab import mount_on_fresh_path
+MOUNT = mount_on_fresh_path(drive.mount)
 import torch
 print("GPU:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "No GPU selected")
 '''
-    configure = '''from v7.colab import DRIVE_DATA_ROOT, DRIVE_WORK_ROOT, ensure_source
+    configure = '''from v7.colab import ensure_source
 import os
-DATA_ROOT = Path(DRIVE_DATA_ROOT)  # MyDrive/nih -xray/data/3 (ภาพเดิม)
-WORK = Path(DRIVE_WORK_ROOT)       # MyDrive/nih -xray/Notebook_7_beta (ผลและข้อมูลใช้ซ้ำ)
-ensure_source(DATA_ROOT, remount=lambda: drive.mount("/content/drive", force_remount=True))
+DATA_ROOT = MOUNT / "MyDrive/nih -xray/data/3"  # ภาพเดิม
+WORK = MOUNT / "MyDrive/nih -xray/Notebook_7_beta"  # ผลและข้อมูลใช้ซ้ำ
+ensure_source(DATA_ROOT)
 WORK.mkdir(parents=True, exist_ok=True)
 os.environ["TORCH_HOME"] = str(WORK / "cache/torch")  # reuse ImageNet weights across runtimes
 print("Read-only source:", DATA_ROOT)

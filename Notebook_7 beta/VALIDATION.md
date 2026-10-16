@@ -2,7 +2,7 @@
 
 ## Passed locally
 
-- **10 focused tests passed** in the repository `.gpu` Python 3.11 environment.
+- **11 focused tests passed** in the repository `.gpu` Python 3.11 environment.
 - Gaussian sigma calibration (0.01/0.03/0.05), black borders, constant/too-small images,
   corruption formulas and fixed RNG, PSNR/SSIM identity, frozen strict-label selection,
   patient isolation, insufficient quotas, corrupt images, vendor byte hashes and view shapes.
@@ -14,6 +14,8 @@
 - A mounted Drive containing only Notebook_7_beta fails before audit/selection. Remount
   recovery is tested. Missing indexed PNGs fail before checkpoint creation; all-read-error
   audits stop as incomplete, and legacy incorrect complete flags are not reused.
+- A populated old mountpoint is preserved while mounting at a fresh empty path;
+  the regression fixture reproduces Colab's nonempty-mountpoint rejection.
 
 ## GPU integration passed
 

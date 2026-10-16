@@ -2,6 +2,7 @@
 from pathlib import Path
 import json
 import shutil
+import tempfile
 import zipfile
 
 from .release.experiment import file_hash
@@ -9,6 +10,14 @@ from .release.experiment import file_hash
 DRIVE_DATA_ROOT = "/content/drive/MyDrive/nih -xray/data/3"
 DRIVE_WORK_ROOT = "/content/drive/MyDrive/nih -xray/Notebook_7_beta"
 AUDIT_DIRECTORY = "audit_io_v2"
+
+
+def mount_on_fresh_path(mount, content_root="/content"):
+    """Avoid populated mountpoints left behind after a failed Colab remount."""
+    destination = Path(tempfile.mkdtemp(prefix="nih_drive_v7_", dir=content_root))
+    print("Authorize Google Drive using faceyuslay@gmail.com only.", flush=True)
+    mount(str(destination))
+    return destination
 
 
 def ensure_source(data_root, remount=None):

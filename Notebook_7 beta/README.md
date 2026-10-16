@@ -13,8 +13,11 @@ Open the notebook from Drive, select **Runtime → Change runtime type → GPU**
 Authorize the Drive mount using **faceyuslay@gmail.com only** (Windows G:).
 The full scan runs in Colab, not on the local PC.
 
-If Colab sees only Notebook_7_beta while the Drive website shows data, the notebook
-requests a force remount. Choose faceyuslay@gmail.com in that authorization flow.
+The notebook mounts Drive at a new empty /content/nih_drive_v7_* directory each time
+the setup cell runs. This avoids Colab's "Mountpoint must not already contain files"
+error without deleting files left in /content/drive. DATA_ROOT and WORK use that mount;
+the underlying MyDrive folders remain the paths above. Choose faceyuslay@gmail.com
+in the authorization flow. If the source remains invisible, rerun setup to reconnect.
 The mounted account cannot be verified from the folder name alone; also check for
 duplicate nih -xray folders if the source remains invisible. Source validation runs
 before creating an output directory. Missing data stops the run without selecting images.
