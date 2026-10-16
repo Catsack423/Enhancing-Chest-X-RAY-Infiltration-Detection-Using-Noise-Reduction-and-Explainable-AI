@@ -337,31 +337,80 @@ Median L1 มี AUC สูงสุด แต่ paired ΔAUC เทียบ B
 Baseline มี recall **84%** แต่ specificity **32%**: confusion matrix `[[16,34],[8,42]]`
 ในลำดับ `[[TN,FP],[FN,TP]]` จึงไม่ควรใช้ F1 ที่สูงกว่าบางวิธีเพียงค่าเดียวเพื่อสรุปภาพรวม
 
-### 5.3 วิธีที่ ROC-AUC สูงสุดในแต่ละ state
+### 5.3 เปรียบเทียบ ROC-AUC และ Accuracy ในแต่ละ state
 
-| State | วิธีที่ AUC สูงสุด | ROC-AUC | Baseline AUC | ΔAUC |
+**วิธีที่ AUC สูงสุดอาจไม่ใช่วิธีที่ Accuracy สูงสุด** ตารางแรกจึงเพิ่ม Accuracy ของผู้ชนะตาม AUC
+เทียบ Baseline และตารางถัดมาเลือกผู้ชนะตาม Accuracy โดยตรง เพื่อไม่ปะปนเกณฑ์การจัดอันดับ
+
+Accuracy ทั้งสองตารางใช้ **Youden threshold จาก validation ที่บันทึกไว้ของแต่ละโมเดล**
+ตรึงใช้กับทุก test state ไม่ได้เลือก threshold ใหม่จาก test และไม่ใช่คอลัมน์ `accuracy_at_0_5`
+แต่ละ state มี test **100 ภาพ (50+50)** ดังนั้น Accuracy 1 จุดเปอร์เซ็นต์เท่ากับทายถูกเพิ่ม 1 ภาพ
+และ Accuracy เท่ากับ balanced accuracy เพราะจำนวนภาพสอง class เท่ากัน
+
+**(ก) เลือกวิธีด้วย ROC-AUC แล้วเปรียบเทียบ Accuracy กับ Baseline**
+
+| State | วิธีที่ AUC สูงสุด | ROC-AUC | Baseline AUC | ΔAUC | Accuracy ของวิธีนี้ | Baseline Accuracy | ΔAccuracy (จุดเปอร์เซ็นต์) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| clean | Median L1 (3×3) | 0.6980 | 0.6580 | +0.0400 | 60% | 58% | +2 |
+| gaussian_N1 | DAE→CLAHE L3 | 0.6792 | 0.6400 | +0.0392 | 66% | 53% | +13 |
+| gaussian_N2 | DAE→CLAHE L3 | 0.7156 | 0.6492 | +0.0664 | 66% | 56% | +10 |
+| gaussian_N3 | DAE→CLAHE L3 | 0.7036 | 0.6688 | +0.0348 | 66% | 60% | +6 |
+| poisson_N1 | DAE→CLAHE L3 | 0.6912 | 0.6580 | +0.0332 | 64% | 58% | +6 |
+| poisson_N2 | DAE→CLAHE L1 | 0.6992 | 0.6588 | +0.0404 | 62% | 57% | +5 |
+| poisson_N3 | DAE→CLAHE L3 | 0.6808 | 0.6104 | +0.0704 | 56% | 59% | -3 |
+| poisson_gaussian_N1 | DAE→CLAHE L3 | 0.6876 | 0.6276 | +0.0600 | 65% | 56% | +9 |
+| poisson_gaussian_N2 | DAE→CLAHE L1 | 0.6980 | 0.6388 | +0.0592 | 63% | 59% | +4 |
+| poisson_gaussian_N3 | DAE→CLAHE L3 | 0.6756 | 0.6368 | +0.0388 | 57% | 62% | -5 |
+| salt_pepper_N1 | Median L1 (3×3) | 0.6952 | 0.6268 | +0.0684 | 62% | 60% | +2 |
+| salt_pepper_N2 | Median L1 (3×3) | 0.6904 | 0.5808 | +0.1096 | 62% | 57% | +5 |
+| salt_pepper_N3 | Median L1 (3×3) | 0.7108 | 0.6000 | +0.1108 | 61% | 53% | +8 |
+| speckle_N1 | DAE→CLAHE L2 | 0.6892 | 0.6500 | +0.0392 | 62% | 56% | +6 |
+| speckle_N2 | DAE→CLAHE L1 | 0.6928 | 0.6468 | +0.0460 | 60% | 56% | +4 |
+| speckle_N3 | DAE→CLAHE L2 | 0.6824 | 0.6356 | +0.0468 | 62% | 59% | +3 |
+
+ΔAUC เป็นผลต่างของ AUC ส่วน ΔAccuracy เป็น **จุดเปอร์เซ็นต์** เช่น 60% เทียบ 58% คือ +2 จุดเปอร์เซ็นต์
+ค่า Accuracy ของวิธีในตารางนี้ไม่ได้หมายความว่าสูงสุดใน state นั้น ต้องดูตาราง (ข) ประกอบ
+
+**(ข) เลือกวิธีด้วย Accuracy โดยตรง — แสดงทุกวิธีเมื่อคะแนนสูงสุดเท่ากัน**
+
+| State | วิธีที่ Accuracy สูงสุด | Accuracy สูงสุด | Baseline Accuracy | ΔAccuracy (จุดเปอร์เซ็นต์) |
 | --- | --- | --- | --- | --- |
-| clean | Median L1 (3×3) | 0.6980 | 0.6580 | +0.0400 |
-| gaussian_N1 | DAE→CLAHE L3 | 0.6792 | 0.6400 | +0.0392 |
-| gaussian_N2 | DAE→CLAHE L3 | 0.7156 | 0.6492 | +0.0664 |
-| gaussian_N3 | DAE→CLAHE L3 | 0.7036 | 0.6688 | +0.0348 |
-| poisson_N1 | DAE→CLAHE L3 | 0.6912 | 0.6580 | +0.0332 |
-| poisson_N2 | DAE→CLAHE L1 | 0.6992 | 0.6588 | +0.0404 |
-| poisson_N3 | DAE→CLAHE L3 | 0.6808 | 0.6104 | +0.0704 |
-| poisson_gaussian_N1 | DAE→CLAHE L3 | 0.6876 | 0.6276 | +0.0600 |
-| poisson_gaussian_N2 | DAE→CLAHE L1 | 0.6980 | 0.6388 | +0.0592 |
-| poisson_gaussian_N3 | DAE→CLAHE L3 | 0.6756 | 0.6368 | +0.0388 |
-| salt_pepper_N1 | Median L1 (3×3) | 0.6952 | 0.6268 | +0.0684 |
-| salt_pepper_N2 | Median L1 (3×3) | 0.6904 | 0.5808 | +0.1096 |
-| salt_pepper_N3 | Median L1 (3×3) | 0.7108 | 0.6000 | +0.1108 |
-| speckle_N1 | DAE→CLAHE L2 | 0.6892 | 0.6500 | +0.0392 |
-| speckle_N2 | DAE→CLAHE L1 | 0.6928 | 0.6468 | +0.0460 |
-| speckle_N3 | DAE→CLAHE L2 | 0.6824 | 0.6356 | +0.0468 |
+| clean | DAE→CLAHE L1 | 64% | 58% | +6 |
+| gaussian_N1 | DAE→CLAHE L3 | 66% | 53% | +13 |
+| gaussian_N2 | DAE→CLAHE L3 | 66% | 56% | +10 |
+| gaussian_N3 | DAE→CLAHE L1 | 68% | 60% | +8 |
+| poisson_N1 | DAE→CLAHE L3 | 64% | 58% | +6 |
+| poisson_N2 | DWT→CLAHE L1 | 64% | 57% | +7 |
+| poisson_N3 | DAE→CLAHE L2 | 67% | 59% | +8 |
+| poisson_gaussian_N1 | DAE→CLAHE L3 | 65% | 56% | +9 |
+| poisson_gaussian_N2 | DAE→CLAHE L2 | 66% | 59% | +7 |
+| poisson_gaussian_N3 | DAE→CLAHE L2 | 65% | 62% | +3 |
+| salt_pepper_N1 | Median L1 (3×3) | 62% | 60% | +2 |
+| salt_pepper_N2 | Median L1 (3×3) | 62% | 57% | +5 |
+| salt_pepper_N3 | DAE→CLAHE L2 | 65% | 53% | +12 |
+| speckle_N1 | DAE→CLAHE L3 | 64% | 56% | +8 |
+| speckle_N2 | DAE→CLAHE L2 | 63% | 56% | +7 |
+| speckle_N3 | DWT→CLAHE L1 | 66% | 59% | +7 |
 
-Median L1 เด่นกับ salt-and-pepper ทั้งสามระดับ; DAE L3 เด่นกับ Gaussian และบาง Poisson states
-DAE L2 เด่นกับ speckle N1/N3 และมีค่าเฉลี่ยรวมสูงสุด จึงยังไม่มีวิธีที่ชนะทุก noise family
-ตารางเต็มทุกคู่ method/state อยู่ใน [classification.csv](results_summary/tables/classification.csv)
-และ [ROC-AUC matrix](results_summary/tables/roc_auc_by_state.csv)
+**อ่านผลอย่างไร**
+
+- บน **clean**, Median L1 มี AUC สูงสุด **0.6980** แต่ Accuracy **60%**;
+  วิธีที่ Accuracy สูงสุดคือ **DAE→CLAHE L1 ที่ 64%** เทียบ Baseline **58%**
+- บน **Poisson N3**, DAE L3 มี AUC สูงสุด แต่ Accuracy **56%** ต่ำกว่า Baseline **59%**;
+  ถ้าเลือกด้วย Accuracy ต้องเป็น **DAE L2 ที่ 67%** จึงเห็นชัดว่า AUC ที่สูงขึ้นไม่ได้รับรอง Accuracy ที่สูงขึ้น
+- ผู้ชนะตาม AUC กับ Accuracy เป็นคนละวิธีใน **10 จาก 16 states**; รอบนี้ไม่พบการเสมอที่ Accuracy สูงสุด
+  DWT→CLAHE L1 นำ Accuracy ใน Poisson N2 และ speckle N3 แม้ไม่ได้เป็นผู้ชนะ AUC ในสอง state นี้
+- ความต่างเกิดได้เพราะ AUC วัดการจัดอันดับโดยไม่ยึด threshold เดียว ขณะที่ Accuracy วัดการตัดสิน class
+  ณ threshold ที่เลือกจาก validation ของแต่ละโมเดล จึงควรรายงานทั้งสองค่า
+- สำหรับภาพรวม 16 states **DAE→CLAHE L2 ยังมีค่าเฉลี่ย Accuracy สูงสุด 62.125%**
+  เทียบ Baseline **57.4375%** หรือเพิ่ม **4.6875 จุดเปอร์เซ็นต์** สอดคล้องกับอันดับ balanced accuracy ในข้อ 5.1
+- ตารางนี้เป็นผลเชิงพรรณนาของรอบ seed 42 ไม่ได้ยืนยันว่าผู้ชนะ Accuracy มีนัยสำคัญทางสถิติ
+  ช่วง paired patient-bootstrap ของ Accuracy อยู่ในข้อ 5.4 และไฟล์ paired deltas
+
+ข้อมูลแยกไว้ใน [AUC winner พร้อม Accuracy](results_summary/tables/state_comparison_auc_accuracy.csv),
+[Accuracy winners รวมกรณีเสมอ](results_summary/tables/accuracy_winners_by_state.csv) และ
+[Accuracy matrix ครบ 12 วิธี × 16 states](results_summary/tables/accuracy_by_state.csv)
+ตารางต้นฉบับทุก metric อยู่ใน [classification.csv](results_summary/tables/classification.csv)
 
 ![ROC-AUC ทั้ง 12 วิธี × 16 states](results_summary/figures/roc_auc_heatmap.png)
 
