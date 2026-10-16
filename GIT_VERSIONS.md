@@ -21,6 +21,7 @@ retains only `Notebook_3 release/manifests/xai.csv` as a dataset-builder input.
 | `codex/notebook-v4-L4-release` | `Notebook_3 release` (adds L4 strength conditions: median 9x9, Seminae DWT 0.35*max detail, DAE twice; `run_all_L4.ipynb` runs only these into `runs/release_v4_L4` and imports the release_v4 DAE) |
 | `codex/notebook-v5-beta` | `Notebook_5 beta` (diagnostic experiments on the gap to a VinBigData reference notebook; expert-label evaluation and Colab runner; `Notebook_3 release` unchanged from v4.3) |
 | `codex/notebook-v6-class200-methods` | `Notebook_6 class200 methods` (21 denoising conditions, class200 classification and Grad-CAM/SHAP; includes only the release XAI manifest needed by the dataset builder) |
+| `codex/notebook-v7-beta` | `Notebook_7 beta` (Colab/Drive noise audit of all 112,120 images; low-noise class160 cohort; 12 v4.3 methods and five corruption families; CNN now with reusable XAI interfaces) |
 
 v4 keeps the `Notebook_3 release` folder because Colab paths (`Notebook_3_release`) and
 the running `runs/release_v4` provenance depend on unchanged bytes. v4 changes the CNN

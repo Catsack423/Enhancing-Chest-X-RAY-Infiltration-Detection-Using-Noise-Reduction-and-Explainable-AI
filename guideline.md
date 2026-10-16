@@ -180,3 +180,18 @@ Implementation อยู่ `Notebook_3 release/` บน branch `codex/notebook-
 - Training DAE/CNN ใช้ non-deterministic cuDNN (benchmark) + channels_last เพื่อความเร็ว (~5× บน L4); seed ยังคุมลำดับข้อมูล, noise และ weight เริ่มต้น แต่ weight ที่ได้อาจต่างกันเล็กน้อยระดับทศนิยมเมื่อรันซ้ำ ความแปรปรวนนี้รวมอยู่ใน mean±SD ข้าม 3 seeds; DAE denoising inference, test evaluation และ Grad-CAM/SHAP ยัง deterministic
 - Runtimecacheuint8shardsอยู่ColabVM, results/checkpointsอยู่Drive; durablemetadata/manifest/sourcepixel/code/versionhashesใช้ตรวจresume
 - ผลvalidationและข้อจำกัดอยู่ `Notebook_3 release/VALIDATION.md` การทดสอบชุดเล็กไม่ใช่ผลclassificationงานวิจัยเต็ม
+
+## 10. v7 beta — noise-controlled class160 pilot (16 October 2026)
+
+- โค้ดแยก `Notebook_7 beta/`, branch `codex/notebook-v7-beta`; ไม่เปลี่ยนผลหรือโค้ดของ v4 เดิม
+- ทำงานจริงบน Colab: อ่าน `/content/drive/MyDrive/nih -xray/data/3`, เก็บ audit/ชุดภาพที่คัด/checkpoints/results ที่ `/content/drive/MyDrive/nih -xray/Notebook_7_beta`
+- วิเคราะห์ 112,120 ภาพด้วย db2 wavelet MAD บน patch64 ในกลาง80%, ตัด patch สีคงที่/อิ่มตัว, ใช้ patch gradient ต่ำสุด25%; ค่าเป็น estimated noise ไม่ใช่หลักฐานว่าภาพไม่มี noise
+- คัดคะแนนต่ำสุดต่อ class/partition (tie=image ID): train160+160, validation40+40, test50+50; reuse frozen patient partition v4.3, Infiltration-only vs strictly No Finding; ไม่ลดเกณฑ์เมื่อภาพไม่พอ
+- ใช้ 12 methods v4.3 ตรงสูตรเดิม ไม่มี strength L4; DWT fusion ยังคง decomposition4ระดับ และ DFT3views ตามเดิม
+- Gaussian, Poisson, Poisson–Gaussian, salt-and-pepper, speckle อย่างละ3ระดับ + ภาพก่อนเติม รวม16สภาวะ; trainสุ่มหนึ่งสภาวะต่อภาพต่อepochเหมือนกันทุกmethod, validation/testใช้corruptionคงที่; parametersอยู่ใน `v7/noise.py` และบันทึกในexperiment.json
+- seed42รอบเดียวสำหรับ beta pilot: 1DAEใหม่จากtrainเท่านั้น +12CNN; ResNet50ImageNetV2/frozenearlylayers/BN/warmup3/รวมสูงสุด20epochs/patience3/geometryaugmentation ตามv4.3, pos_weight=1เพราะtrainสมดุล
+- DAE effective optimizer batch64 ใช้ microbatch8พร้อมaccumulationเพื่อรองรับGPUเล็ก; DAE BNเห็นbatch8ตามที่บันทึกในprotocol; targetsคือภาพก่อนเติมnoise ไม่ใช่clean detector truth
+- bestเลือกbalanced validation BCE รวม16states และเลือกYouden thresholdหนึ่งค่าต่อmodelใช้ทุกteststate; รายงานthreshold0.5คู่กัน, patient-bootstrap95%CI2,000draws และpaired deltaเทียบbaseline
+- PSNR/SSIMใช้ภาพก่อนเติมเป็นreference proxy; frequency fusionไม่มีPSNR/SSIMเพราะเป็นrepresentation; ผลใช้กับcohortที่คัดnoiseต่ำเท่านั้น ไม่ใช่ผลแทนNIHทั้งหมด
+- ผู้ใช้ให้ทำCNNก่อน ยังไม่รันXAI; เก็บnative bbox123ภาพ, SHAPbackground16+16จากtrain, checkpoint/model loader/input gradients/geometry/view order เพื่อใช้ต่อได้
+- ปิดTF32สำหรับmatmul/cuDNNเพื่อให้ผลbatchเดี่ยวของXAIสอดคล้องกับCNNevaluation; AMP trainingยังใช้ตามconfig และเก็บpackage/code/datahashเพื่อปฏิเสธresumeที่ไม่เข้ากัน

@@ -3,3 +3,6 @@
 
 # Preserve PDF bytes and suppress text diffs for reference papers.
 *.pdf binary
+
+# Preserve v7 source/provenance and pinned v4.3 bytes across Windows/Linux clones.
+"Notebook_7 beta/**" -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

@@ -1,0 +1,33 @@
+{
+  "git_ref": "codex/notebook-v4.3-release",
+  "files": {
+    "denoising.py": {
+      "original_sha256": "b559e2a8ba6048aae51660f0846b61ec0d15405bb827104745df4e02a021385f",
+      "vendored_sha256": "b559e2a8ba6048aae51660f0846b61ec0d15405bb827104745df4e02a021385f"
+    },
+    "dae_model.py": {
+      "original_sha256": "663ab1246c1b799f420340584973e11e6368d51e97966603651023071c556632",
+      "vendored_sha256": "663ab1246c1b799f420340584973e11e6368d51e97966603651023071c556632"
+    },
+    "models.py": {
+      "original_sha256": "e5d7f8863bdc60f6a7d0e2be2a2c69f88ae099e0060ad4a88c6d7a23fbd79b2e",
+      "vendored_sha256": "e5d7f8863bdc60f6a7d0e2be2a2c69f88ae099e0060ad4a88c6d7a23fbd79b2e"
+    },
+    "frequency.py": {
+      "original_sha256": "ea4188b09bf23c46349466036fe89eceb5781d2fbca9400fa1547f461aea1136",
+      "vendored_sha256": "ea4188b09bf23c46349466036fe89eceb5781d2fbca9400fa1547f461aea1136"
+    },
+    "evaluation.py": {
+      "original_sha256": "0b7a4e6ec2fa994cc99851e3880e434990c6ff9045db6c2280fbd3db5203c06c",
+      "vendored_sha256": "0b7a4e6ec2fa994cc99851e3880e434990c6ff9045db6c2280fbd3db5203c06c"
+    },
+    "experiment.py": {
+      "original_sha256": "9548471b2e8b550caa46bd25d5f3e6e04558a0021d17c2e24580ce464964f718",
+      "vendored_sha256": "43b018a2d9bcf7f6704b4e0ebf4b86b3cc8c32c68c2a124e9f9a24ed54e40468"
+    },
+    "training.py": {
+      "original_sha256": "ee2bb8dae7aea562cf0b5e5eb248d4e1f113bfd316b1d76f8d7c0588a08e2984",
+      "vendored_sha256": "22c3b0f939e048f0adf31c6aa9159a761bb7dd3420f0ac00153162fe8b7b4fd8"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "research_results": false,
+  "device": "cuda",
+  "conditions": 12,
+  "corruption_states": 16,
+  "dae_epochs": 1,
+  "cnn_epochs": 4,
+  "reload_and_gradient_probes": [
+    {
+      "condition_id": "baseline",
+      "input_shape": [
+        1,
+        1,
+        3,
+        64,
+        64
+      ],
+      "gradient": true,
+      "reload_predictions_match": true
+    },
+    {
+      "condition_id": "dwt_L1_L4_fusion",
+      "input_shape": [
+        1,
+        5,
+        3,
+        64,
+        64
+      ],
+      "gradient": true,
+      "reload_predictions_match": true
+    },
+    {
+      "condition_id": "dft_low_mid_high_fusion",
+      "input_shape": [
+        1,
+        3,
+        3,
+        64,
+        64
+      ],
+      "gradient": true,
+      "reload_predictions_match": true
+    }
+  ],
+  "completed_resume_bytes_unchanged": true
+}

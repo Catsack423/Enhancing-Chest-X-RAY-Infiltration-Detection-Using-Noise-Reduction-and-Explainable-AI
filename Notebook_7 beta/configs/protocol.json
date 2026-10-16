@@ -1,0 +1,180 @@
+{
+  "schema_version": 7,
+  "seed": 42,
+  "run_mode": "full",
+  "expected_audit_images": 112120,
+  "counts_per_class": {
+    "train": 160,
+    "validation": 40,
+    "test": 50
+  },
+  "preprocessing": {
+    "working_size": 256,
+    "cnn_size": 224,
+    "mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "std": [
+      0.229,
+      0.224,
+      0.225
+    ],
+    "clahe_grid": [
+      8,
+      8
+    ]
+  },
+  "cnn": {
+    "weights": "IMAGENET1K_V2",
+    "pretrained": true,
+    "batch_size": 4,
+    "accumulation_steps": 4,
+    "effective_batch_size": 16,
+    "epochs": 20,
+    "warmup_epochs": 3,
+    "early_stopping_patience": 3,
+    "learning_rate": 0.0001,
+    "head_learning_rate": 0.0001,
+    "layer4_learning_rate": 1e-05,
+    "weight_decay": 0.0001,
+    "head_dropout": 0.3,
+    "trainable_layers": "layer4_after_warmup",
+    "freeze_batchnorm": true,
+    "classification_threshold": 0.5,
+    "threshold_policy": "validation_youden",
+    "num_workers": 0,
+    "deterministic": false,
+    "channels_last": true,
+    "amp": true,
+    "snapshot_epochs": [],
+    "augmentation": {
+      "max_rotation_degrees": 7.0,
+      "max_translation_fraction": 0.05,
+      "scale_range": [
+        0.95,
+        1.05
+      ],
+      "padding": "reflection"
+    }
+  },
+  "dae": {
+    "base_channels": 32,
+    "epochs": 20,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "gaussian_sigma": 0.05,
+    "poisson_scale": 30.0,
+    "l1_weight": 0.2,
+    "num_workers": 0,
+    "deterministic": false,
+    "channels_last": true,
+    "amp": true
+  },
+  "conditions": [
+    {
+      "id": "baseline",
+      "group": "baseline",
+      "level": 0
+    },
+    {
+      "id": "median_L1",
+      "group": "median",
+      "level": 1,
+      "kernel": 3
+    },
+    {
+      "id": "median_L2",
+      "group": "median",
+      "level": 2,
+      "kernel": 5
+    },
+    {
+      "id": "median_L3",
+      "group": "median",
+      "level": 3,
+      "kernel": 7
+    },
+    {
+      "id": "clahe_dwt_strength_L1",
+      "group": "clahe_dwt",
+      "level": 1,
+      "clip_limit": 2.0,
+      "wavelet": "db1",
+      "dwt_depth": 3,
+      "mode": "periodization",
+      "threshold_multiplier": 0.5,
+      "threshold_policy": "per_subband",
+      "order": "DWT_then_CLAHE"
+    },
+    {
+      "id": "clahe_dwt_strength_L2",
+      "group": "clahe_dwt",
+      "level": 2,
+      "clip_limit": 2.0,
+      "wavelet": "db1",
+      "dwt_depth": 3,
+      "mode": "periodization",
+      "threshold_multiplier": 1.0,
+      "threshold_policy": "per_subband",
+      "order": "DWT_then_CLAHE"
+    },
+    {
+      "id": "clahe_dwt_strength_L3",
+      "group": "clahe_dwt",
+      "level": 3,
+      "clip_limit": 2.0,
+      "wavelet": "db1",
+      "dwt_depth": 3,
+      "mode": "periodization",
+      "threshold_multiplier": 2.0,
+      "threshold_policy": "per_subband",
+      "order": "DWT_then_CLAHE"
+    },
+    {
+      "id": "dae_clahe_strength_L1",
+      "group": "dae_clahe",
+      "level": 1,
+      "clip_limit": 2.0,
+      "alpha": 0.25
+    },
+    {
+      "id": "dae_clahe_strength_L2",
+      "group": "dae_clahe",
+      "level": 2,
+      "clip_limit": 2.0,
+      "alpha": 0.5
+    },
+    {
+      "id": "dae_clahe_strength_L3",
+      "group": "dae_clahe",
+      "level": 3,
+      "clip_limit": 2.0,
+      "alpha": 1.0
+    },
+    {
+      "id": "dwt_L1_L4_fusion",
+      "group": "dwt_features",
+      "level": 4,
+      "wavelet": "db1",
+      "mode": "periodization",
+      "depth": 4
+    },
+    {
+      "id": "dft_low_mid_high_fusion",
+      "group": "dft_features",
+      "level": 0,
+      "low_cutoff": 0.125,
+      "high_cutoff": 0.25,
+      "frequency_units": "cycles_per_pixel_radial"
+    }
+  ],
+  "bootstrap_replicates": 2000,
+  "noise_version": "v7-five-families-v1",
+  "audit_version": "db2-patch64-central80-v1",
+  "references": [
+    "https://scikit-image.org/docs/stable/api/skimage.util.html#skimage.util.random_noise",
+    "https://doi.org/10.1109/TIP.2008.2001399"
+  ]
+}
