@@ -1,0 +1,17 @@
+corruption_id,auc_winner,best_roc_auc,baseline_roc_auc,auc_delta_vs_baseline,accuracy_winner,best_accuracy,baseline_accuracy,accuracy_delta_vs_baseline
+clean,dft_low_mid_high_fusion,1.0,0.996,0.0040000000000000036,clahe_dwt_strength_L3,0.98,0.96,0.020000000000000018
+gaussian_N1,dft_low_mid_high_fusion,0.9996,0.9956,0.0040000000000000036,dft_low_mid_high_fusion,0.99,0.94,0.050000000000000044
+gaussian_N2,dft_low_mid_high_fusion,0.9996,0.9976,0.0020000000000000018,dft_low_mid_high_fusion,0.99,0.96,0.030000000000000027
+gaussian_N3,dae_clahe_strength_L2,1.0,0.9996,0.00039999999999995595,dae_clahe_strength_L2,0.99,0.99,0.0
+poisson_N1,dft_low_mid_high_fusion,0.9996,0.9972,0.0024000000000000687,dft_low_mid_high_fusion,0.98,0.95,0.030000000000000027
+poisson_N2,median_L1,1.0,0.9996,0.00039999999999995595,dft_low_mid_high_fusion,0.99,0.98,0.010000000000000009
+poisson_N3,dft_low_mid_high_fusion,1.0,0.9992,0.0008000000000000229,dft_low_mid_high_fusion,0.99,0.96,0.030000000000000027
+poisson_gaussian_N1,clahe_dwt_strength_L3,1.0,0.9968,0.0031999999999999806,dft_low_mid_high_fusion,0.98,0.96,0.020000000000000018
+poisson_gaussian_N2,dft_low_mid_high_fusion,1.0,1.0,0.0,dft_low_mid_high_fusion,0.99,0.97,0.020000000000000018
+poisson_gaussian_N3,baseline,0.9996,0.9996,0.0,median_L3,0.98,0.95,0.030000000000000027
+salt_pepper_N1,dft_low_mid_high_fusion,0.998,0.9896,0.008399999999999963,dft_low_mid_high_fusion,0.98,0.92,0.05999999999999994
+salt_pepper_N2,dft_low_mid_high_fusion,0.9984,0.9852,0.01319999999999999,dae_clahe_strength_L3,0.96,0.89,0.06999999999999995
+salt_pepper_N3,dae_clahe_strength_L2,0.998,0.996,0.0020000000000000018,dae_clahe_strength_L2,0.98,0.96,0.020000000000000018
+speckle_N1,clahe_dwt_strength_L1,1.0,0.9972,0.0028000000000000247,clahe_dwt_strength_L1,0.98,0.95,0.030000000000000027
+speckle_N2,dft_low_mid_high_fusion,0.9996,0.9988,0.0008000000000000229,dft_low_mid_high_fusion,0.98,0.96,0.020000000000000018
+speckle_N3,dae_clahe_strength_L1,1.0,0.9988,0.0011999999999999789,dae_clahe_strength_L1,0.99,0.96,0.030000000000000027

@@ -1,0 +1,11 @@
+numpy
+pandas
+Pillow
+opencv-python-headless
+PyWavelets
+scipy
+scikit-learn
+matplotlib
+nbformat
+kagglehub
+# Install a compatible torch/torchvision pair for your CUDA runtime separately.
